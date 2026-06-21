@@ -1,6 +1,318 @@
 <!DOCTYPE html>
 <html lang="ko">
+<head><!DOCTYPE html>
+<html lang="ko">
 <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📚 책,삶,이야기</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: "Noto Sans KR", sans-serif;
+      background: #faf7f2;
+      margin: 0;
+      padding: 0;
+      color: #3d2b1f;
+    }
+
+    /* HEADER */
+    header {
+      background: #6b4f36;
+      padding: 24px;
+      color: white;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* 탭 메뉴 */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #e0d6c7;
+      padding: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #c7b8a5;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .tab-btn.active {
+      background: #6b4f36;
+      color: white;
+      font-weight: 600;
+    }
+
+    /* 탭 콘텐츠 */
+    .tab-content {
+      display: none;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* 카드 */
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-left: 6px solid #6b4f36;
+      padding-left: 10px;
+      margin-bottom: 16px;
+    }
+
+    /* 책 목록 */
+    .book-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .book-cover {
+      width: 80px;
+      height: 110px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #f1f1f1;
+    }
+    .book-info-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    /* 댓글 */
+    .review-box {
+      margin: 10px 0 20px 0;
+      background: #f8f4ef;
+      padding: 12px 16px;
+      border-radius: 10px;
+    }
+    .review-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>📚 우리들의 독서모임</header>
+
+<!-- 탭 메뉴 -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="openTab('current')">📌 이번 달 모임</button>
+  <button class="tab-btn" onclick="openTab('history')">📚 지난 독서목록</button>
+  <button class="tab-btn" onclick="openTab('reviews')">💬 지난 한줄평/질문</button>
+</div>
+
+<!-- =============================================================== -->
+<!-- 📌 TAB 1 — 이번 달 모임 -->
+<!-- =============================================================== -->
+<div id="current" class="tab-content active">
+
+  <div class="card">
+    <h2>📅 이번 달 모임 일정</h2>
+    <div id="currentSchedule">불러오는 중...</div>
+  </div>
+
+  <div class="card">
+    <h2>📖 이번 달 선정도서</h2>
+    <div id="currentBook">불러오는 중...</div>
+  </div>
+
+</div>
+
+<!-- =============================================================== -->
+<!-- 📚 TAB 2 — 지난 독서 목록 -->
+<!-- =============================================================== -->
+<div id="history" class="tab-content">
+  <div class="card">
+    <h2>📚 역대 선정도서</h2>
+    <div id="bookHistoryList">불러오는 중...</div>
+  </div>
+</div>
+
+<!-- =============================================================== -->
+<!-- 💬 TAB 3 — 지난 한줄평/질문 (책별 묶음) -->
+<!-- =============================================================== -->
+<div id="reviews" class="tab-content">
+  <div class="card">
+    <h2>💬 책별 지난 한줄평 / 질문</h2>
+    <div id="reviewsByBook">불러오는 중...</div>
+  </div>
+</div>
+
+
+
+<script>
+  /* ----------------------------------------------------------
+      🔗 Supabase 연결 (반드시 수정!)
+  ---------------------------------------------------------- */
+  const SUPABASE_URL = "https://pxbgwwavxggbtywqxogj.supabase.co";
+  const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM
+  /* ----------------------------------------------------------
+      📌 탭 열기 함수
+  ---------------------------------------------------------- */
+  function openTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.tab-btn[onclick="openTab('${tabName}')"]`).classList.add('active');
+
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+  }
+
+
+
+  /* ----------------------------------------------------------
+      📅 이번 달 설정 불러오기 (settings)
+  ---------------------------------------------------------- */
+  async function loadCurrentSettings() {
+    const { data } = await db.from("settings").select("*").eq("id", 1).single();
+
+    const scheduleEl = document.getElementById("currentSchedule");
+    const bookEl = document.getElementById("currentBook");
+
+    if (!data) {
+      scheduleEl.innerHTML = "등록된 일정 없음";
+      bookEl.innerHTML = "등록된 도서 없음";
+      return;
+    }
+
+    scheduleEl.innerHTML = `
+      <div>📆 날짜: ${data.schedule_date || "-"}</div>
+      <div>🕑 시간: ${data.schedule_time || "-"}</div>
+      <div>📍 장소: ${data.schedule_place || "-"}</div>
+      <div>👥 예상 참석: ${data.schedule_members || "-"}</div>
+    `;
+
+    bookEl.innerHTML = `
+      <div style="display:flex; gap:16px; align-items:flex-start;">
+        <img class="book-cover" src="${data.book_cover_url}" onerror="this.src=''; this.style.background='#ddd';"/>
+        <div>
+          <div class="book-info-title">${data.book_title}</div>
+          <div>${data.book_author} / ${data.book_publisher}</div>
+          <div style="margin-top:6px; line-height:1.5;">${data.book_desc}</div>
+        </div>
+      </div>
+    `;
+  }
+
+
+
+  /* ----------------------------------------------------------
+      📚 지난 독서 목록 불러오기 (book_history)
+  ---------------------------------------------------------- */
+  async function loadBookHistory() {
+    const listEl = document.getElementById("bookHistoryList");
+    const { data } = await db
+      .from("book_history")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!data || data.length === 0) {
+      listEl.innerHTML = "아직 기록이 없습니다.";
+      return;
+    }
+
+    listEl.innerHTML = data.map(b => `
+      <div class="book-item">
+        <img class="book-cover" src="${b.book_cover_url}" onerror="this.src=''; this.style.background='#ccc'"/>
+        <div>
+          <div class="book-info-title">${b.book_title}</div>
+          <div>${b.book_author} / ${b.book_publisher}</div>
+          <div>📅 모임 날짜: ${b.meeting_date}</div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+
+
+  /* ----------------------------------------------------------
+      💬 책별 한줄평/질문 묶어서 보기
+      comments + book_history 매칭
+  ---------------------------------------------------------- */
+  async function loadReviewsByBook() {
+    const container = document.getElementById("reviewsByBook");
+
+    const { data: books } = await db
+      .from("book_history")
+      .select("*")
+      .order("meeting_date", { ascending: false });
+
+    if (!books || books.length === 0) {
+      container.innerHTML = "기록된 책이 없습니다.";
+      return;
+    }
+
+    const { data: comments } = await db
+      .from("comments")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    container.innerHTML = books.map(book => {
+      const month = book.meeting_date;   // "2026년 7월 3일" ← 그대로 사용
+
+      // 🔍 meeting_date 포함된 댓글만 매칭
+      const match = comments.filter(c =>
+        c.created_at && c.created_at.includes(month.slice(0, 7).replace("년 ", "-").replace("월", ""))
+      );
+
+      return `
+        <div style="margin-bottom:30px;">
+          <h3 style="border-bottom:2px solid #d8c7b8; padding-bottom:6px;">
+            📘 ${book.book_title} (${book.meeting_date})
+          </h3>
+
+          ${match.length === 0
+            ? "<div>이 책에 대한 기록이 없습니다.</div>"
+            : match.map(r => `
+              <div class="review-box">
+                <div class="review-name">🙋 ${r.name}</div>
+                <div>📝 ${r.review}</div>
+                ${r.question ? `<div>💬 질문: ${r.question}</div>` : ""}
+              </div>
+            `).join("")
+          }
+        </div>
+      `;
+    }).join("");
+  }
+
+
+
+  /* ----------------------------------------------------------
+      🚀 초기 실행
+  ---------------------------------------------------------- */
+  loadCurrentSettings();
+  loadBookHistory();
+  loadReviewsByBook();
+
+</script>
+</body>
+</html>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📚 독서모임 대시보드</title>
