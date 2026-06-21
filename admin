@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📚 관리자 - 책 표지 업로드</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ===== 전체 스타일 ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f5f0e8, #e8ddd0);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* ===== 카드 ===== */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 36px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 30px rgba(92,61,46,0.12);
+    }
+    .card h1 {
+      font-size: 1.4rem;
+      color: #5c3d2e;
+      margin-bottom: 6px;
+    }
+    .card p.desc {
+      font-size: 0.85rem;
+      color: #a0856e;
+      margin-bottom: 24px;
+    }
+
+    /* ===== 비밀번호 영역 ===== */
+    .pw-section {
+      margin-bottom: 20px;
+      padding: 14px;
+      background: #fdf6ee;
+      border-radius: 10px;
+      border: 1px solid #e8ddd0;
+    }
+    .pw-section label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #5c3d2e;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .pw-row {
+      display: flex;
+      gap: 8px;
+    }
+    .pw-row input {
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid #d4c4b0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .pw-row button {
+      padding: 9px 16px;
+      background: #5c3d2e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* ===== 업로드 폼 ===== */
+    #uploadForm { display: none; } /* 비밀번호 확인 전 숨김 */
+
+    /* 드래그 앤 드롭 영역 */
+    .drop-zone {
+      border: 2px dashed #c4a882;
+      border-radius: 14px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      margin-bottom: 20px;
+      background: #fffbf7;
+    }
+    .drop-zone:hover,
+    .drop-zone.dragover {
+      background: #fdf0e0;
+      border-color: #8b6340;
+    }
+    .drop-zone .icon { font-size: 3rem; margin-bottom: 10px; }
+    .drop-zone .hint {
+      font-size: 0.9rem;
+      color: #8b6340;
+      line-height: 1.6;
+    }
+    .drop-zone input[type="file"] {
+      display: none; /* 숨기고 클릭 이벤트로 열기 */
+    }
+
+    /* 미리보기 */
+    #preview-wrap {
+      display: none;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #preview-wrap img {
+      max-width: 140px;
+      max-height: 200px;
+      border-radius: 8px;
+      box-shadow: 4px 4px 14px rgba(0,0,0,0.2);
+      object-fit: cover;
+    }
+    #preview-wrap p {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: #8b6340;
+    }
+
+    /* 폼 입력 */
+    .form-row { margin-bottom: 14px; }
+    .form-row label {
+      display: block;
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #5c3d2e;
+      margin-bottom: 5px;
+    }
+    .form-row input {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1px solid #d4c4b0;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+    }
+    .form-row input:focus {
+      outline: none;
+      border-color: #8b6340;
+      box-shadow: 0 0 0 3px rgba(139,99,64,0.1);
+    }
+
+    /* 업로드 버튼 */
+    .upload-btn {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #5c3d2e, #8b6340);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .upload-btn:hover { opacity: 0.9; }
+    .upload-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* 진행바 */
+    .progress-wrap {
+      display: none;
+      margin-top: 14px;
+    }
+    .progress-bar-bg {
+      background: #e8ddd0;
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #8b6340, #c4a882);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    /* 결과 메시지 */
+    #msg {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    /* URL 결과 박스 */
+    #result-box {
+      display: none;
+      margin-top: 16px;
+      background: #f0faf4;
+      border: 1px solid #a8d5b5;
+      border-radius: 10px;
+      padding: 14px;
+    }
+    #result-box .result-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #2d7a4f;
+      margin-bottom: 8px;
+    }
+    #result-box .url-text {
+      font-size: 0.8rem;
+      color: #1a5c38;
+      word-break: break-all;
+      background: white;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #c8ecd5;
+      margin-bottom: 10px;
+    }
+    .copy-btn {
+      width: 100%;
+      padding: 9px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .copy-btn:hover { opacity: 0.88; }
+
+    /* 업로드 기록 */
+    #history { margin-top: 24px; }
+    #history h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #5c3d2e;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e8ddd0;
+    }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0e8de;
+      font-size: 0.83rem;
+    }
+    .history-item img {
+      width: 36px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+    }
+    .history-item .fname {
+      flex: 1;
+      color: #3d2b1f;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .history-copy {
+      padding: 4px 10px;
+      background: #5c3d2e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🖼️ 책 표지 이미지 업로드</h1>
+    <p class="desc">독서모임 대시보드에 사용할 책 표지를 업로드하세요</p>
+
+    <!-- ===== 간단한 비밀번호 보호 ===== -->
+    <div class="pw-section">
+      <label>🔐 관리자 비밀번호</label>
+      <div class="pw-row">
+        <input type="password" id="pwInput" placeholder="비밀번호 입력"/>
+        <button onclick="checkPassword()">확인</button>
+      </div>
+      <div id="pwMsg" style="font-size:0.8rem;margin-top:6px;color:#c0392b;"></div>
+    </div>
+
+    <!-- ===== 업로드 폼 (비밀번호 확인 후 표시) ===== -->
+    <div id="uploadForm">
+
+      <!-- 드래그 앤 드롭 영역 -->
+      <div class="drop-zone" id="dropZone">
+        <div class="icon">📸</div>
+        <div class="hint">
+          클릭하거나 이미지를 여기에 드래그하세요<br/>
+          <span style="font-size:0.78rem;color:#b0927a;">JPG, PNG, WebP · 최대 5MB</span>
+        </div>
+        <!-- 숨겨진 파일 입력 -->
+        <input type="file" id="fileInput" accept="image/*"/>
+      </div>
+
+      <!-- 이미지 미리보기 -->
+      <div id="preview-wrap">
+        <img id="preview-img" src="" alt="미리보기"/>
+        <p id="preview-name"></p>
+      </div>
+
+      <!-- 파일명 설정 -->
+      <div class="form-row">
+        <label>📝 저장할 파일명 (확장자 포함)</label>
+        <input
+          type="text"
+          id="fileName"
+          placeholder="예: 채식주의자.jpg"
+        />
+      </div>
+
+      <!-- 업로드 버튼 -->
+      <button class="upload-btn" id="uploadBtn" onclick="uploadImage()">
+        ☁️ Supabase에 업로드하기
+      </button>
+
+      <!-- 진행바 -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- 결과 메시지 -->
+      <div id="msg"></div>
+
+      <!-- URL 결과 박스 -->
+      <div id="result-box">
+        <div class="result-label">✅ 업로드 완료! 아래 URL을 index.html에 붙여넣으세요</div>
+        <div class="url-text" id="resultUrl"></div>
+        <button class="copy-btn" onclick="copyUrl()">📋 URL 복사하기</button>
+      </div>
+
+      <!-- 업로드 기록 -->
+      <div id="history">
+        <h3>📚 업로드된 책 표지 목록</h3>
+        <div id="historyList">불러오는 중...</div>
+      </div>
+
+    </div><!-- /#uploadForm -->
+  </div>
+
+  <script>
+    // ============================================================
+    // ⚙️ 설정값 - 본인 정보로 수정하세요!
+    // ============================================================
+    const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+    const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY';
+
+    // ⚠️ 관리자 비밀번호 (원하는 값으로 변경!)
+    const ADMIN_PASSWORD = 'bookclub1234';
+
+    const BUCKET = 'book-covers'; // 버킷 이름
+
+    // Supabase 클라이언트 초기화
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let selectedFile = null; // 선택된 파일을 저장하는 변수
+
+    // ============================================================
+    // 🔐 비밀번호 확인
+    // ============================================================
+    function checkPassword() {
+      const pw = document.getElementById('pwInput').value;
+      if (pw === ADMIN_PASSWORD) {
+        document.getElementById('uploadForm').style.display = 'block';
+        document.querySelector('.pw-section').style.display = 'none';
+        loadHistory(); // 업로드 기록 불러오기
+      } else {
+        document.getElementById('pwMsg').textContent = '❌ 비밀번호가 틀렸습니다.';
+      }
+    }
+
+    // Enter 키로도 비밀번호 확인
+    document.getElementById('pwInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    // ============================================================
+    // 📁 파일 선택 - 클릭으로 열기
+    // ============================================================
+    const dropZone  = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) handleFile(e.target.files[0]);
+    });
+
+    // ============================================================
+    // 🖱️ 드래그 앤 드롭 처리
+    // ============================================================
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleFile(file);
+    });
+
+    // ============================================================
+    // 🖼️ 파일 선택 후 처리 (미리보기 + 파일명 자동 설정)
+    // ============================================================
+    function handleFile(file) {
+      // 5MB 용량 제한 확인
+      if (file.size > 5 * 1024 * 1024) {
+        alert('파일 크기가 5MB를 초과합니다.');
+        return;
+      }
+
+      selectedFile = file;
+
+      // 파일명 자동 입력
+      document.getElementById('fileName').value = file.name;
+
+      // 미리보기 생성
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('preview-img').src = e.target.result;
+        document.getElementById('preview-name').textContent =
+          `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        document.getElementById('preview-wrap').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ============================================================
+    // ☁️ Supabase Storage에 이미지 업로드
+    // ============================================================
+    async function uploadImage() {
+      const fileName = document.getElementById('fileName').value.trim();
+      const msg      = document.getElementById('msg');
+      const btn      = document.getElementById('uploadBtn');
+
+      // 유효성 검사
+      if (!selectedFile) {
+        msg.style.color = '#c0392b';
+        msg.textContent = '⚠️ 이미지를 먼저 선택해주세요!';
+        return;
+      }
+      if (!fileName) {
+        msg.style.color = '#c0392b';
+        msg.textContent = '⚠️ 저장할 파일명을 입력해주세요!';
+        return;
+      }
+
+      // UI 업로드 중 상태
+      btn.disabled = true;
+      btn.textContent = '업로드 중...';
+      msg.textContent = '';
+      document.getElementById('result-box').style.display = 'none';
+
+      // 진행바 표시
+      const progressWrap = document.getElementById('progressWrap');
+      const progressFill = document.getElementById('progressFill');
+      progressWrap.style.display = 'block';
+      progressFill.style.width = '30%';
+
+      // Supabase Storage에 업로드
+      const { data, error } = await db.storage
+        .from(BUCKET)
+        .upload(fileName, selectedFile, {
+          cacheControl: '3600',
+          upsert: true // 같은 이름 파일 덮어쓰기 허용
+        });
+
+      progressFill.style.width = '100%';
+
+      if (error) {
+        // 업로드 실패
+        msg.style.color = '#c0392b';
+        msg.textContent = `❌ 업로드 실패: ${error.message}`;
+      } else {
+        // 업로드 성공 → 공개 URL 생성
+        const { data: urlData } = db.storage
+          .from(BUCKET)
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+
+        // 결과 박스 표시
+        document.getElementById('resultUrl').textContent = publicUrl;
+        document.getElementById('result-box').style.display = 'block';
+
+        msg.style.color = '#27ae60';
+        msg.textContent = '✅ 업로드 완료!';
+
+        // 목록 새로고침
+        loadHistory();
+
+        // 초기화
+        selectedFile = null;
+        fileInput.value = '';
+        setTimeout(() => {
+          progressWrap.style.display = 'none';
+          progressFill.style.width = '0%';
+        }, 1000);
+      }
+
+      btn.disabled = false;
+      btn.textContent = '☁️ Supabase에 업로드하기';
+    }
+
+    // ============================================================
+    // 📋 URL 복사하기
+    // ============================================================
+    function copyUrl() {
+      const url = document.getElementById('resultUrl').textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✅ 복사됨!';
+        setTimeout(() => { btn.textContent = '📋 URL 복사하기'; }, 2000);
+      });
+    }
+
+    // ============================================================
+    // 📚 업로드된 파일 목록 불러오기
+    // ============================================================
+    async function loadHistory() {
+      const historyList = document.getElementById('historyList');
+
+      // Storage에서 파일 목록 조회
+      const { data, error } = await db.storage
+        .from(BUCKET)
+        .list('', { limit: 20, sortBy: { column: 'created_at', order: 'desc' } });
+
+      if (error || !data || data.length === 0) {
+        historyList.innerHTML =
+          '<div style="font-size:0.82rem;color:#b0927a;padding:10px 0;">아직 업로드된 파일이 없습니다.</div>';
+        return;
+      }
+
+      // 각 파일의 공개 URL과 함께 목록 렌더링
+      historyList.innerHTML = data.map(file => {
+        const { data: urlData } = db.storage
+          .from(BUCKET)
+          .getPublicUrl(file.name);
+        const url = urlData.publicUrl;
+
+        return `
+          <div class="history-item">
+            <img src="${url}" alt="${file.name}" onerror="this.style.opacity=0.3"/>
+            <span class="fname" title="${file.name}">${file.name}</span>
+            <button class="history-copy" onclick="copyToClipboard('${url}', this)">
+              URL 복사
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 기록 목록의 URL 복사
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✅ 복사!';
+        setTimeout(() => { btn.textContent = 'URL 복사'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
