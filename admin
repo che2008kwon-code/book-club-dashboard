@@ -3,574 +3,616 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📚 관리자 - 책 표지 업로드</title>
+  <title>⚙️ 독서모임 관리자</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ===== 전체 스타일 ===== */
+    /* ===== 기본 초기화 ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background: linear-gradient(135deg, #f5f0e8, #e8ddd0);
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      color: #e0d8d0;
+      padding: 20px 16px 60px;
     }
+
+    /* ===== 헤더 ===== */
+    .admin-header {
+      max-width: 760px; margin: 0 auto 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-header h1 { font-size: 1.5rem; color: #f5d9a8; letter-spacing: 1px; }
+    .back-btn {
+      text-decoration: none; color: rgba(245,217,168,0.7);
+      font-size: 0.85rem; border: 1px solid rgba(245,217,168,0.3);
+      padding: 6px 14px; border-radius: 20px; transition: all 0.2s;
+    }
+    .back-btn:hover { color: #f5d9a8; border-color: rgba(245,217,168,0.7); }
 
     /* ===== 카드 ===== */
     .card {
-      background: white;
-      border-radius: 20px;
-      padding: 36px;
-      max-width: 500px;
-      width: 100%;
-      box-shadow: 0 8px 30px rgba(92,61,46,0.12);
+      max-width: 760px; margin: 0 auto 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 28px;
+      backdrop-filter: blur(10px);
     }
-    .card h1 {
-      font-size: 1.4rem;
-      color: #5c3d2e;
-      margin-bottom: 6px;
-    }
-    .card p.desc {
-      font-size: 0.85rem;
-      color: #a0856e;
-      margin-bottom: 24px;
+    .card h2 {
+      font-size: 1.05rem; color: #f5d9a8;
+      margin-bottom: 20px; padding-bottom: 12px;
+      border-bottom: 1px solid rgba(245,217,168,0.2);
+      display: flex; align-items: center; gap: 8px;
     }
 
-    /* ===== 비밀번호 영역 ===== */
-    .pw-section {
-      margin-bottom: 20px;
-      padding: 14px;
-      background: #fdf6ee;
-      border-radius: 10px;
-      border: 1px solid #e8ddd0;
+    /* ===== 비밀번호 화면 ===== */
+    #pwScreen {
+      max-width: 400px; margin: 80px auto 0;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 36px;
+      text-align: center; backdrop-filter: blur(10px);
     }
-    .pw-section label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #5c3d2e;
-      display: block;
-      margin-bottom: 6px;
+    #pwScreen .lock-icon { font-size: 3rem; margin-bottom: 14px; }
+    #pwScreen h2 { font-size: 1.2rem; color: #f5d9a8; margin-bottom: 8px; }
+    #pwScreen p  { font-size: 0.85rem; color: rgba(224,216,208,0.6); margin-bottom: 24px; }
+    #pwInput {
+      width: 100%; padding: 12px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px; color: white;
+      font-size: 1rem; text-align: center;
+      letter-spacing: 4px; margin-bottom: 12px;
     }
-    .pw-row {
-      display: flex;
-      gap: 8px;
+    #pwInput:focus { outline: none; border-color: #f5d9a8; }
+    #pwInput::placeholder { letter-spacing: 1px; color: rgba(255,255,255,0.3); }
+    #pwBtn {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, #c4902a, #f5d9a8);
+      color: #1a1a2e; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
     }
-    .pw-row input {
-      flex: 1;
-      padding: 9px 12px;
-      border: 1px solid #d4c4b0;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-    .pw-row button {
-      padding: 9px 16px;
-      background: #5c3d2e;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
+    #pwBtn:hover { opacity: 0.9; }
+    #pwError { color: #ff7675; font-size: 0.85rem; margin-top: 10px; }
 
-    /* ===== 업로드 폼 ===== */
-    #uploadForm { display: none; } /* 비밀번호 확인 전 숨김 */
+    /* ===== 관리자 콘텐츠 ===== */
+    #adminContent { display: none; }
 
-    /* 드래그 앤 드롭 영역 */
-    .drop-zone {
-      border: 2px dashed #c4a882;
-      border-radius: 14px;
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-      margin-bottom: 20px;
-      background: #fffbf7;
+    /* ===== 폼 스타일 ===== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
-    .drop-zone:hover,
-    .drop-zone.dragover {
-      background: #fdf0e0;
-      border-color: #8b6340;
-    }
-    .drop-zone .icon { font-size: 3rem; margin-bottom: 10px; }
-    .drop-zone .hint {
-      font-size: 0.9rem;
-      color: #8b6340;
-      line-height: 1.6;
-    }
-    .drop-zone input[type="file"] {
-      display: none; /* 숨기고 클릭 이벤트로 열기 */
-    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
 
-    /* 미리보기 */
-    #preview-wrap {
-      display: none;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #preview-wrap img {
-      max-width: 140px;
-      max-height: 200px;
-      border-radius: 8px;
-      box-shadow: 4px 4px 14px rgba(0,0,0,0.2);
-      object-fit: cover;
-    }
-    #preview-wrap p {
-      margin-top: 8px;
-      font-size: 0.82rem;
-      color: #8b6340;
-    }
-
-    /* 폼 입력 */
-    .form-row { margin-bottom: 14px; }
+    .form-row { display: flex; flex-direction: column; gap: 6px; }
+    .form-row.span2 { grid-column: 1 / -1; }
     .form-row label {
-      display: block;
-      font-size: 0.83rem;
-      font-weight: 600;
-      color: #5c3d2e;
-      margin-bottom: 5px;
+      font-size: 0.8rem; font-weight: 600;
+      color: #f5d9a8; letter-spacing: 0.5px;
     }
-    .form-row input {
-      width: 100%;
-      padding: 9px 13px;
-      border: 1px solid #d4c4b0;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      font-family: inherit;
+    .form-row input,
+    .form-row textarea {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px; color: #e0d8d0;
+      font-size: 0.92rem; font-family: inherit;
+      resize: vertical; transition: border-color 0.2s;
     }
-    .form-row input:focus {
+    .form-row input:focus,
+    .form-row textarea:focus {
       outline: none;
-      border-color: #8b6340;
-      box-shadow: 0 0 0 3px rgba(139,99,64,0.1);
+      border-color: #f5d9a8;
+      background: rgba(255,255,255,0.12);
     }
+    .form-row input::placeholder,
+    .form-row textarea::placeholder { color: rgba(224,216,208,0.35); }
 
-    /* 업로드 버튼 */
-    .upload-btn {
-      width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, #5c3d2e, #8b6340);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .upload-btn:hover { opacity: 0.9; }
-    .upload-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-
-    /* 진행바 */
-    .progress-wrap {
+    /* ===== 책 표지 미리보기 ===== */
+    .cover-preview-wrap { margin-top: 16px; display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    #coverPreview {
+      width: 90px; height: 130px;
+      border-radius: 6px; object-fit: cover;
+      box-shadow: 4px 4px 14px rgba(0,0,0,0.4);
       display: none;
-      margin-top: 14px;
     }
-    .progress-bar-bg {
-      background: #e8ddd0;
-      border-radius: 999px;
-      height: 8px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #8b6340, #c4a882);
-      border-radius: 999px;
-      width: 0%;
-      transition: width 0.3s;
-    }
-
-    /* 결과 메시지 */
-    #msg {
-      margin-top: 14px;
-      font-size: 0.88rem;
-      text-align: center;
-      min-height: 18px;
-    }
-
-    /* URL 결과 박스 */
-    #result-box {
-      display: none;
-      margin-top: 16px;
-      background: #f0faf4;
-      border: 1px solid #a8d5b5;
-      border-radius: 10px;
-      padding: 14px;
-    }
-    #result-box .result-label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #2d7a4f;
-      margin-bottom: 8px;
-    }
-    #result-box .url-text {
-      font-size: 0.8rem;
-      color: #1a5c38;
-      word-break: break-all;
-      background: white;
-      padding: 8px 10px;
+    #coverPlaceholder {
+      width: 90px; height: 130px;
+      background: rgba(255,255,255,0.08);
+      border: 2px dashed rgba(245,217,168,0.3);
       border-radius: 6px;
-      border: 1px solid #c8ecd5;
-      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; color: rgba(245,217,168,0.4);
     }
-    .copy-btn {
-      width: 100%;
-      padding: 9px;
-      background: #27ae60;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .copy-btn:hover { opacity: 0.88; }
-
-    /* 업로드 기록 */
-    #history { margin-top: 24px; }
-    #history h3 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #5c3d2e;
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #e8ddd0;
-    }
-    .history-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px solid #f0e8de;
-      font-size: 0.83rem;
-    }
-    .history-item img {
-      width: 36px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 4px;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
-    }
-    .history-item .fname {
-      flex: 1;
-      color: #3d2b1f;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .history-copy {
-      padding: 4px 10px;
-      background: #5c3d2e;
-      color: white;
-      border: none;
-      border-radius: 6px;
+    .cover-url-hint {
       font-size: 0.75rem;
-      cursor: pointer;
+      color: rgba(224,216,208,0.45);
+      line-height: 1.7; flex: 1; padding-top: 4px;
+    }
+
+    /* ===== 저장 버튼 ===== */
+    .save-section { max-width: 760px; margin: 0 auto 12px; }
+    .save-btn {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, #c4902a, #f5d9a8);
+      color: #1a1a2e; border: none; border-radius: 14px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      letter-spacing: 1px; transition: transform 0.1s, opacity 0.2s;
+    }
+    .save-btn:hover  { opacity: 0.92; }
+    .save-btn:active { transform: scale(0.99); }
+    .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== 저장 결과 메시지 ===== */
+    #saveMsg {
+      max-width: 760px; margin: 0 auto 20px;
+      text-align: center; font-size: 0.92rem;
+      padding: 12px; border-radius: 10px; display: none;
+    }
+    #saveMsg.success {
+      background: rgba(39,174,96,0.2); color: #55efc4;
+      border: 1px solid rgba(39,174,96,0.3);
+    }
+    #saveMsg.error {
+      background: rgba(231,76,60,0.2); color: #ff7675;
+      border: 1px solid rgba(231,76,60,0.3);
+    }
+
+    /* ===== 통계 카드 ===== */
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    }
+    @media (max-width: 500px) { .stat-grid { grid-template-columns: 1fr; } }
+    .stat-item {
+      background: rgba(245,217,168,0.08);
+      border: 1px solid rgba(245,217,168,0.15);
+      border-radius: 12px; padding: 18px; text-align: center;
+    }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #f5d9a8; }
+    .stat-label { font-size: 0.78rem; color: rgba(224,216,208,0.55); margin-top: 4px; }
+
+    /* ===== 댓글 관리 ===== */
+    .comments-scroll {
+      max-height: 420px; overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(245,217,168,0.3) transparent;
+    }
+    .comment-manage-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .comment-manage-body  { flex: 1; }
+    .comment-manage-name  { font-size: 0.85rem; font-weight: 600; color: #f5d9a8; margin-bottom: 4px; }
+    .comment-manage-review{ font-size: 0.82rem; color: rgba(224,216,208,0.8); margin-bottom: 4px; line-height: 1.5; }
+    .comment-manage-question { font-size: 0.78rem; color: rgba(224,216,208,0.5); margin-bottom: 4px; }
+    .comment-manage-date  { font-size: 0.72rem; color: rgba(224,216,208,0.35); }
+    .delete-btn {
+      padding: 6px 14px;
+      background: rgba(231,76,60,0.15);
+      color: #ff7675;
+      border: 1px solid rgba(231,76,60,0.3);
+      border-radius: 8px; font-size: 0.78rem;
+      cursor: pointer; white-space: nowrap;
+      flex-shrink: 0; transition: background 0.2s;
+    }
+    .delete-btn:hover { background: rgba(231,76,60,0.35); }
+
+    /* ===== 로딩 스피너 ===== */
+    .mini-spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(26,26,46,0.3);
+      border-top-color: #1a1a2e;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== 안내 배너 ===== */
+    .info-banner {
+      background: rgba(245,217,168,0.08);
+      border: 1px solid rgba(245,217,168,0.2);
+      border-radius: 10px; padding: 12px 16px;
+      font-size: 0.82rem; color: rgba(224,216,208,0.6);
+      line-height: 1.7; margin-bottom: 16px;
+    }
+    .empty-comment {
+      text-align: center; padding: 28px;
+      color: rgba(224,216,208,0.35); font-size: 0.88rem;
     }
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h1>🖼️ 책 표지 이미지 업로드</h1>
-    <p class="desc">독서모임 대시보드에 사용할 책 표지를 업로드하세요</p>
 
-    <!-- ===== 간단한 비밀번호 보호 ===== -->
-    <div class="pw-section">
-      <label>🔐 관리자 비밀번호</label>
-      <div class="pw-row">
-        <input type="password" id="pwInput" placeholder="비밀번호 입력"/>
-        <button onclick="checkPassword()">확인</button>
-      </div>
-      <div id="pwMsg" style="font-size:0.8rem;margin-top:6px;color:#c0392b;"></div>
+  <!-- ===== 🔐 비밀번호 화면 ===== -->
+  <div id="pwScreen">
+    <div class="lock-icon">🔐</div>
+    <h2>관리자 페이지</h2>
+    <p>독서모임 관리자만 접근할 수 있습니다</p>
+    <input type="password" id="pwInput" placeholder="비밀번호를 입력하세요"/>
+    <button id="pwBtn" onclick="checkPw()">로그인</button>
+    <div id="pwError"></div>
+  </div>
+
+  <!-- ===== 관리자 콘텐츠 ===== -->
+  <div id="adminContent">
+
+    <!-- 헤더 -->
+    <div class="admin-header">
+      <h1>⚙️ 독서모임 관리자</h1>
+      <a href="index.html" class="back-btn">← 메인으로</a>
     </div>
 
-    <!-- ===== 업로드 폼 (비밀번호 확인 후 표시) ===== -->
-    <div id="uploadForm">
-
-      <!-- 드래그 앤 드롭 영역 -->
-      <div class="drop-zone" id="dropZone">
-        <div class="icon">📸</div>
-        <div class="hint">
-          클릭하거나 이미지를 여기에 드래그하세요<br/>
-          <span style="font-size:0.78rem;color:#b0927a;">JPG, PNG, WebP · 최대 5MB</span>
+    <!-- 📊 현황 통계 -->
+    <div class="card">
+      <h2>📊 현황</h2>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="statComments">-</div>
+          <div class="stat-label">총 한줄평 수</div>
         </div>
-        <!-- 숨겨진 파일 입력 -->
-        <input type="file" id="fileInput" accept="image/*"/>
+        <div class="stat-item">
+          <div class="stat-value" id="statBook">-</div>
+          <div class="stat-label">선정도서 등록</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statSchedule">-</div>
+          <div class="stat-label">일정 등록</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📅 모임 일정 설정 -->
+    <div class="card">
+      <h2>📅 모임 일정 설정</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>📆 모임 날짜</label>
+          <input type="text" id="scheduleDate" placeholder="예: 2026년 7월 5일 (토)"/>
+        </div>
+        <div class="form-row">
+          <label>🕑 시간</label>
+          <input type="text" id="scheduleTime" placeholder="예: 오후 2:00 ~ 4:00"/>
+        </div>
+        <div class="form-row">
+          <label>📍 장소</label>
+          <input type="text" id="schedulePlace" placeholder="예: ○○ 카페 2층"/>
+        </div>
+        <div class="form-row">
+          <label>👥 예상 참석인원</label>
+          <input type="text" id="scheduleMembers" placeholder="예: 8명"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📖 선정도서 설정 -->
+    <div class="card">
+      <h2>📖 선정도서 설정</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>📚 책 제목</label>
+          <input type="text" id="bookTitle" placeholder="예: 채식주의자"/>
+        </div>
+        <div class="form-row">
+          <label>✍️ 저자</label>
+          <input type="text" id="bookAuthor" placeholder="예: 한강"/>
+        </div>
+        <div class="form-row">
+          <label>🏢 출판사 · 출판연도</label>
+          <input type="text" id="bookPublisher" placeholder="예: 창비 · 2007년"/>
+        </div>
+        <div class="form-row">
+          <label>🖼️ 책 표지 이미지 URL</label>
+          <input
+            type="text" id="bookCoverUrl"
+            placeholder="https://..."
+            oninput="previewCover()"
+          />
+        </div>
+        <div class="form-row span2">
+          <label>📝 책 소개</label>
+          <textarea id="bookDesc" rows="4"
+            placeholder="독자들에게 전달할 책 소개를 작성해주세요..."></textarea>
+        </div>
       </div>
 
-      <!-- 이미지 미리보기 -->
-      <div id="preview-wrap">
-        <img id="preview-img" src="" alt="미리보기"/>
-        <p id="preview-name"></p>
+      <!-- 책 표지 미리보기 -->
+      <div class="cover-preview-wrap">
+        <div>
+          <div id="coverPlaceholder">📚</div>
+          <img id="coverPreview" alt="표지 미리보기"/>
+        </div>
+        <p class="cover-url-hint">
+          💡 <strong>책 표지 URL 찾는 법</strong><br/>
+          ① 네이버 책(book.naver.com) 또는 교보문고에서 책 검색<br/>
+          ② 책 표지 이미지 위에서 <strong>우클릭</strong><br/>
+          ③ <strong>"이미지 주소 복사"</strong> 선택<br/>
+          ④ 위 입력창에 붙여넣기 (Ctrl+V)<br/><br/>
+          🖼️ Supabase에 직접 업로드하려면<br/>
+          <a href="storage.html" style="color:#f5d9a8;">→ 이미지 업로드 페이지</a>를 이용하세요
+        </p>
       </div>
+    </div>
 
-      <!-- 파일명 설정 -->
-      <div class="form-row">
-        <label>📝 저장할 파일명 (확장자 포함)</label>
-        <input
-          type="text"
-          id="fileName"
-          placeholder="예: 채식주의자.jpg"
-        />
-      </div>
-
-      <!-- 업로드 버튼 -->
-      <button class="upload-btn" id="uploadBtn" onclick="uploadImage()">
-        ☁️ Supabase에 업로드하기
+    <!-- 💾 저장 버튼 -->
+    <div class="save-section">
+      <button class="save-btn" id="saveBtn" onclick="saveSettings()">
+        💾 변경사항 저장하기
       </button>
+    </div>
+    <div id="saveMsg"></div>
 
-      <!-- 진행바 -->
-      <div class="progress-wrap" id="progressWrap">
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progressFill"></div>
-        </div>
+    <!-- 💬 한줄평 관리 -->
+    <div class="card">
+      <h2>💬 한줄평 관리</h2>
+      <div class="info-banner">
+        ⚠️ 삭제한 한줄평은 복구할 수 없습니다. 신중하게 삭제해주세요.
       </div>
-
-      <!-- 결과 메시지 -->
-      <div id="msg"></div>
-
-      <!-- URL 결과 박스 -->
-      <div id="result-box">
-        <div class="result-label">✅ 업로드 완료! 아래 URL을 index.html에 붙여넣으세요</div>
-        <div class="url-text" id="resultUrl"></div>
-        <button class="copy-btn" onclick="copyUrl()">📋 URL 복사하기</button>
+      <div class="comments-scroll" id="commentManageList">
+        <div class="empty-comment">불러오는 중...</div>
       </div>
+    </div>
 
-      <!-- 업로드 기록 -->
-      <div id="history">
-        <h3>📚 업로드된 책 표지 목록</h3>
-        <div id="historyList">불러오는 중...</div>
-      </div>
+  </div><!-- /#adminContent -->
 
-    </div><!-- /#uploadForm -->
-  </div>
 
   <script>
     // ============================================================
-    // ⚙️ 설정값 - 본인 정보로 수정하세요!
+    // ⚙️ 설정 - 반드시 본인 값으로 교체하세요!
     // ============================================================
-    const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
-    const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY';
+    const SUPABASE_URL = 'https://pxbgwwavxggbtywqxogj.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM';
 
-    // ⚠️ 관리자 비밀번호 (원하는 값으로 변경!)
-    const ADMIN_PASSWORD = 'bookclub1234';
+    // ⚠️ 관리자 비밀번호 - 원하는 값으로 변경하세요!
+    const ADMIN_PW = 'dudwls@1026';
 
-    const BUCKET = 'book-covers'; // 버킷 이름
-
-    // Supabase 클라이언트 초기화
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let selectedFile = null; // 선택된 파일을 저장하는 변수
 
     // ============================================================
     // 🔐 비밀번호 확인
     // ============================================================
-    function checkPassword() {
+    function checkPw() {
       const pw = document.getElementById('pwInput').value;
-      if (pw === ADMIN_PASSWORD) {
-        document.getElementById('uploadForm').style.display = 'block';
-        document.querySelector('.pw-section').style.display = 'none';
-        loadHistory(); // 업로드 기록 불러오기
+      if (pw === ADMIN_PW) {
+        document.getElementById('pwScreen').style.display     = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        loadAll(); // 전체 데이터 로드
       } else {
-        document.getElementById('pwMsg').textContent = '❌ 비밀번호가 틀렸습니다.';
+        document.getElementById('pwError').textContent = '❌ 비밀번호가 올바르지 않습니다.';
       }
     }
 
-    // Enter 키로도 비밀번호 확인
+    // Enter 키로도 로그인 가능
     document.getElementById('pwInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') checkPassword();
+      if (e.key === 'Enter') checkPw();
     });
 
     // ============================================================
-    // 📁 파일 선택 - 클릭으로 열기
+    // 📥 전체 데이터 로드
     // ============================================================
-    const dropZone  = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-
-    dropZone.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files[0]) handleFile(e.target.files[0]);
-    });
-
-    // ============================================================
-    // 🖱️ 드래그 앤 드롭 처리
-    // ============================================================
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) handleFile(file);
-    });
-
-    // ============================================================
-    // 🖼️ 파일 선택 후 처리 (미리보기 + 파일명 자동 설정)
-    // ============================================================
-    function handleFile(file) {
-      // 5MB 용량 제한 확인
-      if (file.size > 5 * 1024 * 1024) {
-        alert('파일 크기가 5MB를 초과합니다.');
-        return;
-      }
-
-      selectedFile = file;
-
-      // 파일명 자동 입력
-      document.getElementById('fileName').value = file.name;
-
-      // 미리보기 생성
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        document.getElementById('preview-img').src = e.target.result;
-        document.getElementById('preview-name').textContent =
-          `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-        document.getElementById('preview-wrap').style.display = 'block';
-      };
-      reader.readAsDataURL(file);
+    function loadAll() {
+      loadSettings();   // 책 & 일정 설정 불러오기
+      loadComments();   // 한줄평 목록 불러오기
     }
 
     // ============================================================
-    // ☁️ Supabase Storage에 이미지 업로드
+    // 📋 기존 설정값 불러와서 폼에 자동 채우기
     // ============================================================
-    async function uploadImage() {
-      const fileName = document.getElementById('fileName').value.trim();
-      const msg      = document.getElementById('msg');
-      const btn      = document.getElementById('uploadBtn');
+    async function loadSettings() {
+      const { data, error } = await db
+        .from('settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
 
-      // 유효성 검사
-      if (!selectedFile) {
-        msg.style.color = '#c0392b';
-        msg.textContent = '⚠️ 이미지를 먼저 선택해주세요!';
+      if (error || !data) return;
+
+      // 폼에 기존 값 자동 채우기
+      setVal('scheduleDate',    data.schedule_date);
+      setVal('scheduleTime',    data.schedule_time);
+      setVal('schedulePlace',   data.schedule_place);
+      setVal('scheduleMembers', data.schedule_members);
+      setVal('bookTitle',       data.book_title);
+      setVal('bookAuthor',      data.book_author);
+      setVal('bookPublisher',   data.book_publisher);
+      setVal('bookDesc',        data.book_desc);
+      setVal('bookCoverUrl',    data.book_cover_url);
+
+      // 표지 이미지 미리보기
+      if (data.book_cover_url) previewCover();
+
+      // 통계 업데이트
+      document.getElementById('statBook').textContent =
+        data.book_title ? '✅' : '❌';
+      document.getElementById('statSchedule').textContent =
+        data.schedule_date ? '✅' : '❌';
+    }
+
+    // 폼 값 설정 헬퍼
+    function setVal(id, value) {
+      const el = document.getElementById(id);
+      if (el && value != null) el.value = value;
+    }
+
+    // ============================================================
+    // 🖼️ 책 표지 미리보기
+    // ============================================================
+    function previewCover() {
+      const url       = document.getElementById('bookCoverUrl').value.trim();
+      const preview   = document.getElementById('coverPreview');
+      const placeholder = document.getElementById('coverPlaceholder');
+
+      if (!url) {
+        preview.style.display     = 'none';
+        placeholder.style.display = 'flex';
         return;
       }
-      if (!fileName) {
-        msg.style.color = '#c0392b';
-        msg.textContent = '⚠️ 저장할 파일명을 입력해주세요!';
-        return;
-      }
 
-      // UI 업로드 중 상태
+      preview.src = url;
+      preview.style.display     = 'block';
+      placeholder.style.display = 'none';
+
+      // 이미지 로드 실패 시 placeholder로 복구
+      preview.onerror = () => {
+        preview.style.display     = 'none';
+        placeholder.style.display = 'flex';
+      };
+    }
+
+    // ============================================================
+    // 💾 설정값 저장 (Supabase settings 테이블 upsert)
+    // ============================================================
+    async function saveSettings() {
+      const btn = document.getElementById('saveBtn');
+      const msg = document.getElementById('saveMsg');
+
+      // 버튼 로딩 상태
       btn.disabled = true;
-      btn.textContent = '업로드 중...';
-      msg.textContent = '';
-      document.getElementById('result-box').style.display = 'none';
+      btn.innerHTML = '<span class="mini-spinner"></span>저장 중...';
 
-      // 진행바 표시
-      const progressWrap = document.getElementById('progressWrap');
-      const progressFill = document.getElementById('progressFill');
-      progressWrap.style.display = 'block';
-      progressFill.style.width = '30%';
+      // 폼에서 값 읽기
+      const payload = {
+        id:               1,
+        schedule_date:    document.getElementById('scheduleDate').value.trim(),
+        schedule_time:    document.getElementById('scheduleTime').value.trim(),
+        schedule_place:   document.getElementById('schedulePlace').value.trim(),
+        schedule_members: document.getElementById('scheduleMembers').value.trim(),
+        book_title:       document.getElementById('bookTitle').value.trim(),
+        book_author:      document.getElementById('bookAuthor').value.trim(),
+        book_publisher:   document.getElementById('bookPublisher').value.trim(),
+        book_desc:        document.getElementById('bookDesc').value.trim(),
+        book_cover_url:   document.getElementById('bookCoverUrl').value.trim(),
+        updated_at:       new Date().toISOString(), // 현재 시각 저장
+      };
 
-      // Supabase Storage에 업로드
-      const { data, error } = await db.storage
-        .from(BUCKET)
-        .upload(fileName, selectedFile, {
-          cacheControl: '3600',
-          upsert: true // 같은 이름 파일 덮어쓰기 허용
-        });
+      // Supabase upsert (있으면 업데이트, 없으면 삽입)
+      const { error } = await db
+        .from('settings')
+        .upsert(payload, { onConflict: 'id' });
 
-      progressFill.style.width = '100%';
+      // 결과 메시지 표시
+      msg.style.display = 'block';
+      if (error) {
+        msg.className   = 'error';
+        msg.textContent = `❌ 저장 실패: ${error.message}`;
+      } else {
+        msg.className   = 'success';
+        msg.textContent = '✅ 저장 완료! 메인 페이지에 즉시 반영되었습니다 🎉';
+
+        // 통계 다시 업데이트
+        document.getElementById('statBook').textContent =
+          payload.book_title ? '✅' : '❌';
+        document.getElementById('statSchedule').textContent =
+          payload.schedule_date ? '✅' : '❌';
+
+        // 3초 후 메시지 숨기기
+        setTimeout(() => { msg.style.display = 'none'; }, 3000);
+      }
+
+      // 버튼 복구
+      btn.disabled = false;
+      btn.innerHTML = '💾 변경사항 저장하기';
+    }
+
+    // ============================================================
+    // 💬 한줄평 목록 불러오기 (관리용)
+    // ============================================================
+    async function loadComments() {
+      const list = document.getElementById('commentManageList');
+
+      const { data, error } = await db
+        .from('comments')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      // 통계: 총 한줄평 수
+      document.getElementById('statComments').textContent =
+        (data && !error) ? data.length : '?';
 
       if (error) {
-        // 업로드 실패
-        msg.style.color = '#c0392b';
-        msg.textContent = `❌ 업로드 실패: ${error.message}`;
-      } else {
-        // 업로드 성공 → 공개 URL 생성
-        const { data: urlData } = db.storage
-          .from(BUCKET)
-          .getPublicUrl(fileName);
-
-        const publicUrl = urlData.publicUrl;
-
-        // 결과 박스 표시
-        document.getElementById('resultUrl').textContent = publicUrl;
-        document.getElementById('result-box').style.display = 'block';
-
-        msg.style.color = '#27ae60';
-        msg.textContent = '✅ 업로드 완료!';
-
-        // 목록 새로고침
-        loadHistory();
-
-        // 초기화
-        selectedFile = null;
-        fileInput.value = '';
-        setTimeout(() => {
-          progressWrap.style.display = 'none';
-          progressFill.style.width = '0%';
-        }, 1000);
+        list.innerHTML = '<div class="empty-comment">댓글을 불러오지 못했습니다 😥</div>';
+        return;
       }
-
-      btn.disabled = false;
-      btn.textContent = '☁️ Supabase에 업로드하기';
-    }
-
-    // ============================================================
-    // 📋 URL 복사하기
-    // ============================================================
-    function copyUrl() {
-      const url = document.getElementById('resultUrl').textContent;
-      navigator.clipboard.writeText(url).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = '✅ 복사됨!';
-        setTimeout(() => { btn.textContent = '📋 URL 복사하기'; }, 2000);
-      });
-    }
-
-    // ============================================================
-    // 📚 업로드된 파일 목록 불러오기
-    // ============================================================
-    async function loadHistory() {
-      const historyList = document.getElementById('historyList');
-
-      // Storage에서 파일 목록 조회
-      const { data, error } = await db.storage
-        .from(BUCKET)
-        .list('', { limit: 20, sortBy: { column: 'created_at', order: 'desc' } });
-
-      if (error || !data || data.length === 0) {
-        historyList.innerHTML =
-          '<div style="font-size:0.82rem;color:#b0927a;padding:10px 0;">아직 업로드된 파일이 없습니다.</div>';
+      if (!data || data.length === 0) {
+        list.innerHTML = '<div class="empty-comment">아직 등록된 한줄평이 없습니다 🌱</div>';
         return;
       }
 
-      // 각 파일의 공개 URL과 함께 목록 렌더링
-      historyList.innerHTML = data.map(file => {
-        const { data: urlData } = db.storage
-          .from(BUCKET)
-          .getPublicUrl(file.name);
-        const url = urlData.publicUrl;
-
+      // 한줄평 목록 렌더링
+      list.innerHTML = data.map(item => {
+        const d = new Date(item.created_at);
+        const date = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} `
+                   + `${pad(d.getHours())}:${pad(d.getMinutes())}`;
         return `
-          <div class="history-item">
-            <img src="${url}" alt="${file.name}" onerror="this.style.opacity=0.3"/>
-            <span class="fname" title="${file.name}">${file.name}</span>
-            <button class="history-copy" onclick="copyToClipboard('${url}', this)">
-              URL 복사
+          <div class="comment-manage-item" id="comment-${item.id}">
+            <div class="comment-manage-body">
+              <div class="comment-manage-name">🙋 ${esc(item.name)}</div>
+              <div class="comment-manage-review">"${esc(item.review)}"</div>
+              ${item.question
+                ? `<div class="comment-manage-question">💬 ${esc(item.question)}</div>`
+                : ''}
+              <div class="comment-manage-date">${date}</div>
+            </div>
+            <button class="delete-btn" onclick="deleteComment(${item.id})">
+              🗑️ 삭제
             </button>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
-    // 기록 목록의 URL 복사
-    function copyToClipboard(text, btn) {
-      navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = '✅ 복사!';
-        setTimeout(() => { btn.textContent = 'URL 복사'; }, 2000);
-      });
+    // ============================================================
+    // 🗑️ 한줄평 삭제
+    // ============================================================
+    async function deleteComment(id) {
+      // 삭제 확인
+      if (!confirm('이 한줄평을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
+
+      const { error } = await db
+        .from('comments')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert('삭제 중 오류가 발생했습니다: ' + error.message);
+      } else {
+        // 화면에서 즉시 제거 (새로고침 없이)
+        const el = document.getElementById(`comment-${id}`);
+        if (el) {
+          el.style.opacity    = '0';
+          el.style.transition = 'opacity 0.3s';
+          setTimeout(() => {
+            el.remove();
+            // 통계 업데이트
+            const current = parseInt(document.getElementById('statComments').textContent) || 0;
+            document.getElementById('statComments').textContent = Math.max(0, current - 1);
+          }, 300);
+        }
+      }
     }
+
+    // ============================================================
+    // 🔧 유틸리티 함수
+    // ============================================================
+
+    // XSS 방지 - HTML 특수문자 이스케이프
+    function esc(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // 숫자 앞에 0 채우기 (날짜 포맷용)
+    function pad(n) { return String(n).padStart(2, '0'); }
+
   </script>
 </body>
 </html>
