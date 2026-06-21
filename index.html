@@ -526,24 +526,20 @@
     const tabLoaded = { current: true, history: false, reviews: false };
 
     // ============================================================
-    // 🗂️ 탭 전환
+    // 🗂️ 탭 전환 (매번 최신 데이터 로드로 변경)
     // ============================================================
     function switchTab(tabName, el) {
-      // 버튼 활성화
       document.querySelectorAll('.tab-btn')
         .forEach(b => b.classList.remove('active'));
       el.classList.add('active');
 
-      // 콘텐츠 전환
       document.querySelectorAll('.tab-content')
         .forEach(c => c.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
 
-      // 탭별 데이터 최초 1회만 로드
-      if (!tabLoaded[tabName]) {
-        tabLoaded[tabName] = true;
-        if (tabName === 'history')  loadBookHistory();
-        if (tabName === 'reviews')  loadReviewsByBook();
+      // ✅ 매번 최신 데이터로 새로 로드 (기존 1회 제한 제거)
+      if (tabName === 'history')  loadBookHistory();
+      if (tabName === 'reviews')  loadReviewsByBook();
       }
     }
 
