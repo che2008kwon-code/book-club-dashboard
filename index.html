@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📚 독서모임 대시보드</title>
-
-  <!-- Supabase 라이브러리 불러오기 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    /* ===== 전체 기본 스타일 ===== */
+    /* ===== 기본 초기화 ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Noto Sans KR', sans-serif;
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
       background: linear-gradient(135deg, #f5f0e8 0%, #e8ddd0 100%);
       min-height: 100vh;
       color: #3d2b1f;
@@ -26,18 +23,45 @@
       text-align: center;
       padding: 30px 20px 20px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      position: relative;
     }
-    header h1 {
-      font-size: 2rem;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-    }
-    header p {
-      font-size: 0.95rem;
-      opacity: 0.85;
-    }
+    header h1 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 8px; }
+    header p  { font-size: 0.95rem; opacity: 0.85; }
 
-    /* ===== 메인 컨테이너 ===== */
+    /* 관리자 링크 */
+    .admin-link {
+      position: absolute;
+      top: 14px; right: 16px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 4px 10px;
+      border-radius: 20px;
+      transition: opacity 0.2s;
+    }
+    .admin-link:hover { color: rgba(255,255,255,0.9); }
+
+    /* ===== 로딩 오버레이 ===== */
+    #loading-overlay {
+      position: fixed; inset: 0;
+      background: rgba(245,240,232,0.92);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 999;
+      gap: 16px;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 4px solid #e0cfc0;
+      border-top-color: #8b6340;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading-overlay p { color: #8b6340; font-size: 0.95rem; }
+
+    /* ===== 컨테이너 ===== */
     .container {
       max-width: 900px;
       margin: 0 auto;
@@ -46,12 +70,12 @@
       gap: 24px;
     }
 
-    /* ===== 카드 공통 스타일 ===== */
+    /* ===== 카드 공통 ===== */
     .card {
       background: white;
       border-radius: 16px;
       padding: 28px;
-      box-shadow: 0 4px 20px rgba(92, 61, 46, 0.1);
+      box-shadow: 0 4px 20px rgba(92,61,46,0.1);
     }
     .card h2 {
       font-size: 1.2rem;
@@ -59,15 +83,13 @@
       margin-bottom: 16px;
       padding-bottom: 10px;
       border-bottom: 2px solid #e8ddd0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
 
-    /* ===== 모임 일정 섹션 ===== */
+    /* ===== 모임 일정 ===== */
     .schedule-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 14px;
     }
     .schedule-item {
@@ -78,193 +100,101 @@
       text-align: center;
     }
     .schedule-item .label {
-      font-size: 0.75rem;
-      color: #8b6340;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
+      font-size: 0.75rem; color: #8b6340;
+      font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 6px;
     }
-    .schedule-item .value {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #3d2b1f;
-    }
+    .schedule-item .value { font-size: 1rem; font-weight: 700; color: #3d2b1f; }
 
-    /* ===== 선정도서 섹션 ===== */
-    .book-section {
-      display: flex;
-      gap: 28px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-    .book-cover-wrap {
-      flex-shrink: 0;
-    }
+    /* ===== 선정도서 ===== */
+    .book-section { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+    .book-cover-wrap { flex-shrink: 0; }
     .book-cover {
-      width: 140px;
-      height: 200px;
-      border-radius: 6px;
-      object-fit: cover;
-      box-shadow: 6px 6px 20px rgba(0,0,0,0.25),
-                  -2px 0 8px rgba(0,0,0,0.1);
+      width: 140px; height: 200px;
+      border-radius: 6px; object-fit: cover;
+      box-shadow: 6px 6px 20px rgba(0,0,0,0.25), -2px 0 8px rgba(0,0,0,0.1);
       display: block;
     }
-    /* 책 표지 이미지가 없을 때 대체 디자인 */
     .book-cover-placeholder {
-      width: 140px;
-      height: 200px;
+      width: 140px; height: 200px;
       background: linear-gradient(135deg, #5c3d2e, #8b6340);
       border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       box-shadow: 6px 6px 20px rgba(0,0,0,0.25);
-      color: white;
-      font-size: 2.5rem;
+      color: white; font-size: 2.5rem;
     }
-    .book-info {
-      flex: 1;
-      min-width: 200px;
-    }
-    .book-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #3d2b1f;
-      margin-bottom: 6px;
-      line-height: 1.3;
-    }
-    .book-author {
-      font-size: 0.95rem;
-      color: #8b6340;
-      margin-bottom: 4px;
-    }
-    .book-publisher {
-      font-size: 0.85rem;
-      color: #a0856e;
-      margin-bottom: 14px;
-    }
+    .book-info { flex: 1; min-width: 200px; }
+    .book-title { font-size: 1.5rem; font-weight: 700; color: #3d2b1f; margin-bottom: 6px; line-height: 1.3; }
+    .book-author { font-size: 0.95rem; color: #8b6340; margin-bottom: 4px; }
+    .book-publisher { font-size: 0.85rem; color: #a0856e; margin-bottom: 14px; }
     .book-desc {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: #5a4035;
+      font-size: 0.9rem; line-height: 1.7; color: #5a4035;
       background: #fdf6ee;
       border-left: 3px solid #8b6340;
       padding: 12px 14px;
       border-radius: 0 8px 8px 0;
     }
 
+    /* ===== 정보 없을 때 배너 ===== */
+    .no-info-banner {
+      background: #fff8f0;
+      border: 2px dashed #c4a882;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      color: #8b6340;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+    .no-info-banner strong { display: block; font-size: 1.1rem; margin-bottom: 8px; }
+
     /* ===== 댓글 작성 폼 ===== */
-    .form-section {
-      background: linear-gradient(135deg, #fffbf7, #fdf6ee);
-      border: 1px solid #e8ddd0;
-    }
-    .form-row {
-      margin-bottom: 14px;
-    }
-    .form-row label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #5c3d2e;
-      margin-bottom: 6px;
-    }
+    .form-section { background: linear-gradient(135deg, #fffbf7, #fdf6ee); border: 1px solid #e8ddd0; }
+    .form-row { margin-bottom: 14px; }
+    .form-row label { display: block; font-size: 0.85rem; font-weight: 600; color: #5c3d2e; margin-bottom: 6px; }
     .form-row input,
     .form-row textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid #d4c4b0;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: #3d2b1f;
-      background: white;
-      transition: border-color 0.2s;
-      resize: vertical;
+      width: 100%; padding: 10px 14px;
+      border: 1px solid #d4c4b0; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; color: #3d2b1f;
+      background: white; resize: vertical; transition: border-color 0.2s;
     }
     .form-row input:focus,
-    .form-row textarea:focus {
-      outline: none;
-      border-color: #8b6340;
-      box-shadow: 0 0 0 3px rgba(139, 99, 64, 0.1);
-    }
+    .form-row textarea:focus { outline: none; border-color: #8b6340; box-shadow: 0 0 0 3px rgba(139,99,64,0.1); }
     .submit-btn {
-      width: 100%;
-      padding: 12px;
+      width: 100%; padding: 12px;
       background: linear-gradient(135deg, #5c3d2e, #8b6340);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
+      color: white; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
       transition: transform 0.1s, opacity 0.2s;
     }
     .submit-btn:hover { opacity: 0.92; }
     .submit-btn:active { transform: scale(0.98); }
     .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    /* 전송 결과 메시지 */
-    #msg {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 0.9rem;
-      min-height: 20px;
-      color: #5c3d2e;
-    }
+    #msg { text-align: center; margin-top: 10px; font-size: 0.9rem; min-height: 20px; color: #5c3d2e; }
 
     /* ===== 댓글 목록 ===== */
-    .comments-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .comments-list { display: flex; flex-direction: column; gap: 14px; }
     .comment-card {
-      background: #fdf6ee;
-      border: 1px solid #e8ddd0;
-      border-radius: 12px;
-      padding: 16px 18px;
-      position: relative;
+      background: #fdf6ee; border: 1px solid #e8ddd0;
+      border-radius: 12px; padding: 16px 18px;
     }
-    .comment-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .comment-name {
-      font-weight: 700;
-      color: #5c3d2e;
-      font-size: 0.95rem;
-    }
-    .comment-date {
-      font-size: 0.75rem;
-      color: #b0927a;
-    }
+    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .comment-name { font-weight: 700; color: #5c3d2e; font-size: 0.95rem; }
+    .comment-date { font-size: 0.75rem; color: #b0927a; }
     .comment-review {
-      font-size: 0.92rem;
-      color: #3d2b1f;
-      line-height: 1.6;
-      margin-bottom: 8px;
-      padding: 8px 12px;
-      background: white;
-      border-radius: 8px;
-      border-left: 3px solid #c4a882;
+      font-size: 0.92rem; color: #3d2b1f; line-height: 1.6;
+      margin-bottom: 8px; padding: 8px 12px;
+      background: white; border-radius: 8px; border-left: 3px solid #c4a882;
     }
-    .comment-question {
-      font-size: 0.88rem;
-      color: #6b4c35;
-      line-height: 1.6;
-    }
-    .comment-question::before {
-      content: "💬 질문: ";
-      font-weight: 600;
-    }
-    .empty-msg {
-      text-align: center;
-      color: #b0927a;
-      font-size: 0.9rem;
-      padding: 30px 0;
+    .comment-question { font-size: 0.88rem; color: #6b4c35; line-height: 1.6; }
+    .comment-question::before { content: "💬 질문: "; font-weight: 600; }
+    .empty-msg { text-align: center; color: #b0927a; font-size: 0.9rem; padding: 30px 0; }
+
+    /* 업데이트 표시 */
+    .updated-badge {
+      font-size: 0.72rem; color: #b0927a;
+      margin-left: auto; font-weight: normal;
     }
 
     /* ===== 반응형 ===== */
@@ -276,117 +206,64 @@
     }
   </style>
 </head>
-
 <body>
 
-  <!-- ===== 헤더 ===== -->
+  <!-- 로딩 오버레이 -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>모임 정보를 불러오는 중...</p>
+  </div>
+
+  <!-- 헤더 -->
   <header>
-    <h1>📚 책, 삶, 이야기</h1>
-    <p>책을 통해 삶을 이야기하다</p>
+    <h1>📚 우리들의 독서모임</h1>
+    <p>책과 함께하는 즐거운 시간</p>
+    <a href="admin.html" class="admin-link">⚙️ 관리자</a>
   </header>
 
   <div class="container">
 
-    <!-- ===== 1. 모임 일정 카드 ===== -->
+    <!-- 1. 모임 일정 -->
     <div class="card">
-      <h2>📅 이번 달 모임 일정</h2>
-      <div class="schedule-grid">
-        <div class="schedule-item">
-          <div class="label">📆 모임 날짜</div>
-          <!-- ⚙️ 여기에 실제 날짜를 입력하세요 -->
-          <div class="value">2026년 7월 3일 (금)</div>
-        </div>
-        <div class="schedule-item">
-          <div class="label">🕑 시간</div>
-          <!-- ⚙️ 여기에 실제 시간을 입력하세요 -->
-          <div class="value">오전 10:00 ~ 12:00</div>
-        </div>
-        <div class="schedule-item">
-          <div class="label">📍 장소</div>
-          <!-- ⚙️ 여기에 실제 장소를 입력하세요 -->
-          <div class="value">경인교육대학교 평생학습관<br>
-          1층 열린문화공간</div>
-        </div>
+      <h2>
+        📅 이번 달 모임 일정
+        <span class="updated-badge" id="updatedBadge"></span>
+      </h2>
+      <div id="scheduleArea">
+        <!-- Supabase에서 불러와 동적으로 표시 -->
       </div>
     </div>
 
-    <!-- ===== 2. 이번 달 선정도서 카드 ===== -->
+    <!-- 2. 선정도서 -->
     <div class="card">
       <h2>📖 이번 달 선정도서</h2>
-      <div class="book-section">
-        <div class="book-cover-wrap">
-          <!--
-            ⚙️ 책 표지 이미지 넣는 방법:
-            방법1) 인터넷에서 책 표지 이미지 URL을 찾아서 src=""에 넣기
-            방법2) 이미지 URL을 모르면 아래 placeholder 그대로 사용
-          -->
-          <img
-            class="book-cover"
-            src="https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791141602451.jpg"
-            alt="선정도서 표지"
-            onerror="this.style.display='none'; document.getElementById('cover-placeholder').style.display='flex';"
-          />
-          <div id="cover-placeholder" class="book-cover-placeholder" style="display:none;">📚</div>
-        </div>
-
-        <div class="book-info">
-          <!-- ⚙️ 아래 책 정보를 실제 내용으로 수정하세요 -->
-          <div class="book-title">절창</div>
-          <div class="book-author">✍️ 구병모 지음</div>
-          <div class="book-publisher">🏢 문학동네 · 2025년</div>
-          <div class="book-desc">
-            상처를 통해 타인을 읽는 한 여인, 그리고 타인이라는 영원한 텍스트
-            제목인 ‘절창切創’은 ‘베인 상처’라는 뜻으로, 상처에 접촉하는 것으로
-            상대의 마음을 읽는 한 여성의 이야기를 담고 있다. 언어로 쉽사리 정의 
-            내릴 수 없는 기이한 사랑 이야기이기도 한 이 소설은 오독을 전제하지
-            않고는 읽을 수 없는 타인이라는 영원한 텍스트를 독해하고자 하는 행위, 
-            그리고 그 행위의 가능성과 불가능성에 대한 깊은 성찰로 나아간다.
-          </div>
-        </div>
+      <div id="bookArea">
+        <!-- Supabase에서 불러와 동적으로 표시 -->
       </div>
     </div>
 
-    <!-- ===== 3. 한줄평 & 질문 작성 폼 ===== -->
+    <!-- 3. 한줄평 작성 폼 -->
     <div class="card form-section">
-      <h2>✏️ 나의 한줄평 & 질문 남기기</h2>
+      <h2>✏️ 나의 한줄평 &amp; 질문 남기기</h2>
       <form id="commentForm">
         <div class="form-row">
           <label for="name">이름 (닉네임)</label>
-          <input
-            type="text"
-            id="name"
-            placeholder="예: 책벌레독자"
-            maxlength="20"
-            required
-          />
+          <input type="text" id="name" placeholder="예: 책벌레독자" maxlength="20" required/>
         </div>
         <div class="form-row">
           <label for="review">📝 한줄평</label>
-          <textarea
-            id="review"
-            rows="2"
-            placeholder="책을 읽은 소감을 한 줄로 남겨주세요"
-            maxlength="200"
-            required
-          ></textarea>
+          <textarea id="review" rows="2" placeholder="책을 읽은 소감을 한 줄로 남겨주세요" maxlength="200" required></textarea>
         </div>
         <div class="form-row">
           <label for="question">💬 모임에서 나누고 싶은 질문 (선택)</label>
-          <textarea
-            id="question"
-            rows="2"
-            placeholder="함께 이야기하고 싶은 질문을 남겨주세요 (선택사항)"
-            maxlength="300"
-          ></textarea>
+          <textarea id="question" rows="2" placeholder="함께 이야기하고 싶은 질문을 남겨주세요 (선택사항)" maxlength="300"></textarea>
         </div>
-        <button type="submit" class="submit-btn" id="submitBtn">
-          💌 제출하기
-        </button>
+        <button type="submit" class="submit-btn" id="submitBtn">💌 제출하기</button>
       </form>
       <div id="msg"></div>
     </div>
 
-    <!-- ===== 4. 댓글 목록 ===== -->
+    <!-- 4. 댓글 목록 -->
     <div class="card">
       <h2>💬 모임원들의 한줄평</h2>
       <div class="comments-list" id="commentsList">
@@ -394,134 +271,186 @@
       </div>
     </div>
 
-  </div><!-- /.container -->
-
+  </div>
 
   <script>
     // ============================================================
-    // ⚙️ Supabase 연결 설정
-    //    Step 1-3에서 복사한 값으로 아래 두 줄을 교체하세요!
+    // ⚙️ Supabase 연결 설정 - 본인 값으로 교체하세요!
     // ============================================================
-    const SUPABASE_URL  = 'https://pxbgwwavxggbtywqxogj.supabase.co';   // 예: https://abcdefghij.supabase.co
-    const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM';  // 긴 문자열
+    const SUPABASE_URL = 'https://pxbgwwavxggbtywqxogj.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM';
 
-    // Supabase 클라이언트 생성
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ============================================================
-    // 📋 댓글 목록 불러오기 함수
+    // 📋 설정값(책 정보 + 일정) 불러오기
+    // ============================================================
+    async function loadSettings() {
+      const { data, error } = await db
+        .from('settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+      // 로딩 오버레이 숨기기
+      document.getElementById('loading-overlay').style.display = 'none';
+
+      if (error || !data) {
+        // 등록된 정보 없을 때 안내 배너 표시
+        document.getElementById('scheduleArea').innerHTML = noInfoBanner('일정');
+        document.getElementById('bookArea').innerHTML    = noInfoBanner('도서');
+        return;
+      }
+
+      // ── 모임 일정 렌더링 ──
+      const scheduleHtml = (data.schedule_date || data.schedule_time || data.schedule_place || data.schedule_members)
+        ? `<div class="schedule-grid">
+            <div class="schedule-item">
+              <div class="label">📆 모임 날짜</div>
+              <div class="value">${esc(data.schedule_date) || '미정'}</div>
+            </div>
+            <div class="schedule-item">
+              <div class="label">🕑 시간</div>
+              <div class="value">${esc(data.schedule_time) || '미정'}</div>
+            </div>
+            <div class="schedule-item">
+              <div class="label">📍 장소</div>
+              <div class="value">${esc(data.schedule_place) || '미정'}</div>
+            </div>
+            <div class="schedule-item">
+              <div class="label">👥 참석인원</div>
+              <div class="value">${esc(data.schedule_members) || '미정'}</div>
+            </div>
+           </div>`
+        : noInfoBanner('일정');
+
+      document.getElementById('scheduleArea').innerHTML = scheduleHtml;
+
+      // 업데이트 시각 표시
+      if (data.updated_at) {
+        const d = new Date(data.updated_at);
+        const formatted = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} 업데이트`;
+        document.getElementById('updatedBadge').textContent = formatted;
+      }
+
+      // ── 선정도서 렌더링 ──
+      const bookHtml = (data.book_title)
+        ? `<div class="book-section">
+            <div class="book-cover-wrap">
+              ${data.book_cover_url
+                ? `<img class="book-cover"
+                        src="${esc(data.book_cover_url)}"
+                        alt="선정도서 표지"
+                        onerror="this.style.display='none';
+                        document.getElementById('coverFallback').style.display='flex';" />`
+                : ''}
+              <div id="coverFallback" class="book-cover-placeholder"
+                   style="display:${data.book_cover_url ? 'none' : 'flex'}">📚</div>
+            </div>
+            <div class="book-info">
+              <div class="book-title">${esc(data.book_title)}</div>
+              <div class="book-author">✍️ ${esc(data.book_author) || '저자 미등록'}</div>
+              <div class="book-publisher">🏢 ${esc(data.book_publisher) || '출판사 미등록'}</div>
+              <div class="book-desc">${esc(data.book_desc) || '도서 설명이 없습니다.'}</div>
+            </div>
+           </div>`
+        : noInfoBanner('도서');
+
+      document.getElementById('bookArea').innerHTML = bookHtml;
+    }
+
+    // 정보 없을 때 배너
+    function noInfoBanner(type) {
+      return `<div class="no-info-banner">
+        <strong>📭 아직 ${type} 정보가 등록되지 않았습니다</strong>
+        관리자 페이지에서 이번 달 ${type} 정보를 입력해주세요.
+        <br/><a href="admin.html" style="color:#8b6340;font-weight:600;">→ 관리자 페이지 이동</a>
+      </div>`;
+    }
+
+    // ============================================================
+    // 💬 댓글 목록 불러오기
     // ============================================================
     async function loadComments() {
       const list = document.getElementById('commentsList');
-
-      // Supabase에서 comments 테이블 전체 조회 (최신순)
       const { data, error } = await db
         .from('comments')
         .select('*')
         .order('created_at', { ascending: false });
 
-      // 오류 처리
       if (error) {
         list.innerHTML = '<div class="empty-msg">댓글을 불러오지 못했습니다 😥</div>';
         return;
       }
-
-      // 댓글이 없을 때
       if (!data || data.length === 0) {
         list.innerHTML = '<div class="empty-msg">아직 등록된 한줄평이 없습니다 🌱</div>';
         return;
       }
-
-      // 댓글이 있을 때 HTML 생성
       list.innerHTML = data.map(item => {
-        // 날짜 포맷 변환
-        const date = new Date(item.created_at);
-        const formatted = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
-
+        const d = new Date(item.created_at);
+        const date = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
         return `
           <div class="comment-card">
             <div class="comment-header">
-              <span class="comment-name">🙋 ${escapeHtml(item.name)}</span>
-              <span class="comment-date">${formatted}</span>
+              <span class="comment-name">🙋 ${esc(item.name)}</span>
+              <span class="comment-date">${date}</span>
             </div>
-            <div class="comment-review">${escapeHtml(item.review)}</div>
-            ${item.question
-              ? `<div class="comment-question">${escapeHtml(item.question)}</div>`
-              : ''}
-          </div>
-        `;
+            <div class="comment-review">${esc(item.review)}</div>
+            ${item.question ? `<div class="comment-question">${esc(item.question)}</div>` : ''}
+          </div>`;
       }).join('');
     }
 
     // ============================================================
-    // 📝 댓글 제출 처리
+    // 📝 댓글 제출
     // ============================================================
     document.getElementById('commentForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); // 페이지 새로고침 방지
-
+      e.preventDefault();
       const name     = document.getElementById('name').value.trim();
       const review   = document.getElementById('review').value.trim();
       const question = document.getElementById('question').value.trim();
-      const btn      = document.getElementById('submitBtn');
-      const msg      = document.getElementById('msg');
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('msg');
 
-      // 입력값 검증
       if (!name || !review) {
         msg.style.color = '#c0392b';
         msg.textContent = '이름과 한줄평은 필수 입력입니다!';
         return;
       }
+      btn.disabled = true; btn.textContent = '제출 중...';
 
-      // 버튼 비활성화 (중복 제출 방지)
-      btn.disabled = true;
-      btn.textContent = '제출 중...';
-
-      // Supabase에 데이터 삽입
-      const { error } = await db
-        .from('comments')
-        .insert([{ name, review, question }]);
+      const { error } = await db.from('comments').insert([{ name, review, question }]);
 
       if (error) {
         msg.style.color = '#c0392b';
-        msg.textContent = '제출 중 오류가 발생했습니다. 다시 시도해주세요 😥';
+        msg.textContent = '제출 중 오류가 발생했습니다 😥';
       } else {
         msg.style.color = '#27ae60';
         msg.textContent = '✅ 한줄평이 등록되었습니다! 감사합니다 😊';
-
-        // 폼 초기화
         document.getElementById('commentForm').reset();
-
-        // 댓글 목록 새로고침
         await loadComments();
-
-        // 3초 후 메시지 지우기
         setTimeout(() => { msg.textContent = ''; }, 3000);
       }
-
-      // 버튼 복구
-      btn.disabled = false;
-      btn.textContent = '💌 제출하기';
+      btn.disabled = false; btn.textContent = '💌 제출하기';
     });
 
     // ============================================================
-    // 🔒 XSS 방지 - HTML 특수문자 이스케이프
+    // 🔧 유틸리티
     // ============================================================
-    function escapeHtml(text) {
+    function esc(text) {
       if (!text) return '';
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+      return String(text)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
+    function pad(n) { return String(n).padStart(2,'0'); }
 
     // ============================================================
-    // 🚀 페이지 로드 시 댓글 불러오기
+    // 🚀 초기 실행
     // ============================================================
+    loadSettings();
     loadComments();
   </script>
-
 </body>
 </html>
