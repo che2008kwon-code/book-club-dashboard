@@ -364,7 +364,7 @@
     // ============================================================
     // ⚙️ 설정 - 반드시 본인 값으로 교체하세요!
     // ============================================================
-    const SUPABASE_URL = 'https://pxbgwwavxggbtywqxogj.supabase.co';
+    const SUPABASE_URL = 'https://pxbgwwavxggbtywqxogj.supabase.co/';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM';
 
     // ⚠️ 관리자 비밀번호 - 원하는 값으로 변경하세요!
