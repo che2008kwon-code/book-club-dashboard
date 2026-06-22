@@ -871,8 +871,13 @@
       if (!bErr && books && books.length > 0) {
         historyBlocks = books.map(book => {
           const ym = parseMeetingDate(book.meeting_date);
-          const matched = ym
-            ? comments.filter(c => c.created_at && c.created_at.startsWith(ym))
+          const matched = comments.filter(c => {
+            if (!c.created_at) return false;
+            const d = new Date(c.created_at);
+            const kst = new Date(d.getTime() + 9*60*60*1000);
+            const kstYm = `${kst.getFullYear()}-${pad(kst.getMonth()+1)}`;
+            return kstYm === ym;
+          });
             : [];
 
           return `
