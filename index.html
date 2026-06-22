@@ -771,15 +771,25 @@
       if (currentSettings && currentSettings.book_title) {
         const s = currentSettings;
 
-        // ✅ schedule_date 파싱 실패 시 현재 월 기준
-        // UTC → KST 변환 적용
+        // ✅ 방법1: schedule_date 파싱 시도
         let ym = parseMeetingDate(s.schedule_date);
+
+        // ✅ 방법2: 파싱 실패 시 updated_at 기준으로 월 추출
+        if (!ym && s.updated_at) {
+          ym = s.updated_at.substring(0, 7); // "2026-06-22T..." → "2026-06"
+        }
+
+        // ✅ 방법3: 그것도 없으면 현재 UTC 월 기준 (가장 안전)
         if (!ym) {
           const now = new Date();
-          // KST = UTC + 9시간
-          const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-          ym = `${kst.getUTCFullYear()}-${pad(kst.getUTCMonth()+1)}`;
+          ym = `${now.getUTCFullYear()}-${pad(now.getUTCMonth()+1)}`;
         }
+
+        // 🔍 디버깅용 (확인 후 삭제 가능)
+        console.log('📅 이번 달 ym:', ym);
+        console.log('📝 schedule_date 원본:', s.schedule_date);
+        console.log('💬 전체 댓글 수:', comments.length);
+        console.log('✅ 매칭된 댓글 수:', comments.filter(c => c.created_at && c.created_at.startsWith(ym)).length);
 
         const currentMatched = comments.filter(c =>
           c.created_at && c.created_at.startsWith(ym)
