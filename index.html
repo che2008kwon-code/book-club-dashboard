@@ -541,13 +541,17 @@
         .forEach(c => c.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
 
-      // 탭별 데이터 최초 1회만 로드
-      if (!tabLoaded[tabName]) {
-        tabLoaded[tabName] = true;
-        if (tabName === 'history')  loadBookHistory();
-        if (tabName === 'reviews')  loadReviewsByBook();
+      // ✅ history는 1회만, reviews는 매번 최신 로드
+      if (tabName === 'history') {
+        if (!tabLoaded.history) {
+          tabLoaded.history = true;
+          loadBookHistory();
+        }
       }
-    }
+      if (tabName === 'reviews') {
+        // 매번 최신 데이터로 갱신
+        loadReviewsByBook();
+      }
 
     // ============================================================
     // 📋 이번 달 설정 불러오기
