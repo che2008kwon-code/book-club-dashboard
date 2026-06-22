@@ -791,9 +791,13 @@
         console.log('💬 전체 댓글 수:', comments.length);
         console.log('✅ 매칭된 댓글 수:', comments.filter(c => c.created_at && c.created_at.startsWith(ym)).length);
 
-        const currentMatched = comments.filter(c =>
-          c.created_at && c.created_at.startsWith(ym)
-        );
+        const currentMatched = comments.filter(c => {
+          if (!c.created_at) return false;
+          const d = new Date(c.created_at);                // UTC
+          const kst = new Date(d.getTime() + 9*60*60*1000); // KST 변환
+          const kstYm = `${kst.getFullYear()}-${pad(kst.getMonth()+1)}`;
+          return kstYm === ym;
+        });
 
         const currentCommentsHtml = currentMatched.length === 0
           ? `<div class="review-empty">
