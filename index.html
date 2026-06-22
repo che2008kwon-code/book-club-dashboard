@@ -679,7 +679,7 @@
       }
       btn.disabled = true; btn.textContent = '제출 중...';
 
-      const { error } = await db.from('comments').insert([{ name, review, question, book_id: currentSettings.id }]);
+      const { error } = await db.from('comments').insert([{ name, review, question }]);
 
       if (error) {
         msg.style.color = '#c0392b';
