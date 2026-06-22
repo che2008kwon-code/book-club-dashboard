@@ -482,14 +482,12 @@
       document.getElementById('bookArea').innerHTML = bookHtml;
     }
 
-    // ============================================================
-    // 💬 탭1 — 이번 달 댓글 불러오기
-    // ✅ book_id = currentSettings.id 기준으로 필터링
+// ============================================================
+    // 💬 탭1 — 이번 달 댓글 불러오기 (수정 버튼 추가 버전)
     // ============================================================
     async function loadComments() {
       const list = document.getElementById('commentsList');
 
-      // currentSettings가 아직 없으면 잠깐 대기
       if (!currentSettings) {
         list.innerHTML = '<div class="empty-msg">로딩 중... 🌱</div>';
         setTimeout(loadComments, 500);
@@ -499,7 +497,6 @@
       const { data, error } = await db
         .from('comments')
         .select('*')
-        // ✅ 핵심: book_id = settings.id 로 현재 책의 댓글만 조회
         .eq('book_id', currentSettings.id)
         .order('created_at', { ascending: false });
 
@@ -516,32 +513,36 @@
         const d    = new Date(item.created_at);
         const date = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
         return `
-          <div class="comment-card">
+          <div class="comment-card" id="comment-${item.id}">
             <div class="comment-header">
               <span class="comment-name">🙋 ${esc(item.name)}</span>
               <span class="comment-date">${date}</span>
             </div>
             <div class="comment-review">${esc(item.review)}</div>
             ${item.question ? `<div class="comment-question">${esc(item.question)}</div>` : ''}
+            
+            <div class="comment-actions">
+              <button class="action-btn" onclick="editComment(${item.id})">✏️ 수정하기</button>
+            </div>
           </div>`;
       }).join('');
     }
 
     // ============================================================
-    // 📝 댓글 제출
-    // ✅ book_id = currentSettings.id 와 함께 저장
+    // 📝 댓글 제출 (비밀번호 저장 로직 추가)
     // ============================================================
     document.getElementById('commentForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name     = document.getElementById('name').value.trim();
+      const password = document.getElementById('password').value.trim(); // 추가
       const review   = document.getElementById('review').value.trim();
       const question = document.getElementById('question').value.trim();
       const btn = document.getElementById('submitBtn');
       const msg = document.getElementById('msg');
 
-      if (!name || !review) {
+      if (!name || !review || !password) {
         msg.style.color = '#c0392b';
-        msg.textContent = '이름과 한줄평은 필수 입력입니다!';
+        msg.textContent = '이름, 비밀번호, 한줄평은 필수 입력입니다!';
         return;
       }
       if (!currentSettings) {
@@ -554,9 +555,10 @@
 
       const { error } = await db.from('comments').insert([{
         name,
+        password, // ✅ DB에 비밀번호 함께 저장
         review,
         question,
-        book_id: currentSettings.id  // ✅ 핵심: 현재 책의 id 저장
+        book_id: currentSettings.id
       }]);
 
       if (error) {
@@ -568,7 +570,6 @@
         document.getElementById('commentForm').reset();
         await loadComments();
 
-        // 탭3가 열려있으면 즉시 갱신
         if (document.getElementById('tab-reviews').classList.contains('active')) {
           loadReviewsByBook();
         }
@@ -576,6 +577,58 @@
       }
       btn.disabled = false; btn.textContent = '💌 제출하기';
     });
+
+    // ============================================================
+    // ✏️ 댓글 수정 로직 (새로 추가할 함수)
+    // ============================================================
+    async function editComment(id) {
+      // 1. 해당 댓글의 기존 데이터 원본을 DB에서 가져옴
+      const { data: item, error: fetchErr } = await db
+        .from('comments').select('*').eq('id', id).single();
+
+      if (fetchErr || !item) {
+        alert('댓글 데이터를 불러오지 못했습니다.');
+        return;
+      }
+
+      // 2. 본인 확인용 비밀번호 입력 받기
+      const inputPw = prompt('댓글 작성 시 입력했던 비밀번호를 입력해주세요:');
+      if (inputPw === null) return; // 취소 클릭 시 종료
+
+      if (inputPw !== item.password) {
+        alert('❌ 비밀번호가 일치하지 않습니다!');
+        return;
+      }
+
+      // 3. 일치할 경우 새 내용 입력 받기 (prompt 창 활용)
+      const newReview = prompt('📝 새로운 한줄평을 입력해주세요:', item.review);
+      if (newReview === null) return;
+      if (!newReview.trim()) {
+        alert('한줄평 내용은 비워둘 수 없습니다.');
+        return;
+      }
+
+      const newQuestion = prompt('💬 나누고 싶은 질문을 입력해주세요 (선택):', item.question || '');
+      
+      // 4. Supabase DB 업데이트 요청
+      const { error: updateErr } = await db
+        .from('comments')
+        .update({ 
+          review: newReview.trim(), 
+          question: newQuestion ? newQuestion.trim() : null 
+        })
+        .eq('id', id);
+
+      if (updateErr) {
+        alert('수정 중 오류가 발생했습니다 😥');
+      } else {
+        alert('✅ 성공적으로 수정되었습니다!');
+        await loadComments(); // 탭1 갱신
+        if (document.getElementById('tab-reviews').classList.contains('active')) {
+          loadReviewsByBook(); // 탭3가 열려있다면 함께 갱신
+        }
+      }
+    }
 
     // ============================================================
     // 📚 지난 독서목록 (탭2)
