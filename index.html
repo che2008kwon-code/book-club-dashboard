@@ -25,8 +25,34 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       position: relative;
     }
-    header h1 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 8px; }
-    header p  { font-size: 0.95rem; opacity: 0.85; }
+
+    /* ① 홈버튼: 제목을 클릭 가능하게 */
+    .header-home-btn {
+      display: inline-block;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+    .header-home-btn:hover { opacity: 0.85; }
+    .header-home-btn h1 {
+      font-size: 2rem;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .home-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.9);
+      padding: 2px 9px;
+      border-radius: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
+      letter-spacing: 0;
+    }
+    header p { font-size: 0.95rem; opacity: 0.85; }
 
     .admin-link {
       position: absolute;
@@ -249,7 +275,9 @@
     }
 
     /* ===== 📚 지난 독서목록 ===== */
-    .history-list { display: flex; flex-direction: column; gap: 20px; }
+    .history-list { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ② 클릭 가능한 history-item */
     .history-item {
       display: flex; gap: 20px;
       padding: 20px;
@@ -257,11 +285,27 @@
       border: 1px solid #e8ddd0;
       border-radius: 14px;
       align-items: flex-start;
-      transition: box-shadow 0.2s;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s;
+      position: relative;
     }
     .history-item:hover {
-      box-shadow: 0 4px 16px rgba(92,61,46,0.12);
+      box-shadow: 0 6px 20px rgba(92,61,46,0.15);
+      transform: translateY(-2px);
+      border-color: #c4a882;
     }
+    .history-item::after {
+      content: "자세히 보기 ›";
+      position: absolute;
+      bottom: 12px; right: 16px;
+      font-size: 0.72rem;
+      color: #8b6340;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .history-item:hover::after { opacity: 1; }
+
     .history-cover {
       width: 80px; height: 114px;
       border-radius: 5px; object-fit: cover;
@@ -295,6 +339,90 @@
       -webkit-box-orient: vertical; overflow: hidden;
     }
 
+    /* ===== ② 책 상세 모달 ===== */
+    .book-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(61,43,31,0.55);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(2px);
+    }
+    .book-modal-overlay.open {
+      display: flex;
+    }
+    .book-modal {
+      background: #faf7f2;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .book-modal-header {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: linear-gradient(135deg, #5c3d2e, #8b6340);
+      padding: 24px;
+      border-radius: 20px 20px 0 0;
+      color: white;
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute; top: 14px; right: 16px;
+      background: rgba(255,255,255,0.2);
+      border: none; color: white;
+      font-size: 1.1rem; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .modal-close-btn:hover { background: rgba(255,255,255,0.35); }
+    .modal-cover {
+      width: 90px; height: 128px;
+      border-radius: 6px; object-fit: cover;
+      box-shadow: 4px 4px 14px rgba(0,0,0,0.35);
+      flex-shrink: 0;
+    }
+    .modal-cover-placeholder {
+      width: 90px; height: 128px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+    }
+    .modal-book-meta { flex: 1; padding-right: 32px; }
+    .modal-book-title {
+      font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; line-height: 1.3;
+    }
+    .modal-book-author { font-size: 0.9rem; opacity: 0.85; margin-bottom: 3px; }
+    .modal-book-publisher { font-size: 0.82rem; opacity: 0.7; margin-bottom: 10px; }
+    .modal-book-date {
+      display: inline-block;
+      font-size: 0.72rem; background: rgba(255,255,255,0.2);
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .book-modal-body { padding: 24px; }
+    .modal-desc {
+      font-size: 0.9rem; line-height: 1.8; color: #5a4035;
+      background: white; border-left: 3px solid #8b6340;
+      padding: 14px 16px; border-radius: 0 10px 10px 0;
+      margin-bottom: 24px;
+    }
+    .modal-reviews-title {
+      font-size: 1rem; font-weight: 700; color: #5c3d2e;
+      margin-bottom: 14px; padding-bottom: 8px;
+      border-bottom: 2px solid #e8ddd0;
+      display: flex; align-items: center; gap: 6px;
+    }
+
     /* ===== 💬 지난 한줄평 (책별 묶음) ===== */
     .review-book-block {
       background: white;
@@ -304,11 +432,25 @@
       margin-bottom: 20px;
       box-shadow: 0 2px 10px rgba(92,61,46,0.07);
     }
+
+    /* ③ 진행 중 도서 강조 배지 */
+    .current-book-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.7rem; background: #e8543a; color: white;
+      padding: 3px 10px; border-radius: 20px;
+      font-weight: 700; animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; }
+      50%      { opacity:0.7; }
+    }
+
     .review-book-header {
       display: flex; gap: 14px; align-items: center;
       background: linear-gradient(135deg, #fdf6ee, #f5ece0);
       padding: 16px 20px;
       border-bottom: 1px solid #e8ddd0;
+      flex-wrap: wrap;
     }
     .review-book-thumb {
       width: 48px; height: 68px;
@@ -322,7 +464,7 @@
       display: flex; align-items: center; justify-content: center;
       color: white; font-size: 1.2rem;
     }
-    .review-book-meta { flex: 1; }
+    .review-book-meta { flex: 1; min-width: 120px; }
     .review-book-title {
       font-size: 1rem; font-weight: 700; color: #3d2b1f; margin-bottom: 3px;
     }
@@ -363,7 +505,7 @@
       border-radius: 99px; margin-left: 6px; font-weight: 600;
     }
 
-    /* ===== 로딩 인디케이터 (탭 전환시) ===== */
+    /* ===== 로딩 인디케이터 ===== */
     .tab-loading {
       text-align: center; padding: 40px;
       color: #a0856e; font-size: 0.9rem;
@@ -385,6 +527,8 @@
       .book-desc { text-align: left; }
       .tab-btn { padding: 12px 14px; font-size: 0.82rem; }
       .history-item { gap: 12px; }
+      .book-modal-header { flex-direction: column; }
+      .modal-book-meta { padding-right: 0; }
     }
   </style>
 </head>
@@ -392,49 +536,59 @@
 
   <!-- 로딩 오버레이 -->
   <div id="loading-overlay">
-    <div class="spinner"></div>
+    
     <p>모임 정보를 불러오는 중...</p>
+  </div>
+
+  <!-- ② 책 상세 모달 -->
+  <div class="book-modal-overlay" id="bookModal" onclick="closeModal(event)">
+    <div class="book-modal" id="bookModalInner">
+      <div class="book-modal-header" id="modalHeader">
+        <button class="modal-close-btn" onclick="closeModalDirect()">✕</button>
+      </div>
+      
+    </div>
   </div>
 
   <!-- 헤더 -->
   <header>
-    <h1>📚 책,삶,이야기</h1>
+    <!-- ① 제목 클릭 → 홈(탭1)으로 이동 -->
+    <a class="header-home-btn" onclick="goHome()" href="javascript:void(0)">
+      <h1>📚 책,삶,이야기 <span class="home-badge">🏠 홈</span></h1>
+    </a>
     <p>책을 통해 삶을 이야기하다</p>
     <a href="admin.html" class="admin-link">⚙️ 관리자</a>
   </header>
 
-  <!-- ===== 탭 네비게이션 ===== -->
+  <!-- 탭 네비게이션 -->
   <nav class="tab-nav">
-    <button class="tab-btn active"
+    <button class="tab-btn active" id="btn-current"
       onclick="switchTab('current', this)">📌 이번 달 모임</button>
-    <button class="tab-btn"
+    <button class="tab-btn" id="btn-history"
       onclick="switchTab('history', this)">📚 지난 독서목록</button>
-    <button class="tab-btn"
+    <button class="tab-btn" id="btn-reviews"
       onclick="switchTab('reviews', this)">💬 지난 한줄평/질문</button>
   </nav>
 
   <!-- ============================================================ -->
-  <!-- 📌 TAB 1 : 이번 달 모임 (기존 코드 그대로)                   -->
+  <!-- 📌 TAB 1 : 이번 달 모임                                       -->
   <!-- ============================================================ -->
   <div id="tab-current" class="tab-content active">
     <div class="container">
 
-      <!-- 모임 일정 -->
       <div class="card">
         <h2>
           📅 이번 달 모임 일정
           <span class="updated-badge" id="updatedBadge"></span>
         </h2>
-        <div id="scheduleArea"></div>
+        
       </div>
 
-      <!-- 선정도서 -->
       <div class="card">
         <h2>📖 이번 달 선정도서</h2>
-        <div id="bookArea"></div>
+        
       </div>
 
-      <!-- 한줄평 작성 폼 -->
       <div class="card form-section">
         <h2>✏️ 나의 한줄평 &amp; 질문 남기기</h2>
         <form id="commentForm">
@@ -459,10 +613,9 @@
             💌 제출하기
           </button>
         </form>
-        <div id="msg"></div>
+        
       </div>
 
-      <!-- 이번 달 댓글 목록 -->
       <div class="card">
         <h2>💬 모임원들의 한줄평</h2>
         <div class="comments-list" id="commentsList">
@@ -471,7 +624,7 @@
       </div>
 
     </div>
-  </div><!-- /tab-current -->
+  </div>
 
   <!-- ============================================================ -->
   <!-- 📚 TAB 2 : 지난 독서목록                                      -->
@@ -483,68 +636,74 @@
           📚 역대 선정도서
           <span class="updated-badge" id="historyCountBadge"></span>
         </h2>
+        <p style="font-size:0.82rem;color:#a0856e;margin-bottom:16px;">
+          📖 책을 클릭하면 상세 내용과 한줄평을 함께 볼 수 있습니다.
+        </p>
         <div id="bookHistoryList">
           <div class="tab-loading">
-            <div class="tab-spinner"></div>불러오는 중...
+            불러오는 중...
           </div>
         </div>
       </div>
     </div>
-  </div><!-- /tab-history -->
+  </div>
 
   <!-- ============================================================ -->
-  <!-- 💬 TAB 3 : 지난 한줄평/질문 (책별 묶음)                       -->
+  <!-- 💬 TAB 3 : 지난 한줄평/질문                                   -->
   <!-- ============================================================ -->
   <div id="tab-reviews" class="tab-content">
     <div class="container">
       <div class="card">
-        <h2>💬 지난 한줄평 &amp; 질문 모아보기</h2>
+        <h2>💬 한줄평 &amp; 질문 모아보기</h2>
         <p style="font-size:0.82rem;color:#a0856e;margin-bottom:18px;">
-          📖 모임에서 읽은 책별로 남겨진 한줄평과 질문을 모아볼 수 있습니다.
+          📖 현재 진행 중인 도서와 지난 모임 도서의 한줄평을 모두 볼 수 있습니다.
         </p>
         <div id="reviewsByBook">
           <div class="tab-loading">
-            <div class="tab-spinner"></div>불러오는 중...
+            불러오는 중...
           </div>
         </div>
       </div>
     </div>
-  </div><!-- /tab-reviews -->
+  </div>
 
 
   <script>
     // ============================================================
-    // ⚙️ Supabase 연결 설정
+    // ⚙️ Supabase 연결
     // ============================================================
     const SUPABASE_URL = 'https://pxbgwwavxggbtywqxogj.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM';
-
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 탭별 로드 여부 추적 (중복 로딩 방지)
-    const tabLoaded = { current: true, history: false, reviews: false };
+    // ③ 이번 달 settings 데이터 전역 저장 (탭3에서 사용)
+    let currentSettings = null;
+
+    // ============================================================
+    // ① 홈버튼: 헤더 클릭 시 탭1으로 이동
+    // ============================================================
+    function goHome() {
+      const btn = document.getElementById('btn-current');
+      switchTab('current', btn);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     // ============================================================
     // 🗂️ 탭 전환
     // ============================================================
     function switchTab(tabName, el) {
-      // 버튼 활성화
       document.querySelectorAll('.tab-btn')
         .forEach(b => b.classList.remove('active'));
       el.classList.add('active');
 
-      // 콘텐츠 전환
       document.querySelectorAll('.tab-content')
         .forEach(c => c.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
 
-      // 탭별 데이터 최초 1회만 로드
-      if (!tabLoaded[tabName]) {
-        tabLoaded[tabName] = true;
-        if (tabName === 'history')  loadBookHistory();
-        if (tabName === 'reviews')  loadReviewsByBook();
-      }
+      // 탭 전환 시마다 최신 데이터 로드
+      if (tabName === 'history') loadBookHistory();
+      if (tabName === 'reviews') loadReviewsByBook();
     }
 
     // ============================================================
@@ -554,7 +713,6 @@
       const { data, error } = await db
         .from('settings').select('*').eq('id', 1).single();
 
-      // 로딩 오버레이 숨기기
       document.getElementById('loading-overlay').style.display = 'none';
 
       if (error || !data) {
@@ -563,7 +721,9 @@
         return;
       }
 
-      // 모임 일정
+      // ③ 전역 저장 (탭3 현재 도서 표시용)
+      currentSettings = data;
+
       const scheduleHtml = (data.schedule_date||data.schedule_time||data.schedule_place||data.schedule_members)
         ? `<div class="schedule-grid">
             <div class="schedule-item">
@@ -593,15 +753,11 @@
           `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} 업데이트`;
       }
 
-      // 선정도서
       const bookHtml = data.book_title
         ? `<div class="book-section">
             <div class="book-cover-wrap">
               ${data.book_cover_url
-                ? `<img class="book-cover" src="${esc(data.book_cover_url)}"
-                    alt="선정도서 표지"
-                    onerror="this.style.display='none';
-                    document.getElementById('coverFallback').style.display='flex';"/>`
+                ? ``
                 : ''}
               <div id="coverFallback" class="book-cover-placeholder"
                 style="display:${data.book_cover_url?'none':'flex'}">📚</div>
@@ -679,16 +835,22 @@
         msg.textContent = '✅ 한줄평이 등록되었습니다! 감사합니다 😊';
         document.getElementById('commentForm').reset();
         await loadComments();
+
+        // ③ 탭3가 열려있으면 함께 갱신
+        if (document.getElementById('tab-reviews').classList.contains('active')) {
+          loadReviewsByBook();
+        }
         setTimeout(() => { msg.textContent = ''; }, 3000);
       }
       btn.disabled = false; btn.textContent = '💌 제출하기';
     });
 
     // ============================================================
-    // 📚 지난 독서목록 불러오기 (book_history)
+    // 📚 지난 독서목록 불러오기
     // ============================================================
     async function loadBookHistory() {
       const el = document.getElementById('bookHistoryList');
+      el.innerHTML = `<div class="tab-loading">불러오는 중...</div>`;
 
       const { data, error } = await db
         .from('book_history').select('*')
@@ -705,14 +867,13 @@
 
       document.getElementById('historyCountBadge').textContent = `총 ${data.length}권`;
 
+      // ② 클릭 시 모달 열기 (onclick에 book 데이터 전달)
       el.innerHTML = `<div class="history-list">` +
-        data.map(b => `
-          <div class="history-item">
+        data.map((b, i) => `
+          <div class="history-item" onclick="openBookModal(${i})"
+               data-idx="${i}">
             ${b.book_cover_url
-              ? `<img class="history-cover"
-                   src="${esc(b.book_cover_url)}"
-                   alt="${esc(b.book_title)}"
-                   onerror="this.style.display='none'">`
+              ? ``
               : `<div class="history-cover-placeholder">📚</div>`}
             <div class="history-info">
               <div class="history-title">${esc(b.book_title)}</div>
@@ -729,28 +890,139 @@
             </div>
           </div>`).join('') +
         `</div>`;
+
+      // 전역에 책 목록 저장 (모달에서 사용)
+      window._bookHistoryData = data;
+    }
+        // ============================================================
+    // ② 책 상세 모달 열기
+    // ============================================================
+    async function openBookModal(idx) {
+      const book = window._bookHistoryData[idx];
+      if (!book) return;
+
+      // 모달 헤더 렌더링
+      document.getElementById('modalHeader').innerHTML = `
+        <button class="modal-close-btn" onclick="closeModalDirect()">✕</button>
+        ${book.book_cover_url
+          ? `<img class="modal-cover"
+               src="${esc(book.book_cover_url)}"
+               alt="${esc(book.book_title)}"
+               onerror="this.style.display='none'">`
+          : `<div class="modal-cover-placeholder">📚</div>`}
+        <div class="modal-book-meta">
+          <div class="modal-book-title">${esc(book.book_title)}</div>
+          <div class="modal-book-author">✍️ ${esc(book.book_author)||'저자 미등록'}</div>
+          <div class="modal-book-publisher">
+            🏢 ${esc(book.book_publisher)||'출판사 미등록'}
+          </div>
+          ${book.meeting_date
+            ? `<span class="modal-book-date">📅 ${esc(book.meeting_date)}</span>`
+            : ''}
+        </div>`;
+
+      // 모달 바디 — 설명 먼저 표시, 댓글은 로딩 중 표시
+      document.getElementById('modalBody').innerHTML = `
+        ${book.book_desc
+          ? `<div class="modal-desc">${esc(book.book_desc)}</div>`
+          : ''}
+        <div class="modal-reviews-title">
+          💬 이 책의 한줄평 &amp; 질문
+        </div>
+        <div id="modalCommentsList">
+          <div class="tab-loading">
+            <div class="tab-spinner"></div>한줄평 불러오는 중...
+          </div>
+        </div>`;
+
+      // 모달 열기
+      document.getElementById('bookModal').classList.add('open');
+      document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+
+      // 해당 책의 댓글 로드
+      await loadModalComments(book);
     }
 
     // ============================================================
-    // 💬 책별 한줄평/질문 불러오기
+    // ② 모달 안에서 해당 책의 댓글 불러오기
     // meeting_date 기준으로 연도-월 매칭
+    // ============================================================
+    async function loadModalComments(book) {
+      const el = document.getElementById('modalCommentsList');
+      if (!el) return;
+
+      const ym = parseMeetingDate(book.meeting_date);
+
+      // 댓글 전체 가져오기
+      const { data: allComments, error } = await db
+        .from('comments').select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        el.innerHTML = '<div class="review-empty">댓글을 불러오지 못했습니다 😥</div>';
+        return;
+      }
+
+      // 해당 월 댓글 필터링
+      const matched = (ym && allComments)
+        ? allComments.filter(c => c.created_at && c.created_at.startsWith(ym))
+        : [];
+
+      if (matched.length === 0) {
+        el.innerHTML = '<div class="review-empty">이 책에 대한 한줄평이 아직 없습니다 🌱</div>';
+        return;
+      }
+
+      el.innerHTML =
+        `<div style="font-size:0.78rem;color:#a0856e;margin-bottom:10px;">
+           총 ${matched.length}개의 한줄평
+           <span class="review-count-badge">${matched.length}</span>
+         </div>` +
+        matched.map(r => {
+          const d = new Date(r.created_at);
+          const dateStr = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+          return `
+            <div class="review-comment-item">
+              <div class="review-comment-name">🙋 ${esc(r.name)}</div>
+              <div class="review-comment-text">${esc(r.review)}</div>
+              ${r.question
+                ? `<div class="review-comment-question">${esc(r.question)}</div>`
+                : ''}
+              <div class="review-comment-date">${dateStr}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // ============================================================
+    // ② 모달 닫기
+    // ============================================================
+    function closeModal(event) {
+      // 오버레이(배경) 클릭 시에만 닫기
+      if (event.target === document.getElementById('bookModal')) {
+        closeModalDirect();
+      }
+    }
+    function closeModalDirect() {
+      document.getElementById('bookModal').classList.remove('open');
+      document.body.style.overflow = ''; // 스크롤 복원
+    }
+    // ESC 키로도 닫기
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModalDirect();
+    });
+
+    // ============================================================
+    // ③ 지난 한줄평 + 이번 달 진행 중 도서 함께 표시
     // ============================================================
     async function loadReviewsByBook() {
       const container = document.getElementById('reviewsByBook');
+      container.innerHTML = `<div class="tab-loading">
+        <div class="tab-spinner"></div>불러오는 중...</div>`;
 
       // 1) 도서 히스토리 가져오기
       const { data: books, error: bErr } = await db
         .from('book_history').select('*')
         .order('created_at', { ascending: false });
-
-      if (bErr || !books || books.length === 0) {
-        container.innerHTML = `<div class="no-info-banner">
-          <strong>📭 아직 등록된 도서 기록이 없습니다</strong>
-          관리자 페이지에서 지난 도서 기록을 추가해주세요.
-          <br/><a href="admin.html" style="color:#8b6340;font-weight:600;">
-          → 관리자 페이지 이동</a></div>`;
-        return;
-      }
 
       // 2) 전체 댓글 가져오기
       const { data: allComments } = await db
@@ -759,59 +1031,68 @@
 
       const comments = allComments || [];
 
-      // 3) 책별로 매칭하여 렌더링
-      container.innerHTML = books.map(book => {
+      // ③ 이번 달 진행 중 도서 블록 생성
+      let currentBookBlock = '';
+      if (currentSettings && currentSettings.book_title) {
+        const s    = currentSettings;
+        const now  = new Date();
+        const ym   = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
 
-        // meeting_date 파싱 → "YYYY-MM" 형태로 변환하여 매칭
-        // 예: "2026년 7월 3일" → "2026-07"
-        const ym = parseMeetingDate(book.meeting_date);
+        // 이번 달 작성된 댓글
+        const currentMatched = comments.filter(c =>
+          c.created_at && c.created_at.startsWith(ym)
+        );
 
-        // 해당 월에 작성된 댓글 필터링
-        const matched = ym
-          ? comments.filter(c => c.created_at && c.created_at.startsWith(ym))
-          : [];
-
-        return `
-          <div class="review-book-block">
-            <!-- 책 헤더 -->
-            <div class="review-book-header">
-              ${book.book_cover_url
+        currentBookBlock = `
+          <div class="review-book-block"
+               style="border: 2px solid #8b6340;">
+            <div class="review-book-header"
+                 style="background: linear-gradient(135deg, #5c3d2e, #8b6340);">
+              ${s.book_cover_url
                 ? `<img class="review-book-thumb"
-                     src="${esc(book.book_cover_url)}"
-                     alt="${esc(book.book_title)}"
+                     src="${esc(s.book_cover_url)}"
+                     alt="${esc(s.book_title)}"
                      onerror="this.style.display='none'">`
                 : `<div class="review-book-thumb-placeholder">📚</div>`}
               <div class="review-book-meta">
-                <div class="review-book-title">${esc(book.book_title)}</div>
-                <div class="review-book-author">
-                  ${esc(book.book_author)||''}
-                  ${book.book_publisher ? ` · ${esc(book.book_publisher)}` : ''}
+                <div class="review-book-title"
+                     style="color:white;">${esc(s.book_title)}</div>
+                <div class="review-book-author"
+                     style="color:rgba(255,255,255,0.75);">
+                  ${esc(s.book_author)||''}
+                  ${s.book_publisher ? ` · ${esc(s.book_publisher)}` : ''}
                 </div>
               </div>
-              ${book.meeting_date
-                ? `<div class="review-book-date">📅 ${esc(book.meeting_date)}</div>`
-                : ''}
+              <span class="current-book-badge">🔴 진행 중</span>
             </div>
-
-            <!-- 해당 달 댓글 목록 -->
             <div class="review-comments-wrap">
-              ${matched.length === 0
+              ${currentMatched.length === 0
                 ? `<div class="review-empty">
-                     이 책에 대한 한줄평이 아직 없습니다 🌱
+                     아직 이번 달 한줄평이 없습니다 🌱
+                     <br/>
+                     <a onclick="goHome()" href="javascript:void(0)"
+                        style="color:#8b6340;font-weight:600;font-size:0.82rem;">
+                       → 한줄평 남기러 가기
+                     </a>
                    </div>`
                 : `<div style="font-size:0.78rem;color:#a0856e;margin-bottom:10px;">
-                     총 ${matched.length}개의 한줄평
-                     <span class="review-count-badge">${matched.length}</span>
+                     이번 달 한줄평 ${currentMatched.length}개
+                     <span class="review-count-badge">${currentMatched.length}</span>
                    </div>` +
-                  matched.map(r => {
+                  currentMatched.map(r => {
                     const d = new Date(r.created_at);
                     const dateStr = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
                     return `
-                      <div class="review-comment-item">
-                        <div class="review-comment-name">🙋 ${esc(r.name)}</div>
+                      <div class="review-comment-item"
+                           style="border-left-color:#8b6340;">
+                        <div class="review-comment-name">
+                          🙋 ${esc(r.name)}
+                        </div>
                         <div class="review-comment-text">${esc(r.review)}</div>
                         ${r.question
-                          ? `<div class="review-comment-question">${esc(r.question)}</div>`
+                          ? `<div class="review-comment-question">
+                               ${esc(r.question)}
+                             </div>`
                           : ''}
                         <div class="review-comment-date">${dateStr}</div>
                       </div>`;
@@ -819,30 +1100,127 @@
               }
             </div>
           </div>`;
-      }).join('');
+      }
+
+      // 3) 지난 도서 블록 생성
+      let historyBlocks = '';
+      if (!bErr && books && books.length > 0) {
+        historyBlocks = books.map(book => {
+          const ym = parseMeetingDate(book.meeting_date);
+          const matched = ym
+            ? comments.filter(c => c.created_at && c.created_at.startsWith(ym))
+            : [];
+
+          return `
+            <div class="review-book-block">
+              <div class="review-book-header">
+                ${book.book_cover_url
+                  ? `<img class="review-book-thumb"
+                       src="${esc(book.book_cover_url)}"
+                       alt="${esc(book.book_title)}"
+                       onerror="this.style.display='none'">`
+                  : `<div class="review-book-thumb-placeholder">📚</div>`}
+                <div class="review-book-meta">
+                  <div class="review-book-title">${esc(book.book_title)}</div>
+                  <div class="review-book-author">
+                    ${esc(book.book_author)||''}
+                    ${book.book_publisher ? ` · ${esc(book.book_publisher)}` : ''}
+                  </div>
+                </div>
+                ${book.meeting_date
+                  ? `<div class="review-book-date">
+                       📅 ${esc(book.meeting_date)}
+                     </div>`
+                  : ''}
+              </div>
+              <div class="review-comments-wrap">
+                ${matched.length === 0
+                  ? `<div class="review-empty">
+                       이 책에 대한 한줄평이 아직 없습니다 🌱
+                     </div>`
+                  : `<div style="font-size:0.78rem;color:#a0856e;margin-bottom:10px;">
+                       총 ${matched.length}개의 한줄평
+                       <span class="review-count-badge">${matched.length}</span>
+                     </div>` +
+                    matched.map(r => {
+                      const d = new Date(r.created_at);
+                      const dateStr = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+                      return `
+                        <div class="review-comment-item">
+                          <div class="review-comment-name">
+                            🙋 ${esc(r.name)}
+                          </div>
+                          <div class="review-comment-text">${esc(r.review)}</div>
+                          ${r.question
+                            ? `<div class="review-comment-question">
+                                 ${esc(r.question)}
+                               </div>`
+                            : ''}
+                          <div class="review-comment-date">${dateStr}</div>
+                        </div>`;
+                    }).join('')
+                }
+              </div>
+            </div>`;
+        }).join('');
+      } else {
+        historyBlocks = `<div class="no-info-banner">
+          <strong>📭 아직 등록된 지난 도서 기록이 없습니다</strong>
+          관리자 페이지에서 지난 도서 기록을 추가해주세요.
+          <br/><a href="admin.html" style="color:#8b6340;font-weight:600;">
+          → 관리자 페이지 이동</a></div>`;
+      }
+
+      // ③ 이번 달 블록 맨 위에 + 지난 도서 아래에 표시
+      container.innerHTML = currentBookBlock + historyBlocks;
     }
 
     // ============================================================
-    // 🗓️ meeting_date → "YYYY-MM" 변환 함수
+    // 🔴 Supabase Realtime 실시간 구독
+    // 새 댓글 등록/삭제 시 탭1 + 탭3 자동 갱신
+    // ============================================================
+    function subscribeComments() {
+      db.channel('comments-realtime')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'comments' },
+          (payload) => {
+            console.log('🔔 댓글 변경 감지:', payload.eventType);
+
+            // 탭1 항상 갱신
+            loadComments();
+
+            // 탭3가 열려있으면 즉시 갱신
+            if (document.getElementById('tab-reviews')
+                .classList.contains('active')) {
+              loadReviewsByBook();
+            }
+
+            // 모달이 열려있으면 모달 댓글도 갱신
+            if (document.getElementById('bookModal')
+                .classList.contains('open')) {
+              const idx = window._currentModalIdx;
+              if (idx !== undefined && window._bookHistoryData) {
+                loadModalComments(window._bookHistoryData[idx]);
+              }
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    // ============================================================
+    // 🗓️ meeting_date → "YYYY-MM" 변환
     // "2026년 7월 3일", "2026년 7월", "2026-07", "2026-07-03" 모두 처리
     // ============================================================
     function parseMeetingDate(dateStr) {
       if (!dateStr) return null;
-
-      // "2026년 7월" 또는 "2026년 7월 3일" 형태
       const korMatch = dateStr.match(/(\d{4})년\s*(\d{1,2})월/);
       if (korMatch) {
-        const y = korMatch[1];
-        const m = String(korMatch[2]).padStart(2, '0');
-        return `${y}-${m}`;
+        return `${korMatch[1]}-${String(korMatch[2]).padStart(2,'0')}`;
       }
-
-      // "2026-07" 또는 "2026-07-03" 형태
       const isoMatch = dateStr.match(/^(\d{4})-(\d{2})/);
-      if (isoMatch) {
-        return `${isoMatch[1]}-${isoMatch[2]}`;
-      }
-
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}`;
       return null;
     }
 
@@ -874,6 +1252,7 @@
     // ============================================================
     loadSettings();
     loadComments();
+    subscribeComments();   // 실시간 구독 시작
   </script>
 </body>
 </html>
