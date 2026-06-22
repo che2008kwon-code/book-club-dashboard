@@ -684,6 +684,13 @@
         msg.textContent = '✅ 한줄평이 등록되었습니다! 감사합니다 😊';
         document.getElementById('commentForm').reset();
         await loadComments();
+
+        // ✅ 탭3 캐시 초기화 후 재로드
+        tabLoaded.reviews = false;
+        if (document.getElementById('tab-reviews').classList.contains('active')) {
+          loadReviewsByBook();
+        }
+
         setTimeout(() => { msg.textContent = ''; }, 3000);
       }
       btn.disabled = false; btn.textContent = '💌 제출하기';
