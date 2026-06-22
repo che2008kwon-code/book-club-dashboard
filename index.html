@@ -770,11 +770,14 @@
       if (currentSettings && currentSettings.book_title) {
         const s = currentSettings;
 
-        // schedule_date 우선 파싱 → 없으면 현재 날짜 기준
+        // ✅ schedule_date 파싱 실패 시 현재 월 기준
+        // UTC → KST 변환 적용
         let ym = parseMeetingDate(s.schedule_date);
         if (!ym) {
           const now = new Date();
-          ym = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
+          // KST = UTC + 9시간
+          const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+          ym = `${kst.getUTCFullYear()}-${pad(kst.getUTCMonth()+1)}`;
         }
 
         const currentMatched = comments.filter(c =>
