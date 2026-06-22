@@ -257,6 +257,38 @@
       .history-item { gap: 16px; padding: 16px; }
       .history-cover, .history-cover-placeholder { width: 90px; height: 128px; }
     }
+    /* 비밀번호 입력란 스타일 */
+    .form-row-flex {
+      display: flex;
+      gap: 12px;
+    }
+    .form-row-flex .form-row {
+      flex: 1;
+      margin-bottom: 14px;
+    }
+
+    /* 수정/삭제 버튼 스타일 */
+    .comment-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      justify-content: flex-end;
+    }
+    .action-btn {
+      background: none;
+      border: 1px solid #d4c4b0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #8b6340;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn:hover {
+      background: #5c3d2e;
+      color: white;
+      border-color: #5c3d2e;
+    }    
   </style>
 </head>
 <body>
