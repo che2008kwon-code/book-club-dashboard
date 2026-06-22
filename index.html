@@ -529,22 +529,33 @@
     }
 
     // ============================================================
-    // 📝 댓글 제출 (비밀번호 저장 로직 추가)
+    // 📝 댓글 제출 (password null 방지 및 검증 강화 버전)
     // ============================================================
     document.getElementById('commentForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name     = document.getElementById('name').value.trim();
-      const password = document.getElementById('password').value.trim(); // 추가
-      const review   = document.getElementById('review').value.trim();
-      const question = document.getElementById('question').value.trim();
+      
+      // 1. 화면의 입력 필드에서 값 가져오기
+      const nameEl     = document.getElementById('name');
+      const passwordEl = document.getElementById('password');
+      const reviewEl   = document.getElementById('review');
+      const questionEl = document.getElementById('question');
+
+      // 2. 앞뒤 공백 제거 후 변수에 할당
+      const name     = nameEl ? nameEl.value.trim() : '';
+      const password = passwordEl ? passwordEl.value.trim() : '';
+      const review   = reviewEl ? reviewEl.value.trim() : '';
+      const question = questionEl ? questionEl.value.trim() : '';
+      
       const btn = document.getElementById('submitBtn');
       const msg = document.getElementById('msg');
 
+      // 3. 값 유효성 초강력 검증 (비밀번호 누락 차단)
       if (!name || !review || !password) {
         msg.style.color = '#c0392b';
         msg.textContent = '이름, 비밀번호, 한줄평은 필수 입력입니다!';
         return;
       }
+      
       if (!currentSettings) {
         msg.style.color = '#c0392b';
         msg.textContent = '설정을 불러오는 중입니다. 잠시 후 다시 시도해주세요.';
@@ -553,15 +564,19 @@
 
       btn.disabled = true; btn.textContent = '제출 중...';
 
-      const { error } = await db.from('comments').insert([{
-        name,
-        password, // ✅ DB에 비밀번호 함께 저장
-        review,
-        question,
+      // 4. Supabase 전송 데이터 객체 매핑 명확화
+      const insertData = {
+        name: name,
+        password: password, // <-- 이 값이 null이 아님을 위에서 검증함
+        review: review,
+        question: question || null,
         book_id: currentSettings.id
-      }]);
+      };
+
+      const { error } = await db.from('comments').insert([insertData]);
 
       if (error) {
+        console.error("Supabase 에러 상세:", error); // 디버깅용 콘솔 출력
         msg.style.color = '#c0392b';
         msg.textContent = '제출 중 오류가 발생했습니다 😥';
       } else {
