@@ -482,8 +482,8 @@
       document.getElementById('bookArea').innerHTML = bookHtml;
     }
 
-// ============================================================
-    // 💬 탭1 — 이번 달 댓글 불러오기 (수정 버튼 추가 버전)
+    // ============================================================
+    // 💬 탭1 — 이번 달 댓글 불러오기 (수정/삭제 버튼 모두 포함)
     // ============================================================
     async function loadComments() {
       const list = document.getElementById('commentsList');
@@ -522,7 +522,8 @@
             ${item.question ? `<div class="comment-question">${esc(item.question)}</div>` : ''}
             
             <div class="comment-actions">
-              <button class="action-btn" onclick="editComment(${item.id})">✏️ 수정하기</button>
+              <button class="action-btn btn-edit" onclick="editComment(${item.id})">✏️ 수정하기</button>
+              <button class="action-btn btn-delete" onclick="deleteComment(${item.id})">❌ 삭제하기</button>
             </div>
           </div>`;
       }).join('');
