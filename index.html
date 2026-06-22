@@ -524,6 +524,8 @@
 
     // 탭별 로드 여부 추적 (중복 로딩 방지)
     const tabLoaded = { current: true, history: false, reviews: false };
+    let currentSettings = null;
+
 
     // ============================================================
     // 🗂️ 탭 전환
@@ -562,6 +564,9 @@
         document.getElementById('bookArea').innerHTML    = noInfoBanner('도서');
         return;
       }
+
+      // ③ 전역 저장 (탭3 현재 도서 표시용)
+      currentSettings = data;
 
       // 모임 일정
       const scheduleHtml = (data.schedule_date||data.schedule_time||data.schedule_place||data.schedule_members)
@@ -732,8 +737,7 @@
     }
 
     // ============================================================
-    // 💬 책별 한줄평/질문 불러오기
-    // meeting_date 기준으로 연도-월 매칭
+    // 💬 책별 한줄평/질문 불러오기 (이번 달 도서 포함)
     // ============================================================
     async function loadReviewsByBook() {
       const container = document.getElementById('reviewsByBook');
@@ -743,15 +747,6 @@
         .from('book_history').select('*')
         .order('created_at', { ascending: false });
 
-      if (bErr || !books || books.length === 0) {
-        container.innerHTML = `<div class="no-info-banner">
-          <strong>📭 아직 등록된 도서 기록이 없습니다</strong>
-          관리자 페이지에서 지난 도서 기록을 추가해주세요.
-          <br/><a href="admin.html" style="color:#8b6340;font-weight:600;">
-          → 관리자 페이지 이동</a></div>`;
-        return;
-      }
-
       // 2) 전체 댓글 가져오기
       const { data: allComments } = await db
         .from('comments').select('*')
@@ -759,67 +754,154 @@
 
       const comments = allComments || [];
 
-      // 3) 책별로 매칭하여 렌더링
-      container.innerHTML = books.map(book => {
+      // ③ 이번 달 진행 중 도서 블록 생성
+      let currentBookBlock = '';
+      if (currentSettings && currentSettings.book_title) {
+        const s = currentSettings;
 
-        // meeting_date 파싱 → "YYYY-MM" 형태로 변환하여 매칭
-        // 예: "2026년 7월 3일" → "2026-07"
-        const ym = parseMeetingDate(book.meeting_date);
+        // schedule_date 우선 파싱 → 없으면 현재 날짜 기준
+        let ym = parseMeetingDate(s.schedule_date);
+        if (!ym) {
+          const now = new Date();
+          ym = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
+        }
 
-        // 해당 월에 작성된 댓글 필터링
-        const matched = ym
-          ? comments.filter(c => c.created_at && c.created_at.startsWith(ym))
-          : [];
+        const currentMatched = comments.filter(c =>
+          c.created_at && c.created_at.startsWith(ym)
+        );
 
-        return `
-          <div class="review-book-block">
-            <!-- 책 헤더 -->
-            <div class="review-book-header">
-              ${book.book_cover_url
+        const currentCommentsHtml = currentMatched.length === 0
+          ? `<div class="review-empty">
+               아직 이번 달 한줄평이 없습니다 🌱<br/>
+               <a onclick="
+                 document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                 document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+                 document.querySelector('.tab-btn').classList.add('active');
+                 document.getElementById('tab-current').classList.add('active');
+               " href="javascript:void(0)"
+               style="color:#8b6340;font-weight:600;font-size:0.82rem;">
+               → 한줄평 남기러 가기</a>
+             </div>`
+          : `<div style="font-size:0.78rem;color:#a0856e;margin-bottom:10px;">
+               이번 달 한줄평 ${currentMatched.length}개
+               <span class="review-count-badge">${currentMatched.length}</span>
+             </div>` +
+            currentMatched.map(r => {
+              const d = new Date(r.created_at);
+              const dateStr = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+              return `
+                <div class="review-comment-item" style="border-left-color:#8b6340;">
+                  <div class="review-comment-name">🙋 ${esc(r.name)}</div>
+                  <div class="review-comment-text">${esc(r.review)}</div>
+                  ${r.question
+                    ? `<div class="review-comment-question">${esc(r.question)}</div>`
+                    : ''}
+                  <div class="review-comment-date">${dateStr}</div>
+                </div>`;
+            }).join('');
+
+        currentBookBlock = `
+          <div class="review-book-block" style="border:2px solid #8b6340;margin-bottom:24px;">
+            <div class="review-book-header"
+                 style="background:linear-gradient(135deg,#5c3d2e,#8b6340);">
+              ${s.book_cover_url
                 ? `<img class="review-book-thumb"
-                     src="${esc(book.book_cover_url)}"
-                     alt="${esc(book.book_title)}"
+                     src="${esc(s.book_cover_url)}"
+                     alt="${esc(s.book_title)}"
                      onerror="this.style.display='none'">`
                 : `<div class="review-book-thumb-placeholder">📚</div>`}
               <div class="review-book-meta">
-                <div class="review-book-title">${esc(book.book_title)}</div>
-                <div class="review-book-author">
-                  ${esc(book.book_author)||''}
-                  ${book.book_publisher ? ` · ${esc(book.book_publisher)}` : ''}
+                <div class="review-book-title" style="color:white;">
+                  ${esc(s.book_title)}
+                </div>
+                <div class="review-book-author" style="color:rgba(255,255,255,0.75);">
+                  ${esc(s.book_author||'')}
+                  ${s.book_publisher ? ` · ${esc(s.book_publisher)}` : ''}
                 </div>
               </div>
-              ${book.meeting_date
-                ? `<div class="review-book-date">📅 ${esc(book.meeting_date)}</div>`
-                : ''}
+              <span style="display:inline-flex;align-items:center;
+                font-size:0.7rem;background:#e8543a;color:white;
+                padding:3px 10px;border-radius:20px;font-weight:700;
+                white-space:nowrap;">🔴 진행 중</span>
             </div>
+            <div class="review-comments-wrap">${currentCommentsHtml}</div>
+          </div>
 
-            <!-- 해당 달 댓글 목록 -->
-            <div class="review-comments-wrap">
-              ${matched.length === 0
-                ? `<div class="review-empty">
-                     이 책에 대한 한줄평이 아직 없습니다 🌱
-                   </div>`
-                : `<div style="font-size:0.78rem;color:#a0856e;margin-bottom:10px;">
-                     총 ${matched.length}개의 한줄평
-                     <span class="review-count-badge">${matched.length}</span>
-                   </div>` +
-                  matched.map(r => {
-                    const d = new Date(r.created_at);
-                    const dateStr = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
-                    return `
-                      <div class="review-comment-item">
-                        <div class="review-comment-name">🙋 ${esc(r.name)}</div>
-                        <div class="review-comment-text">${esc(r.review)}</div>
-                        ${r.question
-                          ? `<div class="review-comment-question">${esc(r.question)}</div>`
-                          : ''}
-                        <div class="review-comment-date">${dateStr}</div>
-                      </div>`;
-                  }).join('')
-              }
-            </div>
-          </div>`;
-      }).join('');
+          <!-- 지난 도서 구분선 -->
+          ${(!bErr && books && books.length > 0)
+            ? `<div style="font-size:0.82rem;font-weight:700;color:#5c3d2e;
+                 margin-bottom:16px;padding-bottom:8px;
+                 border-bottom:2px solid #e8ddd0;">
+                 📚 지난 모임 도서
+               </div>`
+            : ''}`;
+      }
+
+      // 3) 지난 도서 블록 생성
+      let historyBlocks = '';
+      if (!bErr && books && books.length > 0) {
+        historyBlocks = books.map(book => {
+          const ym = parseMeetingDate(book.meeting_date);
+          const matched = ym
+            ? comments.filter(c => c.created_at && c.created_at.startsWith(ym))
+            : [];
+
+          return `
+            <div class="review-book-block">
+              <div class="review-book-header">
+                ${book.book_cover_url
+                  ? `<img class="review-book-thumb"
+                       src="${esc(book.book_cover_url)}"
+                       alt="${esc(book.book_title)}"
+                       onerror="this.style.display='none'">`
+                  : `<div class="review-book-thumb-placeholder">📚</div>`}
+                <div class="review-book-meta">
+                  <div class="review-book-title">${esc(book.book_title)}</div>
+                  <div class="review-book-author">
+                    ${esc(book.book_author||'')}
+                    ${book.book_publisher ? ` · ${esc(book.book_publisher)}` : ''}
+                  </div>
+                </div>
+                ${book.meeting_date
+                  ? `<div class="review-book-date">📅 ${esc(book.meeting_date)}</div>`
+                  : ''}
+              </div>
+              <div class="review-comments-wrap">
+                ${matched.length === 0
+                  ? `<div class="review-empty">
+                       이 책에 대한 한줄평이 아직 없습니다 🌱
+                     </div>`
+                  : `<div style="font-size:0.78rem;color:#a0856e;margin-bottom:10px;">
+                       총 ${matched.length}개의 한줄평
+                       <span class="review-count-badge">${matched.length}</span>
+                     </div>` +
+                    matched.map(r => {
+                      const d = new Date(r.created_at);
+                      const dateStr = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+                      return `
+                        <div class="review-comment-item">
+                          <div class="review-comment-name">🙋 ${esc(r.name)}</div>
+                          <div class="review-comment-text">${esc(r.review)}</div>
+                          ${r.question
+                            ? `<div class="review-comment-question">${esc(r.question)}</div>`
+                            : ''}
+                          <div class="review-comment-date">${dateStr}</div>
+                        </div>`;
+                    }).join('')
+                }
+              </div>
+            </div>`;
+        }).join('');
+      } else if (!currentSettings) {
+        historyBlocks = `<div class="no-info-banner">
+          <strong>📭 아직 등록된 도서 기록이 없습니다</strong>
+          관리자 페이지에서 지난 도서 기록을 추가해주세요.
+          <br/><a href="admin.html" style="color:#8b6340;font-weight:600;">
+          → 관리자 페이지 이동</a></div>`;
+      }
+
+      // 이번 달 블록 맨 위 + 지난 도서 아래
+      container.innerHTML = currentBookBlock + historyBlocks;
     }
 
     // ============================================================
