@@ -760,6 +760,12 @@
       document.getElementById('absentCount').textContent = absentCount;
       document.getElementById('noneCount').textContent   = noneCount;
 
+      // 참석인원 요약 업데이트
+      const memberCountEl = document.getElementById('dynamicMemberCount');
+      if (memberCountEl) {
+          memberCountEl.textContent = `참석 ${attendCount}명 / 전체 ${members.length}명`;
+      }
+
       // 카드 렌더링
       grid.innerHTML = members.map(m => {
         const status = attMap[m.id]; // true=참석, false=불참, undefined=미정
