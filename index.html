@@ -572,7 +572,7 @@
         password: password, // <-- 이 값이 null이 아님을 위에서 검증함
         review: review,
         question: question || null,
-        book_id: currentSettings.id
+        book_id: currentSettings.book_id
       };
 
       const { error } = await db.from('comments').insert([insertData]);
