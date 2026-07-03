@@ -416,7 +416,27 @@
         loadReviewsByBook(); // 매번 최신 데이터 로드
       }
     }
-
+    // 스크립트 내부에 추가할 함수
+    async function loadDashboardNotices() {
+      const { data, error } = await db
+        .from('notices')
+        .select('*')
+        .eq('is_pinned', true) // '상단 고정'으로 체크된 항목만 조회
+        .order('created_at', { ascending: false });
+    
+      if (!error && data && data.length > 0) {
+        const noticeCard = document.getElementById('noticeCard');
+        const noticeArea = document.getElementById('noticeArea');
+        
+        noticeCard.style.display = 'block'; // 카드 표시
+        noticeArea.innerHTML = data.map(n => `
+          <div style="padding: 12px; background: #fff8f0; border-left: 4px solid #8b6340; border-radius: 4px; margin-bottom: 8px;">
+            <div style="font-weight: 700; color: #5c3d2e; margin-bottom: 4px;">${esc(n.title)}</div>
+            <div style="font-size: 0.88rem; color: #3d2b1f; white-space: pre-wrap;">${esc(n.content)}</div>
+          </div>
+        `).join('');
+      }
+    }    
     // ============================================================
     // 📋 이번 달 설정 불러오기
     // ✅ settings.id = 현재 진행 중인 book_id (탭1↔탭3 연동 핵심 키)
