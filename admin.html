@@ -6,17 +6,12 @@
   <title>⚙️ 독서모임 관리자</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ===== 기본 초기화 ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      color: #e0d8d0;
-      padding: 20px 16px 80px;
+      min-height: 100vh; color: #e0d8d0; padding: 20px 16px 80px;
     }
-
-    /* ===== 헤더 ===== */
     .admin-header {
       max-width: 800px; margin: 0 auto 24px;
       display: flex; align-items: center; justify-content: space-between;
@@ -25,20 +20,16 @@
     .admin-header h1 { font-size: 1.4rem; color: #f5d9a8; letter-spacing: 1px; }
     .back-btn {
       text-decoration: none; color: rgba(245,217,168,0.7);
-      font-size: 0.82rem;
-      border: 1px solid rgba(245,217,168,0.3);
+      font-size: 0.82rem; border: 1px solid rgba(245,217,168,0.3);
       padding: 6px 14px; border-radius: 20px; transition: all 0.2s;
     }
     .back-btn:hover { color: #f5d9a8; border-color: rgba(245,217,168,0.7); }
-
-    /* ===== 탭 네비게이션 ===== */
     .tab-nav {
       max-width: 800px; margin: 0 auto 20px;
       display: flex; gap: 6px; flex-wrap: wrap;
     }
     .tab-btn {
-      padding: 8px 16px;
-      background: rgba(255,255,255,0.06);
+      padding: 8px 16px; background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: 20px; color: rgba(224,216,208,0.6);
       font-size: 0.85rem; cursor: pointer;
@@ -50,12 +41,8 @@
       border-color: rgba(245,217,168,0.5);
       color: #f5d9a8; font-weight: 600;
     }
-
-    /* ===== 탭 콘텐츠 ===== */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
-    /* ===== 카드 ===== */
     .card {
       max-width: 800px; margin: 0 auto 20px;
       background: rgba(255,255,255,0.05);
@@ -69,8 +56,6 @@
       border-bottom: 1px solid rgba(245,217,168,0.2);
       display: flex; align-items: center; gap: 8px;
     }
-
-    /* ===== 비밀번호 화면 ===== */
     #pwScreen {
       max-width: 400px; margin: 80px auto 0;
       background: rgba(255,255,255,0.06);
@@ -95,21 +80,12 @@
       width: 100%; padding: 12px;
       background: linear-gradient(135deg, #c4902a, #f5d9a8);
       color: #1a1a2e; border: none; border-radius: 10px;
-      font-size: 1rem; font-weight: 700; cursor: pointer;
-      font-family: inherit;
+      font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
     }
     #pwLoginBtn:hover { opacity: 0.9; }
     #pwError { color: #ff7675; font-size: 0.85rem; margin-top: 10px; }
-
-    /* ===== 관리자 콘텐츠 ===== */
     #adminContent { display: none; }
-
-    /* ===== 폼 공통 ===== */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
     .form-row { display: flex; flex-direction: column; gap: 5px; }
     .form-row.span2 { grid-column: 1 / -1; }
@@ -120,35 +96,25 @@
     .form-row input,
     .form-row textarea,
     .form-row select {
-      padding: 9px 13px;
-      background: rgba(255,255,255,0.08);
+      padding: 9px 13px; background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.18);
       border-radius: 10px; color: #e0d8d0;
       font-size: 0.9rem; font-family: inherit;
       resize: vertical; transition: border-color 0.2s;
     }
     .form-row select {
-      cursor: pointer;
-      appearance: none;
+      cursor: pointer; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f5d9a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-      padding-right: 32px;
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
     }
-    .form-row select option {
-      background: #1a1a2e;
-      color: #e0d8d0;
-    }
+    .form-row select option { background: #1a1a2e; color: #e0d8d0; }
     .form-row input:focus,
     .form-row textarea:focus,
     .form-row select:focus {
-      outline: none; border-color: #f5d9a8;
-      background: rgba(255,255,255,0.12);
+      outline: none; border-color: #f5d9a8; background: rgba(255,255,255,0.12);
     }
     .form-row input::placeholder,
     .form-row textarea::placeholder { color: rgba(224,216,208,0.3); }
-
-    /* ===== 버튼 공통 ===== */
     .btn {
       padding: 10px 20px; border: none; border-radius: 10px;
       font-size: 0.88rem; font-weight: 600;
@@ -159,378 +125,218 @@
     .btn:hover { opacity: 0.88; }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary {
-      background: linear-gradient(135deg, #c4902a, #f5d9a8);
-      color: #1a1a2e;
-    }
-    .btn-danger {
-      background: rgba(231,76,60,0.2); color: #ff7675;
-      border: 1px solid rgba(231,76,60,0.3);
-    }
-    .btn-secondary {
-      background: rgba(255,255,255,0.08); color: rgba(224,216,208,0.7);
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    /* ★ 이번 달 지정 버튼 */
+    .btn-primary { background: linear-gradient(135deg, #c4902a, #f5d9a8); color: #1a1a2e; }
+    .btn-danger  { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: rgba(224,216,208,0.7); border: 1px solid rgba(255,255,255,0.15); }
+    .btn-warning { background: rgba(243,156,18,0.2); color: #f39c12; border: 1px solid rgba(243,156,18,0.3); }
     .btn-set-current {
       background: rgba(245,217,168,0.12); color: #f5d9a8;
       border: 1px solid rgba(245,217,168,0.35);
       font-size: 0.78rem; padding: 6px 12px;
     }
-    .btn-set-current:hover {
-      background: rgba(245,217,168,0.22);
-      border-color: rgba(245,217,168,0.6);
-    }
-
-    /* ===== 저장 버튼 영역 ===== */
+    .btn-set-current:hover { background: rgba(245,217,168,0.22); border-color: rgba(245,217,168,0.6); }
     .save-bar {
       max-width: 800px; margin: 0 auto 12px;
       display: flex; gap: 10px; align-items: center;
     }
-    .save-bar .btn-primary {
-      flex: 1; justify-content: center;
-      padding: 14px; font-size: 1rem;
-    }
-
-    /* ===== 결과 메시지 ===== */
+    .save-bar .btn-primary { flex: 1; justify-content: center; padding: 14px; font-size: 1rem; }
     .msg-box {
       text-align: center; font-size: 0.9rem;
-      padding: 11px; border-radius: 10px; display: none;
-      margin-top: 10px;
+      padding: 11px; border-radius: 10px; display: none; margin-top: 10px;
     }
-    .msg-global {
-      max-width: 800px; margin: 0 auto 16px;
-    }
-    .msg-box.success {
-      background: rgba(39,174,96,0.2); color: #55efc4;
-      border: 1px solid rgba(39,174,96,0.3);
-    }
-    .msg-box.error {
-      background: rgba(231,76,60,0.2); color: #ff7675;
-      border: 1px solid rgba(231,76,60,0.3);
-    }
-
-    /* ===== 통계 카드 ===== */
-    .stat-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-    }
+    .msg-global { max-width: 800px; margin: 0 auto 16px; }
+    .msg-box.success { background: rgba(39,174,96,0.2); color: #55efc4; border: 1px solid rgba(39,174,96,0.3); }
+    .msg-box.error   { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     @media (max-width: 600px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
     .stat-item {
-      background: rgba(245,217,168,0.07);
-      border: 1px solid rgba(245,217,168,0.14);
+      background: rgba(245,217,168,0.07); border: 1px solid rgba(245,217,168,0.14);
       border-radius: 14px; padding: 16px; text-align: center;
     }
     .stat-value { font-size: 1.9rem; font-weight: 700; color: #f5d9a8; }
     .stat-label { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 4px; }
-
-    /* ===== 표지 미리보기 ===== */
-    .cover-row {
-      display: flex; align-items: flex-start;
-      gap: 16px; margin-top: 14px; flex-wrap: wrap;
-    }
+    .cover-row { display: flex; align-items: flex-start; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
     #coverPreviewAdmin {
-      width: 80px; height: 115px;
-      border-radius: 6px; object-fit: cover;
+      width: 80px; height: 115px; border-radius: 6px; object-fit: cover;
       box-shadow: 4px 4px 14px rgba(0,0,0,0.4); display: none;
     }
     #coverPreviewPlaceholder {
-      width: 80px; height: 115px;
-      background: rgba(255,255,255,0.07);
-      border: 2px dashed rgba(245,217,168,0.25);
-      border-radius: 6px;
+      width: 80px; height: 115px; background: rgba(255,255,255,0.07);
+      border: 2px dashed rgba(245,217,168,0.25); border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.8rem; color: rgba(245,217,168,0.35);
     }
-    .cover-hint {
-      flex: 1; font-size: 0.75rem;
-      color: rgba(224,216,208,0.4); line-height: 1.8;
-    }
-
-    /* ===== 연계 배지 (★ 신규) ===== */
+    .cover-hint { flex: 1; font-size: 0.75rem; color: rgba(224,216,208,0.4); line-height: 1.8; }
     .link-badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(85,239,196,0.12);
-      border: 1px solid rgba(85,239,196,0.3);
+      background: rgba(85,239,196,0.12); border: 1px solid rgba(85,239,196,0.3);
       border-radius: 20px; padding: 5px 12px;
-      font-size: 0.78rem; color: #55efc4;
-      margin-bottom: 14px;
+      font-size: 0.78rem; color: #55efc4; margin-bottom: 14px;
     }
     .link-badge .unlink-btn {
       background: none; border: none; cursor: pointer;
-      color: rgba(85,239,196,0.5); font-size: 0.75rem;
-      padding: 0; margin-left: 4px; transition: color 0.2s;
+      color: rgba(85,239,196,0.5); font-size: 0.75rem; padding: 0; margin-left: 4px;
     }
     .link-badge .unlink-btn:hover { color: #ff7675; }
-
-    /* ===== 히스토리 선택 드롭다운 박스 (★ 신규) ===== */
     .select-book-box {
-      background: rgba(245,217,168,0.05);
-      border: 1px solid rgba(245,217,168,0.18);
-      border-radius: 14px; padding: 16px;
-      margin-bottom: 18px;
+      background: rgba(245,217,168,0.05); border: 1px solid rgba(245,217,168,0.18);
+      border-radius: 14px; padding: 16px; margin-bottom: 18px;
     }
-    .select-book-box .box-title {
-      font-size: 0.8rem; font-weight: 600;
-      color: #f5d9a8; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .select-book-box .box-desc {
-      font-size: 0.75rem; color: rgba(224,216,208,0.4);
-      margin-bottom: 12px; line-height: 1.6;
-    }
-    .select-book-row {
-      display: flex; gap: 8px; align-items: center;
-    }
+    .select-book-box .box-title { font-size: 0.8rem; font-weight: 600; color: #f5d9a8; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .select-book-box .box-desc { font-size: 0.75rem; color: rgba(224,216,208,0.4); margin-bottom: 12px; line-height: 1.6; }
+    .select-book-row { display: flex; gap: 8px; align-items: center; }
     .select-book-row select {
-      flex: 1;
-      padding: 9px 32px 9px 13px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 10px; color: #e0d8d0;
-      font-size: 0.88rem; font-family: inherit;
+      flex: 1; padding: 9px 32px 9px 13px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px; color: #e0d8d0; font-size: 0.88rem; font-family: inherit;
       cursor: pointer; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f5d9a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
+      background-repeat: no-repeat; background-position: right 12px center;
     }
-    .select-book-row select:focus {
-      outline: none; border-color: #f5d9a8;
-    }
-    .select-book-row select option {
-      background: #1a1a2e; color: #e0d8d0;
-    }
+    .select-book-row select:focus { outline: none; border-color: #f5d9a8; }
+    .select-book-row select option { background: #1a1a2e; color: #e0d8d0; }
     .divider-or {
-      text-align: center; font-size: 0.78rem;
-      color: rgba(224,216,208,0.3);
+      text-align: center; font-size: 0.78rem; color: rgba(224,216,208,0.3);
       margin: 14px 0; position: relative;
     }
     .divider-or::before, .divider-or::after {
       content: ''; position: absolute; top: 50%;
-      width: 42%; height: 1px;
-      background: rgba(255,255,255,0.1);
+      width: 42%; height: 1px; background: rgba(255,255,255,0.1);
     }
     .divider-or::before { left: 0; }
     .divider-or::after  { right: 0; }
-
-    /* ===== 현재 연계된 도서 미리보기 (★ 신규) ===== */
     .linked-book-preview {
-      display: none;
-      background: rgba(85,239,196,0.06);
-      border: 1px solid rgba(85,239,196,0.2);
-      border-radius: 12px; padding: 12px 14px;
-      margin-bottom: 14px;
+      display: none; background: rgba(85,239,196,0.06);
+      border: 1px solid rgba(85,239,196,0.2); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 14px;
       flex-direction: row; align-items: center; gap: 12px;
     }
-    .linked-book-preview img {
-      width: 40px; height: 57px;
-      border-radius: 4px; object-fit: cover;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0;
-    }
-    .linked-book-preview .placeholder {
-      width: 40px; height: 57px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 4px; flex-shrink: 0;
-      display: flex; align-items: center;
-      justify-content: center; font-size: 1rem;
-      color: rgba(245,217,168,0.3);
-    }
-    .linked-book-preview .info .title {
-      font-size: 0.88rem; font-weight: 600; color: #55efc4;
-    }
-    .linked-book-preview .info .sub {
-      font-size: 0.75rem; color: rgba(224,216,208,0.5);
-      margin-top: 3px;
-    }
-    .linked-book-preview .info .id-badge {
-      display: inline-block; font-size: 0.68rem;
-      background: rgba(85,239,196,0.15); color: #55efc4;
-      border-radius: 99px; padding: 1px 8px; margin-top: 4px;
-    }
-
-    /* ===== 데이터 목록 공통 ===== */
+    .linked-book-preview img { width: 40px; height: 57px; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; }
+    .linked-book-preview .placeholder { width: 40px; height: 57px; background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: rgba(245,217,168,0.3); }
+    .linked-book-preview .info .title { font-size: 0.88rem; font-weight: 600; color: #55efc4; }
+    .linked-book-preview .info .sub   { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 3px; }
+    .linked-book-preview .info .id-badge { display: inline-block; font-size: 0.68rem; background: rgba(85,239,196,0.15); color: #55efc4; border-radius: 99px; padding: 1px 8px; margin-top: 4px; }
     .data-list { display: flex; flex-direction: column; gap: 10px; }
     .data-item {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
       border-radius: 12px; padding: 14px 16px;
-      display: flex; align-items: flex-start; gap: 12px;
-      transition: background 0.2s;
+      display: flex; align-items: flex-start; gap: 12px; transition: background 0.2s;
     }
     .data-item:hover { background: rgba(255,255,255,0.07); }
-
-    /* ★ 이번 달 지정된 도서 하이라이트 */
-    .data-item.is-current {
-      border-color: rgba(245,217,168,0.45);
-      background: rgba(245,217,168,0.07);
-    }
-
+    .data-item.is-current { border-color: rgba(245,217,168,0.45); background: rgba(245,217,168,0.07); }
     .data-item-body { flex: 1; min-width: 0; }
-    .data-item-title {
-      font-size: 0.9rem; font-weight: 600; color: #f5d9a8;
-      margin-bottom: 3px;
-    }
-    .data-item-sub {
-      font-size: 0.78rem; color: rgba(224,216,208,0.55);
-      margin-bottom: 2px; line-height: 1.5;
-    }
-    .data-item-date { font-size: 0.7rem; color: rgba(224,216,208,0.3); }
+    .data-item-title { font-size: 0.9rem; font-weight: 600; color: #f5d9a8; margin-bottom: 3px; }
+    .data-item-sub   { font-size: 0.78rem; color: rgba(224,216,208,0.55); margin-bottom: 2px; line-height: 1.5; }
+    .data-item-date  { font-size: 0.7rem; color: rgba(224,216,208,0.3); }
     .data-item-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
-
-    /* 책 표지 썸네일 */
-    .book-thumb {
-      width: 44px; height: 62px;
-      border-radius: 4px; object-fit: cover;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0;
-    }
-    .book-thumb-placeholder {
-      width: 44px; height: 62px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 4px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; color: rgba(245,217,168,0.3);
-    }
-
-    /* ===== 핀 배지 ===== */
-    .pin-badge {
-      display: inline-block;
-      background: rgba(245,217,168,0.18); color: #f5d9a8;
-      font-size: 0.68rem; padding: 2px 7px;
-      border-radius: 99px; margin-left: 6px; font-weight: 600;
-    }
-
-    /* ===== 이번 달 배지 (★ 신규) ===== */
-    .current-badge {
-      display: inline-block;
-      background: rgba(245,217,168,0.22); color: #f5d9a8;
-      font-size: 0.68rem; padding: 2px 8px;
-      border-radius: 99px; margin-left: 6px; font-weight: 700;
-      border: 1px solid rgba(245,217,168,0.4);
-    }
-
-    /* ===== 공지 내용 ===== */
-    .notice-content {
-      font-size: 0.82rem; color: rgba(224,216,208,0.6);
-      line-height: 1.6; margin-top: 4px; white-space: pre-wrap;
-    }
-
-    /* ===== 스크롤 영역 ===== */
-    .scroll-area {
-      max-height: 460px; overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(245,217,168,0.25) transparent;
-    }
-
-    /* ===== 로딩 스피너 ===== */
-    .spinner-inline {
-      display: inline-block; width: 14px; height: 14px;
-      border: 2px solid rgba(26,26,46,0.3);
-      border-top-color: #1a1a2e; border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle; margin-right: 5px;
-    }
+    .book-thumb { width: 44px; height: 62px; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; }
+    .book-thumb-placeholder { width: 44px; height: 62px; background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: rgba(245,217,168,0.3); }
+    .pin-badge     { display: inline-block; background: rgba(245,217,168,0.18); color: #f5d9a8; font-size: 0.68rem; padding: 2px 7px; border-radius: 99px; margin-left: 6px; font-weight: 600; }
+    .current-badge { display: inline-block; background: rgba(245,217,168,0.22); color: #f5d9a8; font-size: 0.68rem; padding: 2px 8px; border-radius: 99px; margin-left: 6px; font-weight: 700; border: 1px solid rgba(245,217,168,0.4); }
+    .notice-content { font-size: 0.82rem; color: rgba(224,216,208,0.6); line-height: 1.6; margin-top: 4px; white-space: pre-wrap; }
+    .scroll-area { max-height: 460px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(245,217,168,0.25) transparent; }
+    .spinner-inline { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(26,26,46,0.3); border-top-color: #1a1a2e; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 32px 20px; color: rgba(224,216,208,0.3); font-size: 0.88rem; line-height: 2; }
+    .empty-icon  { font-size: 2rem; margin-bottom: 8px; }
+    .info-banner { background: rgba(245,217,168,0.07); border: 1px solid rgba(245,217,168,0.18); border-radius: 10px; padding: 11px 15px; font-size: 0.8rem; color: rgba(224,216,208,0.55); line-height: 1.7; margin-bottom: 16px; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: rgba(224,216,208,0.7); cursor: pointer; }
+    .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #f5d9a8; }
+    .count-badge { font-size: 0.78rem; color: rgba(224,216,208,0.35); font-weight: normal; margin-left: 6px; }
 
-    /* ===== 빈 상태 ===== */
-    .empty-state {
-      text-align: center; padding: 32px 20px;
-      color: rgba(224,216,208,0.3); font-size: 0.88rem; line-height: 2;
+    /* ========== 회원관리 탭 전용 스타일 (신규) ========== */
+    .member-table {
+      width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem;
     }
-    .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+    .member-table th {
+      background: rgba(245,217,168,0.15); color: #f5d9a8;
+      padding: 10px 12px; text-align: left; font-size: 0.78rem;
+      font-weight: 600; border-bottom: 1px solid rgba(245,217,168,0.2);
+    }
+    .member-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #e0d8d0; vertical-align: middle;
+    }
+    .member-table tr:last-child td { border-bottom: none; }
+    .member-table tr:hover td { background: rgba(255,255,255,0.04); }
+    .member-table .uid-cell {
+      font-size: 0.68rem; color: rgba(224,216,208,0.3);
+      font-family: monospace; max-width: 80px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .member-table .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+    .member-count-summary {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .m-badge {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.82rem; font-weight: 600;
+    }
+    .m-badge-total  { background: rgba(245,217,168,0.12); color: #f5d9a8; }
+    .m-badge-attend { background: rgba(85,239,196,0.12);  color: #55efc4; }
 
-    /* ===== 안내 배너 ===== */
-    .info-banner {
-      background: rgba(245,217,168,0.07);
-      border: 1px solid rgba(245,217,168,0.18);
-      border-radius: 10px; padding: 11px 15px;
-      font-size: 0.8rem; color: rgba(224,216,208,0.55);
-      line-height: 1.7; margin-bottom: 16px;
+    /* 수정 모달 */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 1000;
+      align-items: center; justify-content: center;
     }
-
-    /* ===== 체크박스 ===== */
-    .checkbox-row {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.85rem; color: rgba(224,216,208,0.7); cursor: pointer;
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #1e2d4a; border: 1px solid rgba(245,217,168,0.25);
+      border-radius: 16px; padding: 28px;
+      width: 92%; max-width: 460px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     }
-    .checkbox-row input[type="checkbox"] {
-      width: 16px; height: 16px;
-      cursor: pointer; accent-color: #f5d9a8;
-    }
-
-    /* ===== 배지 (도서 수 등) ===== */
-    .count-badge {
-      font-size: 0.78rem; color: rgba(224,216,208,0.35);
-      font-weight: normal; margin-left: 6px;
-    }
+    .modal-box h3 { color: #f5d9a8; font-size: 1rem; margin-bottom: 18px; }
+    .modal-box .form-row { margin-bottom: 12px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
   </style>
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- 🔐 비밀번호 화면                                              -->
-<!-- ============================================================ -->
+<!-- 비밀번호 화면 -->
 <div id="pwScreen">
   <div class="lock-icon">🔐</div>
   <h2>관리자 페이지</h2>
   <p>독서모임 관리자만 접근할 수 있습니다</p>
   <input type="password" id="pwInput" placeholder="비밀번호 입력"/>
   <button id="pwLoginBtn" onclick="checkPw()">로그인</button>
-  
+  <div id="pwError"></div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 🖥️ 관리자 콘텐츠                                              -->
-<!-- ============================================================ -->
+<!-- 관리자 콘텐츠 -->
 <div id="adminContent">
-
-  <!-- 헤더 -->
   <div class="admin-header">
     <h1>⚙️ 독서모임 관리자</h1>
     <a href="index.html" class="back-btn">← 메인으로</a>
   </div>
 
-  <!-- 탭 네비게이션 -->
+  <!-- 탭 네비게이션 (회원관리 탭 추가) -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('dashboard', this)">📊 대시보드</button>
-    <button class="tab-btn" onclick="switchTab('current', this)">📌 이번 달 설정</button>
-    <button class="tab-btn" onclick="switchTab('books', this)">📚 도서 히스토리</button>
-    <button class="tab-btn" onclick="switchTab('notices', this)">📢 공지사항</button>
-    <button class="tab-btn" onclick="switchTab('comments', this)">💬 한줄평 관리</button>
+    <button class="tab-btn" onclick="switchTab('current',   this)">📌 이번 달 설정</button>
+    <button class="tab-btn" onclick="switchTab('books',     this)">📚 도서 히스토리</button>
+    <button class="tab-btn" onclick="switchTab('notices',   this)">📢 공지사항</button>
+    <button class="tab-btn" onclick="switchTab('comments',  this)">💬 한줄평 관리</button>
+    <button class="tab-btn" onclick="switchTab('members',   this)">👥 회원 관리</button>
   </div>
 
-  <!-- ==================== 탭1: 대시보드 ==================== -->
+  <!-- ===== 탭1: 대시보드 ===== -->
   <div class="tab-content active" id="tab-dashboard">
     <div class="card">
       <h2>📊 현황 통계</h2>
       <div class="stat-grid">
-        <div class="stat-item">
-          <div class="stat-value" id="statComments">-</div>
-          <div class="stat-label">총 한줄평</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="statBooks">-</div>
-          <div class="stat-label">역대 선정도서</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="statNotices">-</div>
-          <div class="stat-label">공지사항</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="statStatus">-</div>
-          <div class="stat-label">이번 달 등록</div>
-        </div>
+        <div class="stat-item"><div class="stat-value" id="statComments">-</div><div class="stat-label">총 한줄평</div></div>
+        <div class="stat-item"><div class="stat-value" id="statBooks">-</div><div class="stat-label">역대 선정도서</div></div>
+        <div class="stat-item"><div class="stat-value" id="statNotices">-</div><div class="stat-label">공지사항</div></div>
+        <div class="stat-item"><div class="stat-value" id="statMembers">-</div><div class="stat-label">총 회원 수</div></div>
       </div>
     </div>
-
-    <!-- ★ 신규: 이번 달 연계 도서 정보 카드 -->
     <div class="card">
       <h2>📌 이번 달 선정도서 연계 현황</h2>
-      <div id="dashCurrentBook">
-        <div class="empty-state">
-          <div class="empty-icon">🔗</div>불러오는 중...
-        </div>
-      </div>
+      <div id="dashCurrentBook"><div class="empty-state"><div class="empty-icon">🔗</div>불러오는 중...</div></div>
     </div>
-
     <div class="card">
       <h2>💬 최근 한줄평 (최신 5개)</h2>
       <div class="data-list" id="recentComments">
@@ -539,257 +345,213 @@
     </div>
   </div>
 
-  <!-- ==================== 탭2: 이번 달 설정 ==================== -->
+  <!-- ===== 탭2: 이번 달 설정 ===== -->
   <div class="tab-content" id="tab-current">
-
-    <!-- ★ 신규: 히스토리 연계 선택 박스 -->
     <div class="card">
       <h2>🔗 도서 히스토리 연계</h2>
-
-      <!-- 현재 연계된 도서 미리보기 -->
       <div class="linked-book-preview" id="linkedBookPreview">
         <div class="placeholder" id="linkedBookThumbPlaceholder">📚</div>
-        
+        <img id="linkedBookThumb" src="" alt="" style="display:none;width:40px;height:57px;border-radius:4px;object-fit:cover;"/>
         <div class="info">
-          <div class="title" id="linkedBookTitle">-</div>
-          <div class="sub"  id="linkedBookSub">-</div>
+          <div class="title"  id="linkedBookTitle">-</div>
+          <div class="sub"    id="linkedBookSub">-</div>
           <span class="id-badge" id="linkedBookIdBadge">#-</span>
         </div>
       </div>
-
       <div class="select-book-box">
         <div class="box-title">📚 히스토리에서 도서 불러오기</div>
-        <div class="box-desc">
-          도서 히스토리에 등록된 책을 선택하면 아래 폼이 자동으로 채워집니다.<br/>
-          새 도서라면 히스토리에 먼저 등록한 뒤 여기서 연계하세요.
-        </div>
+        <div class="box-desc">도서 히스토리에 등록된 책을 선택하면 아래 폼이 자동으로 채워집니다.</div>
         <div class="select-book-row">
-          <!-- ★ 히스토리 드롭다운 -->
           <select id="historyBookSelect" onchange="applyHistoryBook()">
             <option value="">── 도서를 선택하세요 ──</option>
           </select>
-          <button class="btn btn-secondary"
-            onclick="refreshHistorySelect()" title="목록 새로고침">🔄</button>
+          <button class="btn btn-secondary" onclick="refreshHistorySelect()" title="목록 새로고침">🔄</button>
         </div>
       </div>
-
       <div class="divider-or">또는 직접 입력</div>
     </div>
-
     <div class="card">
       <h2>📅 이번 달 모임 일정</h2>
       <div class="form-grid">
-        <div class="form-row">
-          <label>📆 모임 날짜</label>
-          <input type="text" id="scheduleDate" placeholder="예: 2026년 7월 3일(금)"/>
-        </div>
-        <div class="form-row">
-          <label>🕑 시간</label>
-          <input type="text" id="scheduleTime" placeholder="예: 오전 10:00 ~ 12:00"/>
-        </div>
-        <div class="form-row">
-          <label>📍 장소</label>
-          <input type="text" id="schedulePlace" placeholder="예: 경인교육대학교 평생학습관 열린문화공간"/>
-        </div>
-        <div class="form-row">
-          <label>👥 예상 참석인원</label>
-          <input type="text" id="scheduleMembers" placeholder="예: 5명"/>
-        </div>
+        <div class="form-row"><label>📆 모임 날짜</label><input type="text" id="scheduleDate" placeholder="예: 2026년 7월 3일(금)"/></div>
+        <div class="form-row"><label>🕑 시간</label><input type="text" id="scheduleTime" placeholder="예: 오전 10:00 ~ 12:00"/></div>
+        <div class="form-row"><label>📍 장소</label><input type="text" id="schedulePlace" placeholder="예: 경인교육대학교 평생학습관"/></div>
+        <div class="form-row"><label>👥 예상 참석인원</label><input type="text" id="scheduleMembers" placeholder="예: 5명"/></div>
       </div>
     </div>
-
     <div class="card">
       <h2>📖 이번 달 선정도서</h2>
-
-      <!-- 저장된 연계 ID 표시 -->
       <div id="currentLinkBadge" style="display:none;">
         <div class="link-badge">
           🔗 도서 히스토리 <span id="currentLinkId">#-</span>번과 연계됨
-          <button class="unlink-btn" onclick="unlinkHistory()" title="연계 해제">✕ 연계 해제</button>
+          <button class="unlink-btn" onclick="unlinkHistory()">✕ 연계 해제</button>
         </div>
       </div>
-
       <div class="form-grid">
-        <div class="form-row">
-          <label>📚 책 제목</label>
-          <input type="text" id="bookTitle" placeholder="예: 채식주의자"/>
-        </div>
-        <div class="form-row">
-          <label>✍️ 저자</label>
-          <input type="text" id="bookAuthor" placeholder="예: 한강"/>
-        </div>
-        <div class="form-row">
-          <label>🏢 출판사 · 출판연도</label>
-          <input type="text" id="bookPublisher" placeholder="예: 창비 · 2007년"/>
-        </div>
-        <div class="form-row">
-          <label>🖼️ 책 표지 이미지 URL</label>
-          <input type="text" id="bookCoverUrl"
-            placeholder="https://..."
-            oninput="previewCover()"/>
-        </div>
-        <div class="form-row span2">
-          <label>📝 책 소개</label>
-          <textarea id="bookDesc" rows="4"
-            placeholder="독자들에게 전달할 책 소개를 작성해주세요..."></textarea>
-        </div>
+        <div class="form-row"><label>📚 책 제목</label><input type="text" id="bookTitle" placeholder="예: 채식주의자"/></div>
+        <div class="form-row"><label>✍️ 저자</label><input type="text" id="bookAuthor" placeholder="예: 한강"/></div>
+        <div class="form-row"><label>🏢 출판사 · 출판연도</label><input type="text" id="bookPublisher" placeholder="예: 창비 · 2007년"/></div>
+        <div class="form-row"><label>🖼️ 표지 이미지 URL</label><input type="text" id="bookCoverUrl" placeholder="https://..." oninput="previewCover()"/></div>
+        <div class="form-row span2"><label>📝 책 소개</label><textarea id="bookDesc" rows="4" placeholder="독자들에게 전달할 책 소개를 작성해주세요..."></textarea></div>
       </div>
       <div class="cover-row">
-        <div>
-          <div id="coverPreviewPlaceholder">📚</div>
-          
-        </div>
-        <p class="cover-hint">
-          💡 <strong style="color:#f5d9a8;">책 표지 URL 찾는 법</strong><br/>
-          ① 네이버책 / 교보문고에서 책 검색<br/>
-          ② 표지 이미지 위에서 우클릭<br/>
-          ③ "이미지 주소 복사" 선택<br/>
-          ④ 위 URL 칸에 Ctrl+V 붙여넣기
-        </p>
+        <div><div id="coverPreviewPlaceholder">📚</div><img id="coverPreviewAdmin" src="" alt=""/></div>
+        <p class="cover-hint">💡 <strong style="color:#f5d9a8;">책 표지 URL 찾는 법</strong><br/>① 네이버책 / 교보문고에서 책 검색<br/>② 표지 이미지 위에서 우클릭<br/>③ "이미지 주소 복사" 선택<br/>④ 위 URL 칸에 Ctrl+V 붙여넣기</p>
       </div>
     </div>
-
     <div class="save-bar">
-      <button class="btn btn-primary" id="saveCurrentBtn"
-        onclick="saveCurrentSettings()">
-        💾 이번 달 정보 저장하기
-      </button>
+      <button class="btn btn-primary" id="saveCurrentBtn" onclick="saveCurrentSettings()">💾 이번 달 정보 저장하기</button>
     </div>
-    
+    <div class="msg-box msg-global" id="saveMsgCurrent"></div>
   </div>
 
-  <!-- ==================== 탭3: 도서 히스토리 ==================== -->
+  <!-- ===== 탭3: 도서 히스토리 ===== -->
   <div class="tab-content" id="tab-books">
     <div class="card">
       <h2>➕ 새 도서 기록 추가</h2>
-      <div class="info-banner">
-        📌 역대 선정도서 목록을 추가하면 독서 히스토리로 관리됩니다.<br/>
-        추가 후 <strong style="color:#f5d9a8;">이번 달 설정 탭</strong>에서 연계할 수 있습니다.
-      </div>
+      <div class="info-banner">📌 역대 선정도서 목록을 추가하면 독서 히스토리로 관리됩니다.</div>
       <div class="form-grid">
-        <div class="form-row">
-          <label>📚 책 제목 *</label>
-          <input type="text" id="newBookTitle" placeholder="예: 채식주의자"/>
-        </div>
-        <div class="form-row">
-          <label>✍️ 저자 *</label>
-          <input type="text" id="newBookAuthor" placeholder="예: 한강"/>
-        </div>
-        <div class="form-row">
-          <label>🏢 출판사</label>
-          <input type="text" id="newBookPublisher" placeholder="예: 창비"/>
-        </div>
-        <div class="form-row">
-          <label>📅 모임 날짜</label>
-          <input type="text" id="newBookMeetingDate" placeholder="예: 2026년 6월"/>
-        </div>
-        <div class="form-row">
-          <label>🖼️ 표지 이미지 URL</label>
-          <input type="text" id="newBookCoverUrl" placeholder="https://..."/>
-        </div>
-        <div class="form-row span2">
-          <label>📝 책 소개 (선택)</label>
-          <textarea id="newBookDesc" rows="3"
-            placeholder="간략한 책 소개..."></textarea>
-        </div>
+        <div class="form-row"><label>📚 책 제목 *</label><input type="text" id="newBookTitle" placeholder="예: 채식주의자"/></div>
+        <div class="form-row"><label>✍️ 저자 *</label><input type="text" id="newBookAuthor" placeholder="예: 한강"/></div>
+        <div class="form-row"><label>🏢 출판사</label><input type="text" id="newBookPublisher" placeholder="예: 창비"/></div>
+        <div class="form-row"><label>📅 모임 날짜</label><input type="text" id="newBookMeetingDate" placeholder="예: 2026년 6월"/></div>
+        <div class="form-row"><label>🖼️ 표지 이미지 URL</label><input type="text" id="newBookCoverUrl" placeholder="https://..."/></div>
+        <div class="form-row span2"><label>📝 책 소개 (선택)</label><textarea id="newBookDesc" rows="3" placeholder="간략한 책 소개..."></textarea></div>
       </div>
-      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-primary" id="addBookBtn" onclick="addBook()">
-          ➕ 도서 추가
-        </button>
-        <button class="btn btn-secondary" onclick="clearBookForm()">
-          🔄 초기화
-        </button>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="addBookBtn" onclick="addBook()">➕ 도서 추가</button>
+        <button class="btn btn-secondary" onclick="clearBookForm()">🔄 초기화</button>
       </div>
-      
+      <div class="msg-box" id="msgBook"></div>
     </div>
-
     <div class="card">
-      <h2>
-        📚 역대 선정도서 목록
-        <span class="count-badge" id="bookCountBadge"></span>
-      </h2>
+      <h2>📚 역대 선정도서 목록<span class="count-badge" id="bookCountBadge"></span></h2>
       <div class="scroll-area">
         <div class="data-list" id="bookHistoryList">
-          <div class="empty-state">
-            <div class="empty-icon">📚</div>불러오는 중...
-          </div>
+          <div class="empty-state"><div class="empty-icon">📚</div>불러오는 중...</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 탭4: 공지사항 ==================== -->
+  <!-- ===== 탭4: 공지사항 ===== -->
   <div class="tab-content" id="tab-notices">
     <div class="card">
       <h2>➕ 새 공지사항 작성</h2>
       <div class="form-grid">
-        <div class="form-row span2">
-          <label>📢 공지 제목 *</label>
-          <input type="text" id="newNoticeTitle"
-            placeholder="예: 7월 모임 장소 변경 안내"/>
-        </div>
-        <div class="form-row span2">
-          <label>📝 공지 내용 *</label>
-          <textarea id="newNoticeContent" rows="4"
-            placeholder="공지 내용을 작성해주세요..."></textarea>
-        </div>
-        <div class="form-row span2">
-          <label class="checkbox-row">
-            <input type="checkbox" id="newNoticePinned"/>
-            📌 상단 고정 (중요 공지)
-          </label>
-        </div>
+        <div class="form-row span2"><label>📢 공지 제목 *</label><input type="text" id="newNoticeTitle" placeholder="예: 7월 모임 장소 변경 안내"/></div>
+        <div class="form-row span2"><label>📝 공지 내용 *</label><textarea id="newNoticeContent" rows="4" placeholder="공지 내용을 작성해주세요..."></textarea></div>
+        <div class="form-row span2"><label class="checkbox-row"><input type="checkbox" id="newNoticePinned"/> 📌 상단 고정 (중요 공지)</label></div>
       </div>
-      <div style="margin-top:16px; display:flex; gap:10px;">
-        <button class="btn btn-primary" id="addNoticeBtn" onclick="addNotice()">
-          📢 공지 등록
-        </button>
-        <button class="btn btn-secondary" onclick="clearNoticeForm()">
-          🔄 초기화
-        </button>
+      <div style="margin-top:16px;display:flex;gap:10px;">
+        <button class="btn btn-primary" id="addNoticeBtn" onclick="addNotice()">📢 공지 등록</button>
+        <button class="btn btn-secondary" onclick="clearNoticeForm()">🔄 초기화</button>
       </div>
-      
+      <div class="msg-box" id="msgNotice"></div>
     </div>
-
     <div class="card">
-      <h2>
-        📋 등록된 공지사항
-        <span class="count-badge" id="noticeCountBadge"></span>
-      </h2>
+      <h2>📋 등록된 공지사항<span class="count-badge" id="noticeCountBadge"></span></h2>
       <div class="scroll-area">
         <div class="data-list" id="noticeList">
-          <div class="empty-state">
-            <div class="empty-icon">📢</div>불러오는 중...
-          </div>
+          <div class="empty-state"><div class="empty-icon">📢</div>불러오는 중...</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 탭5: 한줄평 관리 ==================== -->
+  <!-- ===== 탭5: 한줄평 관리 ===== -->
   <div class="tab-content" id="tab-comments">
     <div class="card">
-      <h2>
-        💬 한줄평 전체 관리
-        <span class="count-badge" id="commentCountBadge"></span>
-      </h2>
-      <div class="info-banner">
-        ⚠️ 삭제한 한줄평은 복구할 수 없습니다. 신중하게 삭제해주세요.
-      </div>
+      <h2>💬 한줄평 전체 관리<span class="count-badge" id="commentCountBadge"></span></h2>
+      <div class="info-banner">⚠️ 삭제한 한줄평은 복구할 수 없습니다. 신중하게 삭제해주세요.</div>
       <div class="scroll-area">
         <div class="data-list" id="allCommentsList">
-          <div class="empty-state">
-            <div class="empty-icon">💬</div>불러오는 중...
-          </div>
+          <div class="empty-state"><div class="empty-icon">💬</div>불러오는 중...</div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- ===== 탭6: 회원 관리 (신규) ===== -->
+  <div class="tab-content" id="tab-members">
+
+    <!-- 회원 추가 폼 -->
+    <div class="card">
+      <h2>➕ 회원 추가</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>🙋 이름 *</label>
+          <input type="text" id="mName" placeholder="예: 홍길동" maxlength="20"/>
+        </div>
+        <div class="form-row">
+          <label>📱 연락처</label>
+          <input type="text" id="mPhone" placeholder="예: 010-1234-5678" maxlength="20"/>
+        </div>
+        <div class="form-row">
+          <label>🏠 거주지</label>
+          <input type="text" id="mAddress" placeholder="예: 서울 강남구" maxlength="50"/>
+        </div>
+        <div class="form-row">
+          <label>📝 기타 메모</label>
+          <input type="text" id="mNotes" placeholder="예: 가입일, 특이사항 등" maxlength="100"/>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="addMemberBtn" onclick="addMember()">➕ 회원 추가</button>
+        <button class="btn btn-secondary" onclick="clearMemberForm()">🔄 초기화</button>
+      </div>
+      <div class="msg-box" id="msgMember"></div>
+    </div>
+
+    <!-- 회원 목록 -->
+    <div class="card">
+      <h2>👥 회원 목록<span class="count-badge" id="memberCountBadge"></span></h2>
+      <div class="member-count-summary">
+        <span class="m-badge m-badge-total">전체 <strong id="memberTotalCount">0</strong>명</span>
+      </div>
+      <div class="info-banner">
+        💡 카드를 클릭하면 이름 옆 고유 ID(UUID)를 확인할 수 있습니다.<br/>
+        이 ID는 <strong style="color:#f5d9a8;">attendance 테이블</strong>의 member_id와 자동 연결됩니다.
+      </div>
+      <div class="scroll-area" style="max-height:500px;">
+        <div id="memberList">
+          <div class="empty-state"><div class="empty-icon">👥</div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-members -->
 
 </div><!-- /#adminContent -->
 
-
+<!-- ===== 회원 수정 모달 ===== -->
+<div class="modal-overlay" id="editMemberModal">
+  <div class="modal-box">
+    <h3>✏️ 회원 정보 수정</h3>
+    <input type="hidden" id="editMemberId"/>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>🙋 이름 *</label>
+      <input type="text" id="editMemberName" placeholder="이름" maxlength="20"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>📱 연락처</label>
+      <input type="text" id="editMemberPhone" placeholder="연락처" maxlength="20"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>🏠 거주지</label>
+      <input type="text" id="editMemberAddress" placeholder="거주지" maxlength="50"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>📝 기타 메모</label>
+      <input type="text" id="editMemberNotes" placeholder="기타 메모" maxlength="100"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary"   onclick="saveMemberEdit()">💾 저장</button>
+      <button class="btn btn-secondary" onclick="closeEditModal()">취소</button>
+    </div>
+    <div class="msg-box" id="msgMemberEdit"></div>
+  </div>
+</div>
 <script>
   // ============================================================
   // ⚙️ 설정
@@ -801,7 +563,6 @@
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ★ 현재 연계된 book_id를 메모리에 보관
   let currentLinkedHistoryId = null;
 
   // ============================================================
@@ -824,736 +585,565 @@
   // 🚀 초기 데이터 로드
   // ============================================================
   function initAdmin() {
-    loadCurrentSettings();   // settings + linkedId 로드
+    loadCurrentSettings();
     loadDashboard();
     loadBookHistory();
-    loadHistorySelect();     // ★ 드롭다운 채우기
+    loadHistorySelect();
     loadNotices();
     loadAllComments();
+    loadMembers(); // ★ 회원 목록 초기 로드
   }
-    // ============================================================
-  // 🗂️ 탭 전환
-  // ============================================================
-  function switchTab(tabName, el) {
-    document.querySelectorAll('.tab-btn')
-      .forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content')
-      .forEach(c => c.classList.remove('active'));
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-    el.classList.add('active');
-
-    // ★ 이번 달 설정 탭 진입 시 드롭다운 최신화
-    if (tabName === 'current') loadHistorySelect();
-    // ★ 도서 히스토리 탭 진입 시 목록 최신화
-    if (tabName === 'books')   loadBookHistory();
-  }
-
-  // ============================================================
-  // 📊 대시보드 로드
-  // ============================================================
-  async function loadDashboard() {
-    // 한줄평 수
-    const { count: cc } = await db
-      .from('comments').select('*', { count: 'exact', head: true });
-    document.getElementById('statComments').textContent = cc ?? 0;
-
-    // 도서 히스토리 수
-    const { count: bc } = await db
-      .from('book_history').select('*', { count: 'exact', head: true });
-    document.getElementById('statBooks').textContent = bc ?? 0;
-
-    // 공지 수
-    const { count: nc } = await db
-      .from('notices').select('*', { count: 'exact', head: true });
-    document.getElementById('statNotices').textContent = nc ?? 0;
-
-    // 이번 달 등록 여부
-    const { data: s } = await db
-      .from('settings').select('book_title,schedule_date,book_id')
-      .eq('id', 1).single();
-    document.getElementById('statStatus').textContent =
-      (s?.book_title && s?.schedule_date) ? '✅' : '⚠️';
-
-    // ★ 대시보드 연계 현황 카드
-    const el = document.getElementById('dashCurrentBook');
-    if (s?.book_id) {
-      // 연계된 히스토리 도서 정보 조회
-      const { data: bh } = await db
-        .from('book_history').select('*')
-        .eq('id', s.book_id).single();
-
-      if (bh) {
-        el.innerHTML = `
-          <div class="linked-book-preview" style="display:flex;">
-            ${bh.book_cover_url
-              ? `<img src="${esc(bh.book_cover_url)}" alt="표지"
-                      onerror="this.style.display='none';
-                               this.nextElementSibling.style.display='flex'"/>
-                 <div class="placeholder" style="display:none;">📚</div>`
-              : `<div class="placeholder">📚</div>`}
-            <div class="info">
-              <div class="title">${esc(bh.book_title)}</div>
-              <div class="sub">
-                ${esc(bh.book_author || '')}
-                ${bh.book_publisher ? ' · ' + esc(bh.book_publisher) : ''}
-              </div>
-              ${bh.meeting_date
-                ? `<div class="sub">📅 ${esc(bh.meeting_date)}</div>` : ''}
-              <span class="id-badge">히스토리 #${bh.id}</span>
-            </div>
-          </div>`;
-      } else {
-        el.innerHTML = `<div class="empty-state">
-          <div class="empty-icon">⚠️</div>
-          연계된 도서 정보를 불러올 수 없습니다
-        </div>`;
-      }
-    } else {
-      el.innerHTML = `<div class="empty-state">
-        <div class="empty-icon">🔗</div>
-        아직 도서 히스토리와 연계되지 않았습니다<br/>
-        <span style="font-size:0.8rem;">이번 달 설정 탭에서 연계해보세요</span>
-      </div>`;
+  <!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚙️ 독서모임 관리자</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh; color: #e0d8d0; padding: 20px 16px 80px;
     }
-
-    // 최근 한줄평 5개
-    const { data: recent } = await db
-      .from('comments').select('*')
-      .order('created_at', { ascending: false }).limit(5);
-
-    const el2 = document.getElementById('recentComments');
-    if (!recent || recent.length === 0) {
-      el2.innerHTML = emptyState('💬', '아직 한줄평이 없습니다');
-      return;
+    .admin-header {
+      max-width: 800px; margin: 0 auto 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
     }
-    el2.innerHTML = recent.map(c => `
-      <div class="data-item">
-        <div class="data-item-body">
-          <div class="data-item-title">🙋 ${esc(c.name)}</div>
-          <div class="data-item-sub">"${esc(c.review)}"</div>
-          ${c.question
-            ? `<div class="data-item-sub">💬 ${esc(c.question)}</div>` : ''}
-          <div class="data-item-date">${fmtDate(c.created_at)}</div>
+    .admin-header h1 { font-size: 1.4rem; color: #f5d9a8; letter-spacing: 1px; }
+    .back-btn {
+      text-decoration: none; color: rgba(245,217,168,0.7);
+      font-size: 0.82rem; border: 1px solid rgba(245,217,168,0.3);
+      padding: 6px 14px; border-radius: 20px; transition: all 0.2s;
+    }
+    .back-btn:hover { color: #f5d9a8; border-color: rgba(245,217,168,0.7); }
+    .tab-nav {
+      max-width: 800px; margin: 0 auto 20px;
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 16px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; color: rgba(224,216,208,0.6);
+      font-size: 0.85rem; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .tab-btn:hover { color: #f5d9a8; border-color: rgba(245,217,168,0.4); }
+    .tab-btn.active {
+      background: rgba(245,217,168,0.15);
+      border-color: rgba(245,217,168,0.5);
+      color: #f5d9a8; font-weight: 600;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .card {
+      max-width: 800px; margin: 0 auto 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2 {
+      font-size: 1rem; color: #f5d9a8;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 1px solid rgba(245,217,168,0.2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    #pwScreen {
+      max-width: 400px; margin: 80px auto 0;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 36px;
+      text-align: center; backdrop-filter: blur(10px);
+    }
+    #pwScreen .lock-icon { font-size: 3rem; margin-bottom: 14px; }
+    #pwScreen h2 { font-size: 1.2rem; color: #f5d9a8; margin-bottom: 8px; }
+    #pwScreen p  { font-size: 0.85rem; color: rgba(224,216,208,0.55); margin-bottom: 24px; }
+    #pwInput {
+      width: 100%; padding: 12px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px; color: white;
+      font-size: 1rem; text-align: center;
+      letter-spacing: 4px; margin-bottom: 12px;
+    }
+    #pwInput:focus { outline: none; border-color: #f5d9a8; }
+    #pwInput::placeholder { letter-spacing: 1px; color: rgba(255,255,255,0.3); }
+    #pwLoginBtn {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, #c4902a, #f5d9a8);
+      color: #1a1a2e; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    #pwLoginBtn:hover { opacity: 0.9; }
+    #pwError { color: #ff7675; font-size: 0.85rem; margin-top: 10px; }
+    #adminContent { display: none; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-row { display: flex; flex-direction: column; gap: 5px; }
+    .form-row.span2 { grid-column: 1 / -1; }
+    .form-row label {
+      font-size: 0.78rem; font-weight: 600;
+      color: #f5d9a8; letter-spacing: 0.5px;
+    }
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+      padding: 9px 13px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px; color: #e0d8d0;
+      font-size: 0.9rem; font-family: inherit;
+      resize: vertical; transition: border-color 0.2s;
+    }
+    .form-row select {
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f5d9a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+    }
+    .form-row select option { background: #1a1a2e; color: #e0d8d0; }
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus {
+      outline: none; border-color: #f5d9a8; background: rgba(255,255,255,0.12);
+    }
+    .form-row input::placeholder,
+    .form-row textarea::placeholder { color: rgba(224,216,208,0.3); }
+    .btn {
+      padding: 10px 20px; border: none; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s, transform 0.1s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, #c4902a, #f5d9a8); color: #1a1a2e; }
+    .btn-danger  { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: rgba(224,216,208,0.7); border: 1px solid rgba(255,255,255,0.15); }
+    .btn-warning { background: rgba(243,156,18,0.2); color: #f39c12; border: 1px solid rgba(243,156,18,0.3); }
+    .btn-set-current {
+      background: rgba(245,217,168,0.12); color: #f5d9a8;
+      border: 1px solid rgba(245,217,168,0.35);
+      font-size: 0.78rem; padding: 6px 12px;
+    }
+    .btn-set-current:hover { background: rgba(245,217,168,0.22); border-color: rgba(245,217,168,0.6); }
+    .save-bar {
+      max-width: 800px; margin: 0 auto 12px;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .save-bar .btn-primary { flex: 1; justify-content: center; padding: 14px; font-size: 1rem; }
+    .msg-box {
+      text-align: center; font-size: 0.9rem;
+      padding: 11px; border-radius: 10px; display: none; margin-top: 10px;
+    }
+    .msg-global { max-width: 800px; margin: 0 auto 16px; }
+    .msg-box.success { background: rgba(39,174,96,0.2); color: #55efc4; border: 1px solid rgba(39,174,96,0.3); }
+    .msg-box.error   { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 600px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat-item {
+      background: rgba(245,217,168,0.07); border: 1px solid rgba(245,217,168,0.14);
+      border-radius: 14px; padding: 16px; text-align: center;
+    }
+    .stat-value { font-size: 1.9rem; font-weight: 700; color: #f5d9a8; }
+    .stat-label { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 4px; }
+    .cover-row { display: flex; align-items: flex-start; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+    #coverPreviewAdmin {
+      width: 80px; height: 115px; border-radius: 6px; object-fit: cover;
+      box-shadow: 4px 4px 14px rgba(0,0,0,0.4); display: none;
+    }
+    #coverPreviewPlaceholder {
+      width: 80px; height: 115px; background: rgba(255,255,255,0.07);
+      border: 2px dashed rgba(245,217,168,0.25); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: rgba(245,217,168,0.35);
+    }
+    .cover-hint { flex: 1; font-size: 0.75rem; color: rgba(224,216,208,0.4); line-height: 1.8; }
+    .link-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(85,239,196,0.12); border: 1px solid rgba(85,239,196,0.3);
+      border-radius: 20px; padding: 5px 12px;
+      font-size: 0.78rem; color: #55efc4; margin-bottom: 14px;
+    }
+    .link-badge .unlink-btn {
+      background: none; border: none; cursor: pointer;
+      color: rgba(85,239,196,0.5); font-size: 0.75rem; padding: 0; margin-left: 4px;
+    }
+    .link-badge .unlink-btn:hover { color: #ff7675; }
+    .select-book-box {
+      background: rgba(245,217,168,0.05); border: 1px solid rgba(245,217,168,0.18);
+      border-radius: 14px; padding: 16px; margin-bottom: 18px;
+    }
+    .select-book-box .box-title { font-size: 0.8rem; font-weight: 600; color: #f5d9a8; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .select-book-box .box-desc { font-size: 0.75rem; color: rgba(224,216,208,0.4); margin-bottom: 12px; line-height: 1.6; }
+    .select-book-row { display: flex; gap: 8px; align-items: center; }
+    .select-book-row select {
+      flex: 1; padding: 9px 32px 9px 13px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px; color: #e0d8d0; font-size: 0.88rem; font-family: inherit;
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f5d9a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    .select-book-row select:focus { outline: none; border-color: #f5d9a8; }
+    .select-book-row select option { background: #1a1a2e; color: #e0d8d0; }
+    .divider-or {
+      text-align: center; font-size: 0.78rem; color: rgba(224,216,208,0.3);
+      margin: 14px 0; position: relative;
+    }
+    .divider-or::before, .divider-or::after {
+      content: ''; position: absolute; top: 50%;
+      width: 42%; height: 1px; background: rgba(255,255,255,0.1);
+    }
+    .divider-or::before { left: 0; }
+    .divider-or::after  { right: 0; }
+    .linked-book-preview {
+      display: none; background: rgba(85,239,196,0.06);
+      border: 1px solid rgba(85,239,196,0.2); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 14px;
+      flex-direction: row; align-items: center; gap: 12px;
+    }
+    .linked-book-preview img { width: 40px; height: 57px; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; }
+    .linked-book-preview .placeholder { width: 40px; height: 57px; background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: rgba(245,217,168,0.3); }
+    .linked-book-preview .info .title { font-size: 0.88rem; font-weight: 600; color: #55efc4; }
+    .linked-book-preview .info .sub   { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 3px; }
+    .linked-book-preview .info .id-badge { display: inline-block; font-size: 0.68rem; background: rgba(85,239,196,0.15); color: #55efc4; border-radius: 99px; padding: 1px 8px; margin-top: 4px; }
+    .data-list { display: flex; flex-direction: column; gap: 10px; }
+    .data-item {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px; padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 12px; transition: background 0.2s;
+    }
+    .data-item:hover { background: rgba(255,255,255,0.07); }
+    .data-item.is-current { border-color: rgba(245,217,168,0.45); background: rgba(245,217,168,0.07); }
+    .data-item-body { flex: 1; min-width: 0; }
+    .data-item-title { font-size: 0.9rem; font-weight: 600; color: #f5d9a8; margin-bottom: 3px; }
+    .data-item-sub   { font-size: 0.78rem; color: rgba(224,216,208,0.55); margin-bottom: 2px; line-height: 1.5; }
+    .data-item-date  { font-size: 0.7rem; color: rgba(224,216,208,0.3); }
+    .data-item-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .book-thumb { width: 44px; height: 62px; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; }
+    .book-thumb-placeholder { width: 44px; height: 62px; background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: rgba(245,217,168,0.3); }
+    .pin-badge     { display: inline-block; background: rgba(245,217,168,0.18); color: #f5d9a8; font-size: 0.68rem; padding: 2px 7px; border-radius: 99px; margin-left: 6px; font-weight: 600; }
+    .current-badge { display: inline-block; background: rgba(245,217,168,0.22); color: #f5d9a8; font-size: 0.68rem; padding: 2px 8px; border-radius: 99px; margin-left: 6px; font-weight: 700; border: 1px solid rgba(245,217,168,0.4); }
+    .notice-content { font-size: 0.82rem; color: rgba(224,216,208,0.6); line-height: 1.6; margin-top: 4px; white-space: pre-wrap; }
+    .scroll-area { max-height: 460px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(245,217,168,0.25) transparent; }
+    .spinner-inline { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(26,26,46,0.3); border-top-color: #1a1a2e; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 32px 20px; color: rgba(224,216,208,0.3); font-size: 0.88rem; line-height: 2; }
+    .empty-icon  { font-size: 2rem; margin-bottom: 8px; }
+    .info-banner { background: rgba(245,217,168,0.07); border: 1px solid rgba(245,217,168,0.18); border-radius: 10px; padding: 11px 15px; font-size: 0.8rem; color: rgba(224,216,208,0.55); line-height: 1.7; margin-bottom: 16px; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: rgba(224,216,208,0.7); cursor: pointer; }
+    .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #f5d9a8; }
+    .count-badge { font-size: 0.78rem; color: rgba(224,216,208,0.35); font-weight: normal; margin-left: 6px; }
+
+    /* ========== 회원관리 탭 전용 스타일 (신규) ========== */
+    .member-table {
+      width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem;
+    }
+    .member-table th {
+      background: rgba(245,217,168,0.15); color: #f5d9a8;
+      padding: 10px 12px; text-align: left; font-size: 0.78rem;
+      font-weight: 600; border-bottom: 1px solid rgba(245,217,168,0.2);
+    }
+    .member-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #e0d8d0; vertical-align: middle;
+    }
+    .member-table tr:last-child td { border-bottom: none; }
+    .member-table tr:hover td { background: rgba(255,255,255,0.04); }
+    .member-table .uid-cell {
+      font-size: 0.68rem; color: rgba(224,216,208,0.3);
+      font-family: monospace; max-width: 80px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .member-table .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+    .member-count-summary {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .m-badge {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.82rem; font-weight: 600;
+    }
+    .m-badge-total  { background: rgba(245,217,168,0.12); color: #f5d9a8; }
+    .m-badge-attend { background: rgba(85,239,196,0.12);  color: #55efc4; }
+
+    /* 수정 모달 */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #1e2d4a; border: 1px solid rgba(245,217,168,0.25);
+      border-radius: 16px; padding: 28px;
+      width: 92%; max-width: 460px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .modal-box h3 { color: #f5d9a8; font-size: 1rem; margin-bottom: 18px; }
+    .modal-box .form-row { margin-bottom: 12px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<!-- 비밀번호 화면 -->
+<div id="pwScreen">
+  <div class="lock-icon">🔐</div>
+  <h2>관리자 페이지</h2>
+  <p>독서모임 관리자만 접근할 수 있습니다</p>
+  <input type="password" id="pwInput" placeholder="비밀번호 입력"/>
+  <button id="pwLoginBtn" onclick="checkPw()">로그인</button>
+  <div id="pwError"></div>
+</div>
+
+<!-- 관리자 콘텐츠 -->
+<div id="adminContent">
+  <div class="admin-header">
+    <h1>⚙️ 독서모임 관리자</h1>
+    <a href="index.html" class="back-btn">← 메인으로</a>
+  </div>
+
+  <!-- 탭 네비게이션 (회원관리 탭 추가) -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('dashboard', this)">📊 대시보드</button>
+    <button class="tab-btn" onclick="switchTab('current',   this)">📌 이번 달 설정</button>
+    <button class="tab-btn" onclick="switchTab('books',     this)">📚 도서 히스토리</button>
+    <button class="tab-btn" onclick="switchTab('notices',   this)">📢 공지사항</button>
+    <button class="tab-btn" onclick="switchTab('comments',  this)">💬 한줄평 관리</button>
+    <button class="tab-btn" onclick="switchTab('members',   this)">👥 회원 관리</button>
+  </div>
+
+  <!-- ===== 탭1: 대시보드 ===== -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="card">
+      <h2>📊 현황 통계</h2>
+      <div class="stat-grid">
+        <div class="stat-item"><div class="stat-value" id="statComments">-</div><div class="stat-label">총 한줄평</div></div>
+        <div class="stat-item"><div class="stat-value" id="statBooks">-</div><div class="stat-label">역대 선정도서</div></div>
+        <div class="stat-item"><div class="stat-value" id="statNotices">-</div><div class="stat-label">공지사항</div></div>
+        <div class="stat-item"><div class="stat-value" id="statMembers">-</div><div class="stat-label">총 회원 수</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📌 이번 달 선정도서 연계 현황</h2>
+      <div id="dashCurrentBook"><div class="empty-state"><div class="empty-icon">🔗</div>불러오는 중...</div></div>
+    </div>
+    <div class="card">
+      <h2>💬 최근 한줄평 (최신 5개)</h2>
+      <div class="data-list" id="recentComments">
+        <div class="empty-state"><div class="empty-icon">💬</div>불러오는 중...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 탭2: 이번 달 설정 ===== -->
+  <div class="tab-content" id="tab-current">
+    <div class="card">
+      <h2>🔗 도서 히스토리 연계</h2>
+      <div class="linked-book-preview" id="linkedBookPreview">
+        <div class="placeholder" id="linkedBookThumbPlaceholder">📚</div>
+        <img id="linkedBookThumb" src="" alt="" style="display:none;width:40px;height:57px;border-radius:4px;object-fit:cover;"/>
+        <div class="info">
+          <div class="title"  id="linkedBookTitle">-</div>
+          <div class="sub"    id="linkedBookSub">-</div>
+          <span class="id-badge" id="linkedBookIdBadge">#-</span>
         </div>
-      </div>`).join('');
-  }
-
-  // ============================================================
-  // ★ 히스토리 드롭다운 채우기
-  // ============================================================
-  async function loadHistorySelect() {
-    const sel = document.getElementById('historyBookSelect');
-    const { data, error } = await db
-      .from('book_history').select('id, book_title, book_author, meeting_date')
-      .order('book_id', { ascending: false });
-
-    // 기존 옵션 유지 (첫 번째 placeholder만 남기고 삭제)
-    while (sel.options.length > 1) sel.remove(1);
-
-    if (error || !data || data.length === 0) {
-      sel.options[0].text = '── 등록된 도서 없음 (히스토리 탭에서 추가하세요) ──';
-      return;
-    }
-    sel.options[0].text = '── 도서를 선택하세요 ──';
-
-    data.forEach(b => {
-      const opt = document.createElement('option');
-      opt.value = b.id;
-      // 드롭다운에 표시될 텍스트: #번호 | 제목 (저자) | 모임날짜
-      const dateStr = b.meeting_date ? ` | ${b.meeting_date}` : '';
-      opt.text = `#${b.id} | ${b.book_title} — ${b.book_author || '저자미상'}${dateStr}`;
-      sel.appendChild(opt);
-    });
-
-    // ★ 현재 연계된 ID가 있으면 드롭다운 선택 상태 반영
-    if (currentLinkedHistoryId) {
-      sel.value = String(currentLinkedHistoryId);
-    }
-  }
-
-  // 드롭다운 새로고침 버튼
-  async function refreshHistorySelect() {
-    await loadHistorySelect();
-    showMsg('saveMsgCurrent', '🔄 목록을 새로고침했습니다', 'success');
-  }
-
-  // ============================================================
-  // ★ 히스토리 도서 선택 → 폼 자동 채우기
-  // ============================================================
-  async function applyHistoryBook() {
-    const sel = document.getElementById('historyBookSelect');
-    const id  = parseInt(sel.value);
-
-    if (!id) {
-      // 선택 해제 시 미리보기만 숨김 (폼은 건드리지 않음)
-      document.getElementById('linkedBookPreview').style.display = 'none';
-      return;
-    }
-
-    // 히스토리에서 해당 도서 조회
-    const { data: bh, error } = await db
-      .from('book_history').select('*').eq('id', id).single();
-
-    if (error || !bh) {
-      showMsg('saveMsgCurrent', '❌ 도서 정보를 불러오지 못했습니다', 'error');
-      return;
-    }
-
-    // ★ 폼 자동 채우기
-    setVal('bookTitle',     bh.book_title);
-    setVal('bookAuthor',    bh.book_author);
-    setVal('bookPublisher', bh.book_publisher);
-    setVal('bookDesc',      bh.book_desc);
-    setVal('bookCoverUrl',  bh.book_cover_url);
-    previewCover();
-
-    // ★ 연계 ID 메모리 저장
-    currentLinkedHistoryId = id;
-
-    // ★ 연계 배지 표시
-    document.getElementById('currentLinkBadge').style.display = 'block';
-    document.getElementById('currentLinkId').textContent      = `#${id}`;
-
-    // ★ 미리보기 박스 업데이트
-    const preview   = document.getElementById('linkedBookPreview');
-    const thumb     = document.getElementById('linkedBookThumb');
-    const thumbPh   = document.getElementById('linkedBookThumbPlaceholder');
-    const titleEl   = document.getElementById('linkedBookTitle');
-    const subEl     = document.getElementById('linkedBookSub');
-    const idBadgeEl = document.getElementById('linkedBookIdBadge');
-
-    titleEl.textContent   = bh.book_title;
-    subEl.textContent     = [bh.book_author, bh.book_publisher]
-                              .filter(Boolean).join(' · ');
-    idBadgeEl.textContent = `히스토리 #${id}`;
-
-    if (bh.book_cover_url) {
-      thumb.src = bh.book_cover_url;
-      thumb.style.display    = 'block';
-      thumbPh.style.display  = 'none';
-      thumb.onerror = () => {
-        thumb.style.display   = 'none';
-        thumbPh.style.display = 'flex';
-      };
-    } else {
-      thumb.style.display   = 'none';
-      thumbPh.style.display = 'flex';
-    }
-    preview.style.display = 'flex';
-
-    showMsg('saveMsgCurrent',
-      `✅ #${id} "${bh.book_title}" 정보가 폼에 적용되었습니다. 저장 버튼을 눌러주세요.`,
-      'success');
-  }
-
-  // ============================================================
-  // ★ 연계 해제
-  // ============================================================
-  function unlinkHistory() {
-    if (!confirm('도서 히스토리 연계를 해제하시겠습니까?\n(폼 내용은 유지됩니다. 저장 시 연계가 제거됩니다.)')) return;
-    currentLinkedHistoryId = null;
-
-    // UI 초기화
-    document.getElementById('currentLinkBadge').style.display  = 'none';
-    document.getElementById('linkedBookPreview').style.display = 'none';
-    document.getElementById('historyBookSelect').value         = '';
-
-    showMsg('saveMsgCurrent', '🔓 연계가 해제되었습니다. 저장 버튼을 눌러 반영하세요.', 'success');
-  }
-
-  // ============================================================
-  // 📋 이번 달 설정 불러오기
-  // ============================================================
-  async function loadCurrentSettings() {
-    const { data } = await db
-      .from('settings').select('*').eq('id', 1).single();
-    if (!data) return;
-
-    setVal('scheduleDate',    data.schedule_date);
-    setVal('scheduleTime',    data.schedule_time);
-    setVal('schedulePlace',   data.schedule_place);
-    setVal('scheduleMembers', data.schedule_members);
-    setVal('bookTitle',       data.book_title);
-    setVal('bookAuthor',      data.book_author);
-    setVal('bookPublisher',   data.book_publisher);
-    setVal('bookDesc',        data.book_desc);
-    setVal('bookCoverUrl',    data.book_cover_url);
-    if (data.book_cover_url) previewCover();
-
-    // ★ 연계 ID 복원
-    if (data.book_id) {
-      currentLinkedHistoryId = data.book_id;
-
-      // 배지 표시
-      document.getElementById('currentLinkBadge').style.display = 'block';
-      document.getElementById('currentLinkId').textContent      = `#${data.book_id}`;
-
-      // 미리보기 채우기
-      const { data: bh } = await db
-        .from('book_history').select('*')
-        .eq('id', data.book_id).single();
-
-      if (bh) {
-        const preview   = document.getElementById('linkedBookPreview');
-        const thumb     = document.getElementById('linkedBookThumb');
-        const thumbPh   = document.getElementById('linkedBookThumbPlaceholder');
-
-        document.getElementById('linkedBookTitle').textContent   = bh.book_title;
-        document.getElementById('linkedBookSub').textContent     =
-          [bh.book_author, bh.book_publisher].filter(Boolean).join(' · ');
-        document.getElementById('linkedBookIdBadge').textContent = `히스토리 #${bh.id}`;
-
-        if (bh.book_cover_url) {
-          thumb.src = bh.book_cover_url;
-          thumb.style.display   = 'block';
-          thumbPh.style.display = 'none';
-          thumb.onerror = () => {
-            thumb.style.display   = 'none';
-            thumbPh.style.display = 'flex';
-          };
-        }
-        preview.style.display = 'flex';
-      }
-    }
-  }
-
-  // ============================================================
-  // 💾 이번 달 설정 저장 (★ book_id 포함)
-  // ============================================================
-  async function saveCurrentSettings() {
-    const btn = document.getElementById('saveCurrentBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-inline"></span>저장 중...';
-
-    const { error } = await db.from('settings').upsert({
-      id:               1,
-      schedule_date:    getVal('scheduleDate'),
-      schedule_time:    getVal('scheduleTime'),
-      schedule_place:   getVal('schedulePlace'),
-      schedule_members: getVal('scheduleMembers'),
-      book_title:       getVal('bookTitle'),
-      book_author:      getVal('bookAuthor'),
-      book_publisher:   getVal('bookPublisher'),
-      book_desc:        getVal('bookDesc'),
-      book_cover_url:   getVal('bookCoverUrl'),
-      book_id:  currentLinkedHistoryId,  // ★ 연계 ID 저장
-      updated_at:       new Date().toISOString(),
-    }, { onConflict: 'id' });
-
-    showMsg('saveMsgCurrent',
-      error ? `❌ 저장 실패: ${error.message}`
-            : '✅ 저장 완료! 메인 페이지에 즉시 반영되었습니다 🎉',
-      error ? 'error' : 'success');
-
-    btn.disabled = false;
-    btn.innerHTML = '💾 이번 달 정보 저장하기';
-
-    if (!error) {
-      loadDashboard();
-      // ★ 도서 히스토리 목록의 하이라이트도 갱신
-      loadBookHistory();
-    }
-  }
-
-  // ============================================================
-  // 🖼️ 책 표지 미리보기
-  // ============================================================
-  function previewCover() {
-    const url = document.getElementById('bookCoverUrl').value.trim();
-    const img = document.getElementById('coverPreviewAdmin');
-    const ph  = document.getElementById('coverPreviewPlaceholder');
-    if (!url) {
-      img.style.display = 'none';
-      ph.style.display  = 'flex';
-      return;
-    }
-    img.src = url;
-    img.style.display = 'block';
-    ph.style.display  = 'none';
-    img.onerror = () => {
-      img.style.display = 'none';
-      ph.style.display  = 'flex';
-    };
-  }
-
-  // ============================================================
-  // 📚 도서 히스토리 불러오기 (★ 이번 달 지정 버튼 + 하이라이트 추가)
-  // ============================================================
-  async function loadBookHistory() {
-    const el = document.getElementById('bookHistoryList');
-
-    // ★ 현재 settings의 book_id 조회 (하이라이트용)
-    const { data: settings } = await db
-      .from('settings').select('book_id').eq('id', 1).single();
-    const activeId = settings?.book_id ?? null;
-
-    const { data, error } = await db
-      .from('book_history').select('*')
-      .order('book_id', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      el.innerHTML = emptyState('📚',
-        '아직 등록된 도서 기록이 없습니다<br/>위 폼으로 추가해보세요!');
-      document.getElementById('bookCountBadge').textContent = '';
-      return;
-    }
-    document.getElementById('bookCountBadge').textContent = `(총 ${data.length}권)`;
-
-    el.innerHTML = data.map(b => {
-      // ★ 현재 이번 달로 지정된 도서인지 여부
-      const isCurrent = (b.id === activeId);
-
-      return `
-        <div class="data-item ${isCurrent ? 'is-current' : ''}" id="book-${b.id}">
-          ${b.book_cover_url
-            ? `<img class="book-thumb" src="${esc(b.book_cover_url)}" alt="표지"
-                    onerror="this.style.display='none';
-                             this.nextElementSibling.style.display='flex'"/>
-               <div class="book-thumb-placeholder" style="display:none;">📚</div>`
-            : `<div class="book-thumb-placeholder">📚</div>`}
-          <div class="data-item-body">
-            <div class="data-item-title">
-              #${b.id} ${esc(b.book_title)}
-              ${isCurrent
-                ? `<span class="current-badge">📌 이번 달</span>` : ''}
-            </div>
-            <div class="data-item-sub">
-              ${esc(b.book_author || '')}
-              ${b.book_publisher ? ` · ${esc(b.book_publisher)}` : ''}
-            </div>
-            ${b.meeting_date
-              ? `<div class="data-item-sub">📅 ${esc(b.meeting_date)}</div>` : ''}
-            <div class="data-item-date">등록일: ${fmtDate(b.created_at)}</div>
-          </div>
-          <div class="data-item-actions">
-            ${isCurrent
-              /* 이미 이번 달이면 비활성 버튼 */
-              ? `<button class="btn btn-set-current" disabled>✅ 지정됨</button>`
-              /* 아니면 이번 달로 지정 버튼 */
-              : `<button class="btn btn-set-current"
-                  onclick="setCurrentFromHistory(${b.id})">📌 이번 달로</button>`}
-            <button class="btn btn-danger"
-              onclick="deleteBook(${b.id})">🗑️</button>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  // ============================================================
-  // ★ 히스토리에서 바로 이번 달 지정
-  // ============================================================
-  async function setCurrentFromHistory(id) {
-    if (!confirm(`히스토리 #${id} 도서를 이번 달 선정도서로 지정하시겠습니까?\n(이번 달 설정 탭의 도서 정보가 자동으로 채워집니다)`)) return;
-
-    // 해당 도서 정보 조회
-    const { data: bh, error } = await db
-      .from('book_history').select('*').eq('id', id).single();
-    if (error || !bh) { alert('도서 정보 조회 실패'); return; }
-
-    // settings 업데이트 (도서 정보 + 연계 ID)
-    const { error: saveErr } = await db.from('settings').upsert({
-      id:              1,
-      book_title:      bh.book_title,
-      book_author:     bh.book_author,
-      book_publisher:  bh.book_publisher,
-      book_desc:       bh.book_desc,
-      book_cover_url:  bh.book_cover_url,
-      book_id: id,
-      updated_at:      new Date().toISOString(),
-    }, { onConflict: 'id' });
-
-    if (saveErr) { alert('저장 실패: ' + saveErr.message); return; }
-
-    // ★ 메모리 ID + 이번 달 설정 탭 폼도 동기화
-    currentLinkedHistoryId = id;
-    setVal('bookTitle',     bh.book_title);
-    setVal('bookAuthor',    bh.book_author);
-    setVal('bookPublisher', bh.book_publisher);
-    setVal('bookDesc',      bh.book_desc);
-    setVal('bookCoverUrl',  bh.book_cover_url);
-
-    // 배지 업데이트
-    document.getElementById('currentLinkBadge').style.display = 'block';
-    document.getElementById('currentLinkId').textContent      = `#${id}`;
-
-    // 전체 갱신
-    await loadBookHistory();
-    await loadDashboard();
-    await loadHistorySelect();
-
-    alert(`✅ "#${bh.book_title}" 이(가) 이번 달 도서로 지정되었습니다!`);
-  }
-
-  // ============================================================
-  // ➕ 도서 추가
-  // ============================================================
-  async function addBook() {
-    const title  = getVal('newBookTitle');
-    const author = getVal('newBookAuthor');
-    if (!title)  { showMsg('msgBook', '⚠️ 책 제목은 필수입니다!', 'error'); return; }
-    if (!author) { showMsg('msgBook', '⚠️ 저자는 필수입니다!',    'error'); return; }
-
-    const btn = document.getElementById('addBookBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-inline"></span>추가 중...';
-
-    const { error } = await db.from('book_history').insert([{
-      book_title:     title,
-      book_author:    author,
-      book_publisher: getVal('newBookPublisher'),
-      book_desc:      getVal('newBookDesc'),
-      book_cover_url: getVal('newBookCoverUrl'),
-      meeting_date:   getVal('newBookMeetingDate'),
-    }]);
-
-    showMsg('msgBook',
-      error ? `❌ 추가 실패: ${error.message}`
-            : `✅ "${title}" 도서가 추가되었습니다! 이번 달 설정 탭에서 연계할 수 있습니다.`,
-      error ? 'error' : 'success');
-
-    if (!error) {
-      clearBookForm();
-      loadBookHistory();
-      loadHistorySelect(); // ★ 드롭다운도 갱신
-      loadDashboard();
-    }
-    btn.disabled = false;
-    btn.innerHTML = '➕ 도서 추가';
-  }
-
-  function clearBookForm() {
-    ['newBookTitle','newBookAuthor','newBookPublisher',
-     'newBookDesc','newBookCoverUrl','newBookMeetingDate']
-      .forEach(id => { document.getElementById(id).value = ''; });
-  }
-
-  // ============================================================
-  // 🗑️ 도서 삭제
-  // ============================================================
-  async function deleteBook(id) {
-    if (!confirm('이 도서 기록을 삭제하시겠습니까?')) return;
-
-    // ★ 이번 달 연계된 도서 삭제 시 경고
-    if (id === currentLinkedHistoryId) {
-      if (!confirm('⚠️ 이 도서는 현재 이번 달 선정도서로 연계되어 있습니다.\n삭제하면 연계가 해제됩니다. 계속하시겠습니까?'))
-        return;
-      // 연계 해제
-      currentLinkedHistoryId = null;
-      document.getElementById('currentLinkBadge').style.display  = 'none';
-      document.getElementById('linkedBookPreview').style.display = 'none';
-      // settings의 book_id도 null로
-      await db.from('settings').update({ book_id: null })
-              .eq('id', 1);
-    }
-
-    const { error } = await db.from('book_history').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
-    fadeRemove(`book-${id}`);
-    loadDashboard();
-    loadHistorySelect(); // ★ 드롭다운도 갱신
-  }
-
-  // ============================================================
-  // 📢 공지사항 불러오기
-  // ============================================================
-  async function loadNotices() {
-    const el = document.getElementById('noticeList');
-    const { data, error } = await db
-      .from('notices').select('*')
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      el.innerHTML = emptyState('📢',
-        '등록된 공지사항이 없습니다<br/>위 폼으로 추가해보세요!');
-      document.getElementById('noticeCountBadge').textContent = '';
-      return;
-    }
-    document.getElementById('noticeCountBadge').textContent = `(총 ${data.length}개)`;
-
-    el.innerHTML = data.map(n => `
-      <div class="data-item" id="notice-${n.id}">
-        <div class="data-item-body">
-          <div class="data-item-title">
-            📢 ${esc(n.title)}
-            ${n.is_pinned ? `<span class="pin-badge">📌 고정</span>` : ''}
-          </div>
-          <div class="notice-content">${esc(n.content)}</div>
-          <div class="data-item-date" style="margin-top:6px;">
-            ${fmtDate(n.created_at)}
-          </div>
+      </div>
+      <div class="select-book-box">
+        <div class="box-title">📚 히스토리에서 도서 불러오기</div>
+        <div class="box-desc">도서 히스토리에 등록된 책을 선택하면 아래 폼이 자동으로 채워집니다.</div>
+        <div class="select-book-row">
+          <select id="historyBookSelect" onchange="applyHistoryBook()">
+            <option value="">── 도서를 선택하세요 ──</option>
+          </select>
+          <button class="btn btn-secondary" onclick="refreshHistorySelect()" title="목록 새로고침">🔄</button>
         </div>
-        <div class="data-item-actions">
-          <button class="btn btn-danger"
-            onclick="deleteNotice(${n.id})">🗑️</button>
+      </div>
+      <div class="divider-or">또는 직접 입력</div>
+    </div>
+    <div class="card">
+      <h2>📅 이번 달 모임 일정</h2>
+      <div class="form-grid">
+        <div class="form-row"><label>📆 모임 날짜</label><input type="text" id="scheduleDate" placeholder="예: 2026년 7월 3일(금)"/></div>
+        <div class="form-row"><label>🕑 시간</label><input type="text" id="scheduleTime" placeholder="예: 오전 10:00 ~ 12:00"/></div>
+        <div class="form-row"><label>📍 장소</label><input type="text" id="schedulePlace" placeholder="예: 경인교육대학교 평생학습관"/></div>
+        <div class="form-row"><label>👥 예상 참석인원</label><input type="text" id="scheduleMembers" placeholder="예: 5명"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📖 이번 달 선정도서</h2>
+      <div id="currentLinkBadge" style="display:none;">
+        <div class="link-badge">
+          🔗 도서 히스토리 <span id="currentLinkId">#-</span>번과 연계됨
+          <button class="unlink-btn" onclick="unlinkHistory()">✕ 연계 해제</button>
         </div>
-      </div>`).join('');
-  }
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>📚 책 제목</label><input type="text" id="bookTitle" placeholder="예: 채식주의자"/></div>
+        <div class="form-row"><label>✍️ 저자</label><input type="text" id="bookAuthor" placeholder="예: 한강"/></div>
+        <div class="form-row"><label>🏢 출판사 · 출판연도</label><input type="text" id="bookPublisher" placeholder="예: 창비 · 2007년"/></div>
+        <div class="form-row"><label>🖼️ 표지 이미지 URL</label><input type="text" id="bookCoverUrl" placeholder="https://..." oninput="previewCover()"/></div>
+        <div class="form-row span2"><label>📝 책 소개</label><textarea id="bookDesc" rows="4" placeholder="독자들에게 전달할 책 소개를 작성해주세요..."></textarea></div>
+      </div>
+      <div class="cover-row">
+        <div><div id="coverPreviewPlaceholder">📚</div><img id="coverPreviewAdmin" src="" alt=""/></div>
+        <p class="cover-hint">💡 <strong style="color:#f5d9a8;">책 표지 URL 찾는 법</strong><br/>① 네이버책 / 교보문고에서 책 검색<br/>② 표지 이미지 위에서 우클릭<br/>③ "이미지 주소 복사" 선택<br/>④ 위 URL 칸에 Ctrl+V 붙여넣기</p>
+      </div>
+    </div>
+    <div class="save-bar">
+      <button class="btn btn-primary" id="saveCurrentBtn" onclick="saveCurrentSettings()">💾 이번 달 정보 저장하기</button>
+    </div>
+    <div class="msg-box msg-global" id="saveMsgCurrent"></div>
+  </div>
 
-  // ============================================================
-  // ➕ 공지사항 추가
-  // ============================================================
-  async function addNotice() {
-    const title   = getVal('newNoticeTitle');
-    const content = getVal('newNoticeContent');
-    const pinned  = document.getElementById('newNoticePinned').checked;
-
-    if (!title)   { showMsg('msgNotice', '⚠️ 공지 제목은 필수입니다!', 'error'); return; }
-    if (!content) { showMsg('msgNotice', '⚠️ 공지 내용은 필수입니다!', 'error'); return; }
-
-    const btn = document.getElementById('addNoticeBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-inline"></span>등록 중...';
-
-    const { error } = await db.from('notices').insert([{
-      title, content, is_pinned: pinned,
-    }]);
-
-    showMsg('msgNotice',
-      error ? `❌ 등록 실패: ${error.message}` : '✅ 공지사항이 등록되었습니다!',
-      error ? 'error' : 'success');
-
-    if (!error) { clearNoticeForm(); loadNotices(); loadDashboard(); }
-    btn.disabled = false;
-    btn.innerHTML = '📢 공지 등록';
-  }
-
-  function clearNoticeForm() {
-    document.getElementById('newNoticeTitle').value    = '';
-    document.getElementById('newNoticeContent').value  = '';
-    document.getElementById('newNoticePinned').checked = false;
-  }
-
-  // ============================================================
-  // 🗑️ 공지사항 삭제
-  // ============================================================
-  async function deleteNotice(id) {
-    if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
-    const { error } = await db.from('notices').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
-    fadeRemove(`notice-${id}`);
-    loadDashboard();
-  }
-
-  // ============================================================
-  // 💬 한줄평 전체 불러오기
-  // ============================================================
-  async function loadAllComments() {
-    const el = document.getElementById('allCommentsList');
-    const { data, error } = await db
-      .from('comments').select('*')
-      .order('created_at', { ascending: false });
-
-    const badge = document.getElementById('commentCountBadge');
-
-    if (error) {
-      el.innerHTML = emptyState('😥', '한줄평을 불러오지 못했습니다');
-      return;
-    }
-    if (!data || data.length === 0) {
-      el.innerHTML = emptyState('💬', '아직 등록된 한줄평이 없습니다');
-      if (badge) badge.textContent = '';
-      return;
-    }
-    if (badge) badge.textContent = `(총 ${data.length}개)`;
-
-    el.innerHTML = data.map(c => `
-      <div class="data-item" id="comment-${c.id}">
-        <div class="data-item-body">
-          <div class="data-item-title">🙋 ${esc(c.name)}</div>
-          <div class="data-item-sub">"${esc(c.review)}"</div>
-          ${c.question
-            ? `<div class="data-item-sub">💬 ${esc(c.question)}</div>` : ''}
-          <div class="data-item-date">${fmtDate(c.created_at)}</div>
+  <!-- ===== 탭3: 도서 히스토리 ===== -->
+  <div class="tab-content" id="tab-books">
+    <div class="card">
+      <h2>➕ 새 도서 기록 추가</h2>
+      <div class="info-banner">📌 역대 선정도서 목록을 추가하면 독서 히스토리로 관리됩니다.</div>
+      <div class="form-grid">
+        <div class="form-row"><label>📚 책 제목 *</label><input type="text" id="newBookTitle" placeholder="예: 채식주의자"/></div>
+        <div class="form-row"><label>✍️ 저자 *</label><input type="text" id="newBookAuthor" placeholder="예: 한강"/></div>
+        <div class="form-row"><label>🏢 출판사</label><input type="text" id="newBookPublisher" placeholder="예: 창비"/></div>
+        <div class="form-row"><label>📅 모임 날짜</label><input type="text" id="newBookMeetingDate" placeholder="예: 2026년 6월"/></div>
+        <div class="form-row"><label>🖼️ 표지 이미지 URL</label><input type="text" id="newBookCoverUrl" placeholder="https://..."/></div>
+        <div class="form-row span2"><label>📝 책 소개 (선택)</label><textarea id="newBookDesc" rows="3" placeholder="간략한 책 소개..."></textarea></div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="addBookBtn" onclick="addBook()">➕ 도서 추가</button>
+        <button class="btn btn-secondary" onclick="clearBookForm()">🔄 초기화</button>
+      </div>
+      <div class="msg-box" id="msgBook"></div>
+    </div>
+    <div class="card">
+      <h2>📚 역대 선정도서 목록<span class="count-badge" id="bookCountBadge"></span></h2>
+      <div class="scroll-area">
+        <div class="data-list" id="bookHistoryList">
+          <div class="empty-state"><div class="empty-icon">📚</div>불러오는 중...</div>
         </div>
-        <div class="data-item-actions">
-          <button class="btn btn-danger"
-            onclick="deleteComment(${c.id})">🗑️ 삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 탭4: 공지사항 ===== -->
+  <div class="tab-content" id="tab-notices">
+    <div class="card">
+      <h2>➕ 새 공지사항 작성</h2>
+      <div class="form-grid">
+        <div class="form-row span2"><label>📢 공지 제목 *</label><input type="text" id="newNoticeTitle" placeholder="예: 7월 모임 장소 변경 안내"/></div>
+        <div class="form-row span2"><label>📝 공지 내용 *</label><textarea id="newNoticeContent" rows="4" placeholder="공지 내용을 작성해주세요..."></textarea></div>
+        <div class="form-row span2"><label class="checkbox-row"><input type="checkbox" id="newNoticePinned"/> 📌 상단 고정 (중요 공지)</label></div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;">
+        <button class="btn btn-primary" id="addNoticeBtn" onclick="addNotice()">📢 공지 등록</button>
+        <button class="btn btn-secondary" onclick="clearNoticeForm()">🔄 초기화</button>
+      </div>
+      <div class="msg-box" id="msgNotice"></div>
+    </div>
+    <div class="card">
+      <h2>📋 등록된 공지사항<span class="count-badge" id="noticeCountBadge"></span></h2>
+      <div class="scroll-area">
+        <div class="data-list" id="noticeList">
+          <div class="empty-state"><div class="empty-icon">📢</div>불러오는 중...</div>
         </div>
-      </div>`).join('');
-  }
+      </div>
+    </div>
+  </div>
 
-  // ============================================================
-  // 🗑️ 한줄평 삭제
-  // ============================================================
-  async function deleteComment(id) {
-    if (!confirm('이 한줄평을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
-    const { error } = await db.from('comments').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
+  <!-- ===== 탭5: 한줄평 관리 ===== -->
+  <div class="tab-content" id="tab-comments">
+    <div class="card">
+      <h2>💬 한줄평 전체 관리<span class="count-badge" id="commentCountBadge"></span></h2>
+      <div class="info-banner">⚠️ 삭제한 한줄평은 복구할 수 없습니다. 신중하게 삭제해주세요.</div>
+      <div class="scroll-area">
+        <div class="data-list" id="allCommentsList">
+          <div class="empty-state"><div class="empty-icon">💬</div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    fadeRemove(`comment-${id}`);
+  <!-- ===== 탭6: 회원 관리 (신규) ===== -->
+  <div class="tab-content" id="tab-members">
 
-    const badge = document.getElementById('commentCountBadge');
-    if (badge) {
-      const cur = parseInt(badge.textContent.replace(/[^0-9]/g, '')) || 0;
-      badge.textContent = cur > 1 ? `(총 ${cur - 1}개)` : '';
-    }
-    loadDashboard();
-  }
+    <!-- 회원 추가 폼 -->
+    <div class="card">
+      <h2>➕ 회원 추가</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>🙋 이름 *</label>
+          <input type="text" id="mName" placeholder="예: 홍길동" maxlength="20"/>
+        </div>
+        <div class="form-row">
+          <label>📱 연락처</label>
+          <input type="text" id="mPhone" placeholder="예: 010-1234-5678" maxlength="20"/>
+        </div>
+        <div class="form-row">
+          <label>🏠 거주지</label>
+          <input type="text" id="mAddress" placeholder="예: 서울 강남구" maxlength="50"/>
+        </div>
+        <div class="form-row">
+          <label>📝 기타 메모</label>
+          <input type="text" id="mNotes" placeholder="예: 가입일, 특이사항 등" maxlength="100"/>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="addMemberBtn" onclick="addMember()">➕ 회원 추가</button>
+        <button class="btn btn-secondary" onclick="clearMemberForm()">🔄 초기화</button>
+      </div>
+      <div class="msg-box" id="msgMember"></div>
+    </div>
 
-  // ============================================================
-  // 🔧 유틸리티 함수
-  // ============================================================
+    <!-- 회원 목록 -->
+    <div class="card">
+      <h2>👥 회원 목록<span class="count-badge" id="memberCountBadge"></span></h2>
+      <div class="member-count-summary">
+        <span class="m-badge m-badge-total">전체 <strong id="memberTotalCount">0</strong>명</span>
+      </div>
+      <div class="info-banner">
+        💡 카드를 클릭하면 이름 옆 고유 ID(UUID)를 확인할 수 있습니다.<br/>
+        이 ID는 <strong style="color:#f5d9a8;">attendance 테이블</strong>의 member_id와 자동 연결됩니다.
+      </div>
+      <div class="scroll-area" style="max-height:500px;">
+        <div id="memberList">
+          <div class="empty-state"><div class="empty-icon">👥</div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
 
-  // XSS 방지 이스케이프
-  function esc(text) {
-    if (!text) return '';
-    return String(text)
-      .replace(/&/g,  '&amp;')
-      .replace(/</g,  '&lt;')
-      .replace(/>/g,  '&gt;')
-      .replace(/"/g,  '&quot;')
-      .replace(/'/g,  '&#039;');
-  }
+  </div><!-- /tab-members -->
 
-  // 날짜 포맷 (2026.07.03 17:13)
-  function fmtDate(isoStr) {
-    if (!isoStr) return '';
-    const d = new Date(isoStr);
-    const Y = d.getFullYear();
-    const M = String(d.getMonth() + 1).padStart(2, '0');
-    const D = String(d.getDate()).padStart(2, '0');
-    const h = String(d.getHours()).padStart(2, '0');
-    const m = String(d.getMinutes()).padStart(2, '0');
-    return `${Y}.${M}.${D} ${h}:${m}`;
-  }
+</div><!-- /#adminContent -->
 
-  function setVal(id, value) {
-    const el = document.getElementById(id);
-    if (el && value != null) el.value = value;
-  }
-
-  function getVal(id) {
-    const el = document.getElementById(id);
-    return el ? el.value.trim() : '';
-  }
-
-  // 메시지 박스 (3.5초 후 자동 숨김)
-  function showMsg(elementId, text, type = 'success') {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.textContent   = text;
-    el.className     = `msg-box ${type}`;
-    el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, 3500);
-  }
-
-  // 페이드아웃 후 DOM 제거
-  function fadeRemove(elementId) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.style.transition = 'opacity 0.3s, transform 0.3s';
-    el.style.opacity    = '0';
-    el.style.transform  = 'translateX(10px)';
-    setTimeout(() => el.remove(), 300);
-  }
-
-  // 빈 상태 HTML
-  function emptyState(icon, text) {
-    return `<div class="empty-state">
-      <div class="empty-icon">${icon}</div>${text}
-    </div>`;
-  }
-</script>
-</body>
-</html>
+<!-- ===== 회원 수정 모달 ===== -->
+<div class="modal-overlay" id="editMemberModal">
+  <div class="modal-box">
+    <h3>✏️ 회원 정보 수정</h3>
+    <input type="hidden" id="editMemberId"/>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>🙋 이름 *</label>
+      <input type="text" id="editMemberName" placeholder="이름" maxlength="20"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>📱 연락처</label>
+      <input type="text" id="editMemberPhone" placeholder="연락처" maxlength="20"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>🏠 거주지</label>
+      <input type="text" id="editMemberAddress" placeholder="거주지" maxlength="50"/>
+    </div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>📝 기타 메모</label>
+      <input type="text" id="editMemberNotes" placeholder="기타 메모" maxlength="100"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary"   onclick="saveMemberEdit()">💾 저장</button>
+      <button class="btn btn-secondary" onclick="closeEditModal()">취소</button>
+    </div>
+    <div class="msg-box" id="msgMemberEdit"></div>
+  </div>
+</div>
