@@ -757,7 +757,7 @@
         const s = currentSettings;
 
         // ✅ book_id = settings.id 로 현재 책 댓글 필터링
-        const currentMatched = comments.filter(c => c.book_id === s.id);
+        const currentMatched = comments.filter(c => c.book_id === s.book_id);
 
         const currentCommentsHtml = currentMatched.length === 0
           ? `<div class="review-empty">
