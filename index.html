@@ -740,7 +740,7 @@
       // 1) 지난 도서 목록
       const { data: books, error: bErr } = await db
         .from('book_history').select('*')
-        .order('created_at', { ascending: false });
+        .order('book_id', { ascending: false });
 
       // 2) 전체 댓글 (book_id 포함)
       const { data: allComments, error: cErr } = await db
