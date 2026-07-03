@@ -529,7 +529,7 @@
             </div>
             <div class="schedule-item">
               <div class="label">👥 참석인원</div>
-              <div class="value">${esc(data.schedule_members)||'미정'}</div>              
+              <div class="value" id="dynamicMemberCount">${esc(data.schedule_members)||'미정'}</div>           
             </div>
           </div>`
         : noInfoBanner('일정');
