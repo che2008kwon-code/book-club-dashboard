@@ -498,7 +498,7 @@
       const { data, error } = await db
         .from('comments')
         .select('*')
-        .eq('book_id', currentSettings.id)
+        .eq('book_id', currentSettings.book_id)
         .order('created_at', { ascending: false });
 
       if (error) {
