@@ -248,6 +248,68 @@
       border-top-color: #8b6340; border-radius: 50%;
       animation: spin 0.8s linear infinite; margin: 0 auto 12px;
     }
+    .form-row-flex { display: flex; gap: 12px; }
+    .form-row-flex .form-row { flex: 1; margin-bottom: 14px; }
+    .comment-actions {
+      display: flex; gap: 8px;
+      margin-top: 8px; justify-content: flex-end;
+    }
+    .action-btn {
+      background: none; border: 1px solid #d4c4b0;
+      padding: 4px 10px; border-radius: 6px;
+      font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-edit { color: #8b6340; }
+    .btn-edit:hover { background: #5c3d2e; color: white; border-color: #5c3d2e; }
+    .btn-delete { color: #c0392b; border-color: #e9c4c0; }
+    .btn-delete:hover { background: #c0392b; color: white; border-color: #c0392b; }
+
+    /* ========== 회원 참석 탭 스타일 (신규) ========== */
+    .attendance-banner {
+      background: linear-gradient(135deg, #5c3d2e, #8b6340);
+      color: white; border-radius: 12px; padding: 16px 20px;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 14px;
+    }
+    .attendance-banner .banner-thumb {
+      width: 48px; height: 68px; border-radius: 4px; object-fit: cover;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0;
+    }
+    .attendance-banner .banner-thumb-placeholder {
+      width: 48px; height: 68px; background: rgba(255,255,255,0.15);
+      border-radius: 4px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.4rem; flex-shrink: 0;
+    }
+    .attendance-banner .banner-info h3 { font-size: 0.8rem; opacity: 0.8; margin-bottom: 4px; }
+    .attendance-banner .banner-info p  { font-size: 1rem; font-weight: 700; }
+    .attendance-summary {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .summary-badge {
+      padding: 8px 16px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600;
+    }
+    .badge-total  { background: #e8ddd0; color: #5c3d2e; }
+    .badge-attend { background: #e8f5e9; color: #2e7d32; }
+    .badge-absent { background: #fce4ec; color: #c62828; }
+    .badge-none   { background: #f5f5f5; color: #777; }
+    .attendance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;
+    }
+    .att-card {
+      border: 2px solid #e0cfc0; border-radius: 12px;
+      padding: 16px 10px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: white; user-select: none;
+    }
+    .att-card:hover { border-color: #8b6340; box-shadow: 0 2px 10px rgba(92,61,46,0.15); }
+    .att-card.attended { background: #e8f5e9; border-color: #4caf50; }
+    .att-card.absent  { background: #fce4ec; border-color: #e91e63; }
+    .att-card .att-name { font-weight: 700; font-size: 0.95rem; color: #3d2b1f; margin-bottom: 8px; }
+    .att-card .att-icon { font-size: 1.6rem; line-height: 1; }
+    .att-card .att-text { font-size: 0.78rem; margin-top: 4px; color: #888; }
+    .att-card.attended .att-text { color: #2e7d32; font-weight: 600; }
+    .att-card.absent  .att-text { color: #c62828; font-weight: 600; }
+
     @media (max-width: 600px) {
       header h1 { font-size: 1.5rem; }
       .book-section { flex-direction: column; align-items: center; }
@@ -255,41 +317,8 @@
       .book-desc { text-align: left; }
       .tab-btn { padding: 12px 14px; font-size: 0.82rem; }
       .history-item { gap: 16px; padding: 16px; }
-      .history-cover, .history-cover-placeholder { width: 90px; height: 128px; }
+      .attendance-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     }
-    /* 비밀번호 입력란 스타일 */
-    .form-row-flex {
-      display: flex;
-      gap: 12px;
-    }
-    .form-row-flex .form-row {
-      flex: 1;
-      margin-bottom: 14px;
-    }
-
-    /* 수정/삭제 버튼 스타일 */
-    .comment-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      justify-content: flex-end;
-    }
-    .action-btn {
-      background: none;
-      border: 1px solid #d4c4b0;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    /* 수정 버튼 호버 효과 */
-    .btn-edit { color: #8b6340; }
-    .btn-edit:hover { background: #5c3d2e; color: white; border-color: #5c3d2e; }
-
-    /* 삭제 버튼 호버 효과 */
-    .btn-delete { color: #c0392b; border-color: #e9c4c0; }
-    .btn-delete:hover { background: #c0392b; color: white; border-color: #c0392b; }  
   </style>
 </head>
 <body>
@@ -307,14 +336,15 @@
 
   <nav class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('current', this)">📌 이번 달 모임</button>
+    <button class="tab-btn" onclick="switchTab('members', this)">👥 회원 참석</button>
     <button class="tab-btn" onclick="switchTab('history', this)">📚 지난 독서목록</button>
     <button class="tab-btn" onclick="switchTab('reviews', this)">💬 지난 한줄평/질문</button>
   </nav>
 
-  <!-- TAB 1 -->
+  <!-- ===== TAB 1: 이번 달 모임 ===== -->
   <div id="tab-current" class="tab-content active">
     <div class="container">
-      <div class="card" id="noticeCard" style="display: none;">
+      <div class="card" id="noticeCard" style="display:none;">
         <h2>📢 주요 공지사항</h2>
         <div id="noticeArea"></div>
       </div>
@@ -327,7 +357,7 @@
         <div id="bookArea"></div>
       </div>
       <div class="card form-section">
-        <h2>✏️ 나의 한줄평 &amp; 질문 남기기</h2>        
+        <h2>✏️ 나의 한줄평 &amp; 질문 남기기</h2>
         <form id="commentForm">
           <div class="form-row-flex">
             <div class="form-row">
@@ -348,7 +378,7 @@
             <textarea id="question" rows="2" placeholder="함께 이야기하고 싶은 질문을 남겨주세요 (선택사항)" maxlength="300"></textarea>
           </div>
           <button type="submit" class="submit-btn" id="submitBtn">💌 제출하기</button>
-        </form>        
+        </form>
         <div id="msg"></div>
       </div>
       <div class="card">
@@ -360,7 +390,32 @@
     </div>
   </div>
 
-  <!-- TAB 2 -->
+  <!-- ===== TAB 2: 회원 참석 체크 (신규) ===== -->
+  <div id="tab-members" class="tab-content">
+    <div class="container">
+      <div id="attendanceBanner" class="attendance-banner">
+        <div class="banner-thumb-placeholder">📚</div>
+        <div class="banner-info">
+          <h3>📌 이번 모임 도서</h3>
+          <p id="attendanceBookTitle">불러오는 중...</p>
+        </div>
+      </div>
+      <div class="card">
+        <h2>👥 참석 현황</h2>
+        <div class="attendance-summary">
+          <span class="summary-badge badge-total">전체 <strong id="totalCount">0</strong>명</span>
+          <span class="summary-badge badge-attend">✅ 참석 <strong id="attendCount">0</strong>명</span>
+          <span class="summary-badge badge-absent">❌ 불참 <strong id="absentCount">0</strong>명</span>
+          <span class="summary-badge badge-none">❓ 미정 <strong id="noneCount">0</strong>명</span>
+        </div>
+        <div id="attendanceGrid" class="attendance-grid">
+          <div class="tab-loading"><div class="tab-spinner"></div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 지난 독서목록 ===== -->
   <div id="tab-history" class="tab-content">
     <div class="container">
       <div class="card">
@@ -372,7 +427,7 @@
     </div>
   </div>
 
-  <!-- TAB 3 -->
+  <!-- ===== TAB 4: 지난 한줄평/질문 ===== -->
   <div id="tab-reviews" class="tab-content">
     <div class="container">
       <div class="card">
@@ -386,8 +441,7 @@
       </div>
     </div>
   </div>
-
-  <script>
+    <script>
     // ============================================================
     // ⚙️ Supabase 연결
     // ============================================================
@@ -396,8 +450,8 @@
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const tabLoaded = { current: true, history: false, reviews: false };
-    let currentSettings = null; // settings 테이블의 id=1 데이터 (book_id 포함)
+    const tabLoaded = { current: true, history: false, reviews: false, members: false };
+    let currentSettings = null;
 
     // ============================================================
     // 🗂️ 탭 전환
@@ -406,40 +460,43 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.getElementById(`tab-${tabName}`).classList.add('active');
+      document.getElementById('tab-' + tabName).classList.add('active');
 
       if (tabName === 'history' && !tabLoaded.history) {
         tabLoaded.history = true;
         loadBookHistory();
       }
       if (tabName === 'reviews') {
-        loadReviewsByBook(); // 매번 최신 데이터 로드
+        loadReviewsByBook();
+      }
+      if (tabName === 'members') {
+        loadAttendance(); // 매번 최신 데이터 로드
       }
     }
-    // 스크립트 내부에 추가할 함수
+
+    // ============================================================
+    // 📢 공지사항 로드
+    // ============================================================
     async function loadDashboardNotices() {
       const { data, error } = await db
-        .from('notices')
-        .select('*')
-        .eq('is_pinned', true) // '상단 고정'으로 체크된 항목만 조회
+        .from('notices').select('*')
+        .eq('is_pinned', true)
         .order('created_at', { ascending: false });
-    
+
       if (!error && data && data.length > 0) {
         const noticeCard = document.getElementById('noticeCard');
         const noticeArea = document.getElementById('noticeArea');
-        
-        noticeCard.style.display = 'block'; // 카드 표시
+        noticeCard.style.display = 'block';
         noticeArea.innerHTML = data.map(n => `
-          <div style="padding: 12px; background: #fff8f0; border-left: 4px solid #8b6340; border-radius: 4px; margin-bottom: 8px;">
-            <div style="font-weight: 700; color: #5c3d2e; margin-bottom: 4px;">${esc(n.title)}</div>
-            <div style="font-size: 0.88rem; color: #3d2b1f; white-space: pre-wrap;">${esc(n.content)}</div>
-          </div>
-        `).join('');
+          <div style="padding:12px;background:#fff8f0;border-left:4px solid #8b6340;border-radius:4px;margin-bottom:8px;">
+            <div style="font-weight:700;color:#5c3d2e;margin-bottom:4px;">${esc(n.title)}</div>
+            <div style="font-size:0.88rem;color:#3d2b1f;white-space:pre-wrap;">${esc(n.content)}</div>
+          </div>`).join('');
       }
-    }    
+    }
+
     // ============================================================
     // 📋 이번 달 설정 불러오기
-    // ✅ settings.id = 현재 진행 중인 book_id (탭1↔탭3 연동 핵심 키)
     // ============================================================
     async function loadSettings() {
       const { data, error } = await db
@@ -453,7 +510,6 @@
         return;
       }
 
-      // ✅ 전역 저장 — data.id 가 현재 book_id 역할
       currentSettings = data;
 
       // 일정 표시
@@ -475,7 +531,7 @@
               <div class="label">👥 참석인원</div>
               <div class="value">${esc(data.schedule_members)||'미정'}</div>
             </div>
-           </div>`
+          </div>`
         : noInfoBanner('일정');
       document.getElementById('scheduleArea').innerHTML = scheduleHtml;
 
@@ -490,8 +546,7 @@
         ? `<div class="book-section">
             <div class="book-cover-wrap">
               ${data.book_cover_url
-                ? `<img class="book-cover" src="${esc(data.book_cover_url)}" alt="선정도서 표지"
-                    onerror="this.style.display='none';document.getElementById('coverFallback').style.display='flex';"/>`
+                ? ``
                 : ''}
               <div id="coverFallback" class="book-cover-placeholder"
                 style="display:${data.book_cover_url?'none':'flex'}">📚</div>
@@ -502,13 +557,23 @@
               <div class="book-publisher">🏢 ${esc(data.book_publisher)||'출판사 미등록'}</div>
               <div class="book-desc">${esc(data.book_desc)||'도서 설명이 없습니다.'}</div>
             </div>
-           </div>`
+          </div>`
         : noInfoBanner('도서');
       document.getElementById('bookArea').innerHTML = bookHtml;
+
+      // 참석 배너 도서명 업데이트
+      if (data.book_title) {
+        document.getElementById('attendanceBookTitle').textContent = data.book_title;
+        const banner = document.getElementById('attendanceBanner');
+        if (data.book_cover_url) {
+          banner.querySelector('.banner-thumb-placeholder').outerHTML =
+            ``;
+        }
+      }
     }
 
     // ============================================================
-    // 💬 탭1 — 이번 달 댓글 불러오기 (수정/삭제 버튼 모두 포함)
+    // 💬 탭1 — 이번 달 댓글 불러오기
     // ============================================================
     async function loadComments() {
       const list = document.getElementById('commentsList');
@@ -520,8 +585,7 @@
       }
 
       const { data, error } = await db
-        .from('comments')
-        .select('*')
+        .from('comments').select('*')
         .eq('book_id', currentSettings.book_id)
         .order('created_at', { ascending: false });
 
@@ -545,7 +609,6 @@
             </div>
             <div class="comment-review">${esc(item.review)}</div>
             ${item.question ? `<div class="comment-question">${esc(item.question)}</div>` : ''}
-            
             <div class="comment-actions">
               <button class="action-btn btn-edit" onclick="editComment(${item.id})">✏️ 수정하기</button>
               <button class="action-btn btn-delete" onclick="deleteComment(${item.id})">❌ 삭제하기</button>
@@ -555,33 +618,22 @@
     }
 
     // ============================================================
-    // 📝 댓글 제출 (password null 방지 및 검증 강화 버전)
+    // 📝 댓글 제출
     // ============================================================
     document.getElementById('commentForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      // 1. 화면의 입력 필드에서 값 가져오기
-      const nameEl     = document.getElementById('name');
-      const passwordEl = document.getElementById('password');
-      const reviewEl   = document.getElementById('review');
-      const questionEl = document.getElementById('question');
-
-      // 2. 앞뒤 공백 제거 후 변수에 할당
-      const name     = nameEl ? nameEl.value.trim() : '';
-      const password = passwordEl ? passwordEl.value.trim() : '';
-      const review   = reviewEl ? reviewEl.value.trim() : '';
-      const question = questionEl ? questionEl.value.trim() : '';
-      
+      const name     = document.getElementById('name').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const review   = document.getElementById('review').value.trim();
+      const question = document.getElementById('question').value.trim();
       const btn = document.getElementById('submitBtn');
       const msg = document.getElementById('msg');
 
-      // 3. 값 유효성 초강력 검증 (비밀번호 누락 차단)
       if (!name || !review || !password) {
         msg.style.color = '#c0392b';
         msg.textContent = '이름, 비밀번호, 한줄평은 필수 입력입니다!';
         return;
       }
-      
       if (!currentSettings) {
         msg.style.color = '#c0392b';
         msg.textContent = '설정을 불러오는 중입니다. 잠시 후 다시 시도해주세요.';
@@ -590,19 +642,13 @@
 
       btn.disabled = true; btn.textContent = '제출 중...';
 
-      // 4. Supabase 전송 데이터 객체 매핑 명확화
-      const insertData = {
-        name: name,
-        password: password, // <-- 이 값이 null이 아님을 위에서 검증함
-        review: review,
+      const { error } = await db.from('comments').insert([{
+        name, password, review,
         question: question || null,
         book_id: currentSettings.book_id
-      };
-
-      const { error } = await db.from('comments').insert([insertData]);
+      }]);
 
       if (error) {
-        console.error("Supabase 에러 상세:", error); // 디버깅용 콘솔 출력
         msg.style.color = '#c0392b';
         msg.textContent = '제출 중 오류가 발생했습니다 😥';
       } else {
@@ -610,7 +656,6 @@
         msg.textContent = '✅ 한줄평이 등록되었습니다! 감사합니다 😊';
         document.getElementById('commentForm').reset();
         await loadComments();
-
         if (document.getElementById('tab-reviews').classList.contains('active')) {
           loadReviewsByBook();
         }
@@ -620,105 +665,155 @@
     });
 
     // ============================================================
-    // ✏️ 댓글 수정 로직 (새로 추가할 함수)
+    // ✏️ 댓글 수정
     // ============================================================
     async function editComment(id) {
-      // 1. 해당 댓글의 기존 데이터 원본을 DB에서 가져옴
       const { data: item, error: fetchErr } = await db
         .from('comments').select('*').eq('id', id).single();
+      if (fetchErr || !item) { alert('댓글 데이터를 불러오지 못했습니다.'); return; }
 
-      if (fetchErr || !item) {
-        alert('댓글 데이터를 불러오지 못했습니다.');
-        return;
-      }
-
-      // 2. 본인 확인용 비밀번호 입력 받기
       const inputPw = prompt('댓글 작성 시 입력했던 비밀번호를 입력해주세요:');
-      if (inputPw === null) return; // 취소 클릭 시 종료
+      if (inputPw === null) return;
+      if (inputPw !== item.password) { alert('❌ 비밀번호가 일치하지 않습니다!'); return; }
 
-      if (inputPw !== item.password) {
-        alert('❌ 비밀번호가 일치하지 않습니다!');
-        return;
-      }
-
-      // 3. 일치할 경우 새 내용 입력 받기 (prompt 창 활용)
       const newReview = prompt('📝 새로운 한줄평을 입력해주세요:', item.review);
       if (newReview === null) return;
-      if (!newReview.trim()) {
-        alert('한줄평 내용은 비워둘 수 없습니다.');
-        return;
-      }
+      if (!newReview.trim()) { alert('한줄평 내용은 비워둘 수 없습니다.'); return; }
 
       const newQuestion = prompt('💬 나누고 싶은 질문을 입력해주세요 (선택):', item.question || '');
-      
-      // 4. Supabase DB 업데이트 요청
-      const { error: updateErr } = await db
-        .from('comments')
-        .update({ 
-          review: newReview.trim(), 
-          question: newQuestion ? newQuestion.trim() : null 
-        })
+
+      const { error: updateErr } = await db.from('comments')
+        .update({ review: newReview.trim(), question: newQuestion ? newQuestion.trim() : null })
         .eq('id', id);
 
       if (updateErr) {
         alert('수정 중 오류가 발생했습니다 😥');
       } else {
         alert('✅ 성공적으로 수정되었습니다!');
-        await loadComments(); // 탭1 갱신
-        if (document.getElementById('tab-reviews').classList.contains('active')) {
-          loadReviewsByBook(); // 탭3가 열려있다면 함께 갱신
-        }
+        await loadComments();
+        if (document.getElementById('tab-reviews').classList.contains('active')) loadReviewsByBook();
       }
     }
-    
+
     // ============================================================
-    // ❌ 댓글 삭제 로직 (비밀번호 검증 후 삭제)
+    // ❌ 댓글 삭제
     // ============================================================
     async function deleteComment(id) {
-      // 1. 해당 댓글의 기존 데이터를 DB에서 먼저 확인
       const { data: item, error: fetchErr } = await db
         .from('comments').select('*').eq('id', id).single();
+      if (fetchErr || !item) { alert('댓글 데이터를 불러오지 못했습니다.'); return; }
 
-      if (fetchErr || !item) {
-        alert('댓글 데이터를 불러오지 못했습니다 이미 삭제되었을 수 있습니다.');
-        return;
-      }
+      const inputPw = prompt('❗ 삭제하시겠습니까?\n작성 시 입력했던 비밀번호를 입력해주세요:');
+      if (inputPw === null) return;
+      if (inputPw !== item.password) { alert('❌ 비밀번호가 일치하지 않습니다!'); return; }
+      if (!confirm('정말로 삭제하시겠습니까? 복구할 수 없습니다.')) return;
 
-      // 2. 삭제 확인 및 본인 인증 비밀번호 입력 받기
-      const inputPw = prompt('❗ 댓글을 삭제하시겠습니까?\n작성 시 입력했던 비밀번호를 입력해주세요:');
-      if (inputPw === null) return; // 취소 누르면 중단
-
-      if (inputPw !== item.password) {
-        alert('❌ 비밀번호가 일치하지 않습니다!');
-        return;
-      }
-
-      // 3. 최종 재확인 (실수 방지)
-      if (!confirm('정말로 이 한줄평을 삭제하시겠습니까? 복구할 수 없습니다.')) {
-        return;
-      }
-
-      // 4. Supabase DB에 행 삭제(delete) 요청
-      const { error: deleteErr } = await db
-        .from('comments')
-        .delete()
-        .eq('id', id);
-
+      const { error: deleteErr } = await db.from('comments').delete().eq('id', id);
       if (deleteErr) {
         alert('삭제 중 오류가 발생했습니다 😥');
       } else {
         alert('✅ 성공적으로 삭제되었습니다.');
-        
-        // 5. 화면 즉시 갱신 (탭1, 탭3 모두)
-        await loadComments(); 
-        if (document.getElementById('tab-reviews').classList.contains('active')) {
-          loadReviewsByBook(); 
-        }
+        await loadComments();
+        if (document.getElementById('tab-reviews').classList.contains('active')) loadReviewsByBook();
       }
-    }    
+    }
 
     // ============================================================
-    // 📚 지난 독서목록 (탭2)
+    // 👥 회원 참석 현황 불러오기 (신규)
+    // ============================================================
+    async function loadAttendance() {
+      const grid = document.getElementById('attendanceGrid');
+      grid.innerHTML = '<div class="tab-loading">불러오는 중...</div>';
+
+      if (!currentSettings || !currentSettings.book_id) {
+        grid.innerHTML = '<div class="empty-msg">이번 달 선정 도서가 설정되지 않았습니다.</div>';
+        return;
+      }
+
+      // 전체 회원 목록
+      const { data: members, error: mErr } = await db
+        .from('members').select('id, name').order('name');
+
+      if (mErr || !members || members.length === 0) {
+        grid.innerHTML = '<div class="empty-msg">등록된 회원이 없습니다.<br/>관리자 페이지에서 회원을 추가해주세요.</div>';
+        return;
+      }
+
+      // 이번 모임 참석 데이터
+      const { data: attData } = await db
+        .from('attendance').select('member_id, attended')
+        .eq('book_id', currentSettings.book_id);
+
+      // member_id → attended 맵
+      const attMap = {};
+      (attData || []).forEach(a => { attMap[a.member_id] = a.attended; });
+            // 집계
+      let attendCount = 0, absentCount = 0;
+      members.forEach(m => {
+        if (attMap[m.id] === true) attendCount++;
+        else if (attMap[m.id] === false) absentCount++;
+      });
+      const noneCount = members.length - attendCount - absentCount;
+
+      document.getElementById('totalCount').textContent  = members.length;
+      document.getElementById('attendCount').textContent = attendCount;
+      document.getElementById('absentCount').textContent = absentCount;
+      document.getElementById('noneCount').textContent   = noneCount;
+
+      // 카드 렌더링
+      grid.innerHTML = members.map(m => {
+        const status = attMap[m.id]; // true=참석, false=불참, undefined=미정
+        let cardClass = '', icon = '❓', text = '미정';
+        if (status === true)  { cardClass = 'attended'; icon = '✅'; text = '참석'; }
+        if (status === false) { cardClass = 'absent';   icon = '❌'; text = '불참'; }
+
+        return `
+          <div class="att-card ${cardClass}" onclick="toggleAttendance('${m.id}', '${esc(m.name)}')">
+            <div class="att-name">${esc(m.name)}</div>
+            <div class="att-icon">${icon}</div>
+            <div class="att-text">${text}</div>
+          </div>`;
+      }).join('');
+    }
+
+    // ============================================================
+    // 👥 참석 상태 토글 (미정 → 참석 → 불참 → 미정)
+    // ============================================================
+    async function toggleAttendance(memberId, memberName) {
+      if (!currentSettings || !currentSettings.book_id) return;
+
+      // 현재 상태 확인
+      const { data: existing } = await db
+        .from('attendance').select('*')
+        .eq('member_id', memberId)
+        .eq('book_id', currentSettings.book_id)
+        .maybeSingle();
+
+      if (!existing) {
+        // 미정 → 참석
+        await db.from('attendance').insert({
+          member_id: memberId,
+          book_id: currentSettings.book_id,
+          attended: true
+        });
+      } else if (existing.attended === true) {
+        // 참석 → 불참
+        await db.from('attendance')
+          .update({ attended: false })
+          .eq('id', existing.id);
+      } else {
+        // 불참 → 미정 (레코드 삭제)
+        await db.from('attendance')
+          .delete()
+          .eq('id', existing.id);
+      }
+
+      // 화면 갱신
+      loadAttendance();
+    }
+
+    // ============================================================
+    // 📚 지난 독서목록 (탭3)
     // ============================================================
     async function loadBookHistory() {
       const el = document.getElementById('bookHistoryList');
@@ -754,33 +849,27 @@
     }
 
     // ============================================================
-    // 💬 탭3 — 책별 한줄평 (book_id 기준 매칭)
-    // ✅ 이번 달: book_id = currentSettings.id
-    // ✅ 지난 달: book_id = book_history.id
+    // 💬 탭4 — 책별 한줄평 모아보기
     // ============================================================
     async function loadReviewsByBook() {
       const container = document.getElementById('reviewsByBook');
 
-      // 1) 지난 도서 목록
+      // 지난 도서 목록
       const { data: books, error: bErr } = await db
         .from('book_history').select('*')
         .order('book_id', { ascending: false });
 
-      // 2) 전체 댓글 (book_id 포함)
-      const { data: allComments, error: cErr } = await db
+      // 전체 댓글
+      const { data: allComments } = await db
         .from('comments').select('*')
         .order('created_at', { ascending: true });
 
       const comments = allComments || [];
 
-      // ──────────────────────────────────────────
-      // ✅ 이번 달 진행 중 도서 블록
-      // ──────────────────────────────────────────
+      // ── 이번 달 진행 중 도서 블록 ──
       let currentBookBlock = '';
       if (currentSettings && currentSettings.book_title) {
         const s = currentSettings;
-
-        // ✅ book_id = settings.id 로 현재 책 댓글 필터링
         const currentMatched = comments.filter(c => c.book_id === s.book_id);
 
         const currentCommentsHtml = currentMatched.length === 0
@@ -824,15 +913,11 @@
             : ''}`;
       }
 
-      // ──────────────────────────────────────────
-      // ✅ 지난 도서 블록 (book_id = book_history.id)
-      // ──────────────────────────────────────────
+      // ── 지난 도서 블록 ──
       let historyBlocks = '';
       if (!bErr && books && books.length > 0) {
         historyBlocks = books.map(book => {
-          // ✅ book_id = book_history.id 로 매칭
           const matched = comments.filter(c => c.book_id === book.id);
-
           return `
             <div class="review-book-block">
               <div class="review-book-header">
@@ -873,7 +958,7 @@
     }
 
     // ============================================================
-    // 🧩 댓글 아이템 HTML 렌더링 (공통 함수)
+    // 🧩 댓글 아이템 HTML 렌더링 (공통)
     // ============================================================
     function renderReviewItem(r, borderColor) {
       const d = new Date(r.created_at);
@@ -897,22 +982,25 @@
         <br/><a href="admin.html" style="color:#8b6340;font-weight:600;">→ 관리자 페이지 이동</a>
       </div>`;
     }
+
     function esc(text) {
       if (!text) return '';
       return String(text)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
+
     function pad(n) { return String(n).padStart(2,'0'); }
 
     // ============================================================
     // 🚀 초기 실행
     // ============================================================
     (async () => {
-      await loadSettings();  // settings 먼저 로드
-      await loadComments();  // 그 다음 댓글 로드 (book_id 필요)
+      await loadSettings();
+      await loadComments();
       await loadDashboardNotices();
     })();
+
   </script>
 </body>
 </html>
