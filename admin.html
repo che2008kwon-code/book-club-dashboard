@@ -56,6 +56,7 @@
       border-bottom: 1px solid rgba(245,217,168,0.2);
       display: flex; align-items: center; gap: 8px;
     }
+    /* 비밀번호 화면 */
     #pwScreen {
       max-width: 400px; margin: 80px auto 0;
       background: rgba(255,255,255,0.06);
@@ -83,16 +84,14 @@
       font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
     }
     #pwLoginBtn:hover { opacity: 0.9; }
-    #pwError { color: #ff7675; font-size: 0.85rem; margin-top: 10px; }
+    #pwError { color: #ff7675; font-size: 0.85rem; margin-top: 10px; min-height: 20px; }
     #adminContent { display: none; }
+    /* 폼 */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
     .form-row { display: flex; flex-direction: column; gap: 5px; }
     .form-row.span2 { grid-column: 1 / -1; }
-    .form-row label {
-      font-size: 0.78rem; font-weight: 600;
-      color: #f5d9a8; letter-spacing: 0.5px;
-    }
+    .form-row label { font-size: 0.78rem; font-weight: 600; color: #f5d9a8; letter-spacing: 0.5px; }
     .form-row input,
     .form-row textarea,
     .form-row select {
@@ -110,36 +109,31 @@
     .form-row select option { background: #1a1a2e; color: #e0d8d0; }
     .form-row input:focus,
     .form-row textarea:focus,
-    .form-row select:focus {
-      outline: none; border-color: #f5d9a8; background: rgba(255,255,255,0.12);
-    }
+    .form-row select:focus { outline: none; border-color: #f5d9a8; background: rgba(255,255,255,0.12); }
     .form-row input::placeholder,
     .form-row textarea::placeholder { color: rgba(224,216,208,0.3); }
+    /* 버튼 */
     .btn {
       padding: 10px 20px; border: none; border-radius: 10px;
-      font-size: 0.88rem; font-weight: 600;
-      cursor: pointer; font-family: inherit;
-      transition: opacity 0.2s, transform 0.1s;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: opacity 0.2s, transform 0.1s;
       display: inline-flex; align-items: center; gap: 6px;
     }
     .btn:hover { opacity: 0.88; }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary { background: linear-gradient(135deg, #c4902a, #f5d9a8); color: #1a1a2e; }
-    .btn-danger  { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
+    .btn-primary   { background: linear-gradient(135deg, #c4902a, #f5d9a8); color: #1a1a2e; }
+    .btn-danger    { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
     .btn-secondary { background: rgba(255,255,255,0.08); color: rgba(224,216,208,0.7); border: 1px solid rgba(255,255,255,0.15); }
-    .btn-warning { background: rgba(243,156,18,0.2); color: #f39c12; border: 1px solid rgba(243,156,18,0.3); }
+    .btn-warning   { background: rgba(243,156,18,0.2); color: #f39c12; border: 1px solid rgba(243,156,18,0.3); }
     .btn-set-current {
       background: rgba(245,217,168,0.12); color: #f5d9a8;
-      border: 1px solid rgba(245,217,168,0.35);
-      font-size: 0.78rem; padding: 6px 12px;
+      border: 1px solid rgba(245,217,168,0.35); font-size: 0.78rem; padding: 6px 12px;
     }
     .btn-set-current:hover { background: rgba(245,217,168,0.22); border-color: rgba(245,217,168,0.6); }
-    .save-bar {
-      max-width: 800px; margin: 0 auto 12px;
-      display: flex; gap: 10px; align-items: center;
-    }
+    .save-bar { max-width: 800px; margin: 0 auto 12px; display: flex; gap: 10px; align-items: center; }
     .save-bar .btn-primary { flex: 1; justify-content: center; padding: 14px; font-size: 1rem; }
+    /* 메시지 박스 */
     .msg-box {
       text-align: center; font-size: 0.9rem;
       padding: 11px; border-radius: 10px; display: none; margin-top: 10px;
@@ -147,6 +141,7 @@
     .msg-global { max-width: 800px; margin: 0 auto 16px; }
     .msg-box.success { background: rgba(39,174,96,0.2); color: #55efc4; border: 1px solid rgba(39,174,96,0.3); }
     .msg-box.error   { background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid rgba(231,76,60,0.3); }
+    /* 통계 */
     .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     @media (max-width: 600px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
     .stat-item {
@@ -155,6 +150,7 @@
     }
     .stat-value { font-size: 1.9rem; font-weight: 700; color: #f5d9a8; }
     .stat-label { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 4px; }
+    /* 표지 미리보기 */
     .cover-row { display: flex; align-items: flex-start; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
     #coverPreviewAdmin {
       width: 80px; height: 115px; border-radius: 6px; object-fit: cover;
@@ -167,23 +163,24 @@
       font-size: 1.8rem; color: rgba(245,217,168,0.35);
     }
     .cover-hint { flex: 1; font-size: 0.75rem; color: rgba(224,216,208,0.4); line-height: 1.8; }
+    /* 연계 배지 */
     .link-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(85,239,196,0.12); border: 1px solid rgba(85,239,196,0.3);
-      border-radius: 20px; padding: 5px 12px;
-      font-size: 0.78rem; color: #55efc4; margin-bottom: 14px;
+      border-radius: 20px; padding: 5px 12px; font-size: 0.78rem; color: #55efc4; margin-bottom: 14px;
     }
     .link-badge .unlink-btn {
       background: none; border: none; cursor: pointer;
       color: rgba(85,239,196,0.5); font-size: 0.75rem; padding: 0; margin-left: 4px;
     }
     .link-badge .unlink-btn:hover { color: #ff7675; }
+    /* 히스토리 선택 박스 */
     .select-book-box {
       background: rgba(245,217,168,0.05); border: 1px solid rgba(245,217,168,0.18);
       border-radius: 14px; padding: 16px; margin-bottom: 18px;
     }
-    .select-book-box .box-title { font-size: 0.8rem; font-weight: 600; color: #f5d9a8; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .select-book-box .box-desc { font-size: 0.75rem; color: rgba(224,216,208,0.4); margin-bottom: 12px; line-height: 1.6; }
+    .select-book-box .box-title { font-size: 0.8rem; font-weight: 600; color: #f5d9a8; margin-bottom: 10px; }
+    .select-book-box .box-desc  { font-size: 0.75rem; color: rgba(224,216,208,0.4); margin-bottom: 12px; line-height: 1.6; }
     .select-book-row { display: flex; gap: 8px; align-items: center; }
     .select-book-row select {
       flex: 1; padding: 9px 32px 9px 13px;
@@ -203,19 +200,32 @@
       content: ''; position: absolute; top: 50%;
       width: 42%; height: 1px; background: rgba(255,255,255,0.1);
     }
-    .divider-or::before { left: 0; }
-    .divider-or::after  { right: 0; }
+    .divider-or::before { left: 0; } .divider-or::after { right: 0; }
+    /* 연계 도서 미리보기 */
     .linked-book-preview {
       display: none; background: rgba(85,239,196,0.06);
       border: 1px solid rgba(85,239,196,0.2); border-radius: 12px;
       padding: 12px 14px; margin-bottom: 14px;
       flex-direction: row; align-items: center; gap: 12px;
     }
-    .linked-book-preview img { width: 40px; height: 57px; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; }
-    .linked-book-preview .placeholder { width: 40px; height: 57px; background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: rgba(245,217,168,0.3); }
-    .linked-book-preview .info .title { font-size: 0.88rem; font-weight: 600; color: #55efc4; }
-    .linked-book-preview .info .sub   { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 3px; }
-    .linked-book-preview .info .id-badge { display: inline-block; font-size: 0.68rem; background: rgba(85,239,196,0.15); color: #55efc4; border-radius: 99px; padding: 1px 8px; margin-top: 4px; }
+    .linked-book-preview .lbp-thumb {
+      width: 40px; height: 57px; border-radius: 4px; object-fit: cover;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; display: none;
+    }
+    .linked-book-preview .lbp-placeholder {
+      width: 40px; height: 57px; background: rgba(255,255,255,0.07);
+      border-radius: 4px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: rgba(245,217,168,0.3);
+    }
+    .linked-book-preview .lbp-title { font-size: 0.88rem; font-weight: 600; color: #55efc4; }
+    .linked-book-preview .lbp-sub   { font-size: 0.75rem; color: rgba(224,216,208,0.5); margin-top: 3px; }
+    .linked-book-preview .lbp-badge {
+      display: inline-block; font-size: 0.68rem;
+      background: rgba(85,239,196,0.15); color: #55efc4;
+      border-radius: 99px; padding: 1px 8px; margin-top: 4px;
+    }
+    /* 데이터 목록 */
     .data-list { display: flex; flex-direction: column; gap: 10px; }
     .data-item {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
@@ -224,10 +234,10 @@
     }
     .data-item:hover { background: rgba(255,255,255,0.07); }
     .data-item.is-current { border-color: rgba(245,217,168,0.45); background: rgba(245,217,168,0.07); }
-    .data-item-body { flex: 1; min-width: 0; }
-    .data-item-title { font-size: 0.9rem; font-weight: 600; color: #f5d9a8; margin-bottom: 3px; }
-    .data-item-sub   { font-size: 0.78rem; color: rgba(224,216,208,0.55); margin-bottom: 2px; line-height: 1.5; }
-    .data-item-date  { font-size: 0.7rem; color: rgba(224,216,208,0.3); }
+    .data-item-body    { flex: 1; min-width: 0; }
+    .data-item-title   { font-size: 0.9rem; font-weight: 600; color: #f5d9a8; margin-bottom: 3px; }
+    .data-item-sub     { font-size: 0.78rem; color: rgba(224,216,208,0.55); margin-bottom: 2px; line-height: 1.5; }
+    .data-item-date    { font-size: 0.7rem; color: rgba(224,216,208,0.3); }
     .data-item-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .book-thumb { width: 44px; height: 62px; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); flex-shrink: 0; }
     .book-thumb-placeholder { width: 44px; height: 62px; background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: rgba(245,217,168,0.3); }
@@ -243,38 +253,21 @@
     .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: rgba(224,216,208,0.7); cursor: pointer; }
     .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #f5d9a8; }
     .count-badge { font-size: 0.78rem; color: rgba(224,216,208,0.35); font-weight: normal; margin-left: 6px; }
-
-    /* ========== 회원관리 탭 전용 스타일 (신규) ========== */
-    .member-table {
-      width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem;
-    }
+    /* 회원관리 전용 */
+    .member-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
     .member-table th {
       background: rgba(245,217,168,0.15); color: #f5d9a8;
       padding: 10px 12px; text-align: left; font-size: 0.78rem;
       font-weight: 600; border-bottom: 1px solid rgba(245,217,168,0.2);
     }
-    .member-table td {
-      padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
-      color: #e0d8d0; vertical-align: middle;
-    }
+    .member-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e0d8d0; vertical-align: middle; }
     .member-table tr:last-child td { border-bottom: none; }
     .member-table tr:hover td { background: rgba(255,255,255,0.04); }
-    .member-table .uid-cell {
-      font-size: 0.68rem; color: rgba(224,216,208,0.3);
-      font-family: monospace; max-width: 80px;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .member-table .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
-    .member-count-summary {
-      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
-    }
-    .m-badge {
-      padding: 6px 14px; border-radius: 20px;
-      font-size: 0.82rem; font-weight: 600;
-    }
-    .m-badge-total  { background: rgba(245,217,168,0.12); color: #f5d9a8; }
-    .m-badge-attend { background: rgba(85,239,196,0.12);  color: #55efc4; }
-
+    .uid-cell { font-size: 0.68rem; color: rgba(224,216,208,0.3); font-family: monospace; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: help; }
+    .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+    .member-count-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .m-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; }
+    .m-badge-total { background: rgba(245,217,168,0.12); color: #f5d9a8; }
     /* 수정 모달 */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
@@ -284,8 +277,7 @@
     .modal-overlay.open { display: flex; }
     .modal-box {
       background: #1e2d4a; border: 1px solid rgba(245,217,168,0.25);
-      border-radius: 16px; padding: 28px;
-      width: 92%; max-width: 460px;
+      border-radius: 16px; padding: 28px; width: 92%; max-width: 460px;
       box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     }
     .modal-box h3 { color: #f5d9a8; font-size: 1rem; margin-bottom: 18px; }
@@ -295,7 +287,7 @@
 </head>
 <body>
 
-<!-- 비밀번호 화면 -->
+<!-- ✅ 비밀번호 화면 (1개만 존재해야 함) -->
 <div id="pwScreen">
   <div class="lock-icon">🔐</div>
   <h2>관리자 페이지</h2>
@@ -305,24 +297,24 @@
   <div id="pwError"></div>
 </div>
 
-<!-- 관리자 콘텐츠 -->
+<!-- ✅ 관리자 콘텐츠 (초기 display:none) -->
 <div id="adminContent">
+
   <div class="admin-header">
     <h1>⚙️ 독서모임 관리자</h1>
     <a href="index.html" class="back-btn">← 메인으로</a>
   </div>
 
-  <!-- 탭 네비게이션 (회원관리 탭 추가) -->
   <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('dashboard', this)">📊 대시보드</button>
-    <button class="tab-btn" onclick="switchTab('current',   this)">📌 이번 달 설정</button>
-    <button class="tab-btn" onclick="switchTab('books',     this)">📚 도서 히스토리</button>
-    <button class="tab-btn" onclick="switchTab('notices',   this)">📢 공지사항</button>
-    <button class="tab-btn" onclick="switchTab('comments',  this)">💬 한줄평 관리</button>
-    <button class="tab-btn" onclick="switchTab('members',   this)">👥 회원 관리</button>
+    <button class="tab-btn active" onclick="switchTab('dashboard',this)">📊 대시보드</button>
+    <button class="tab-btn" onclick="switchTab('current',this)">📌 이번 달 설정</button>
+    <button class="tab-btn" onclick="switchTab('books',this)">📚 도서 히스토리</button>
+    <button class="tab-btn" onclick="switchTab('notices',this)">📢 공지사항</button>
+    <button class="tab-btn" onclick="switchTab('comments',this)">💬 한줄평 관리</button>
+    <button class="tab-btn" onclick="switchTab('members',this)">👥 회원 관리</button>
   </div>
 
-  <!-- ===== 탭1: 대시보드 ===== -->
+  <!-- 탭1: 대시보드 -->
   <div class="tab-content active" id="tab-dashboard">
     <div class="card">
       <h2>📊 현황 통계</h2>
@@ -335,7 +327,9 @@
     </div>
     <div class="card">
       <h2>📌 이번 달 선정도서 연계 현황</h2>
-      <div id="dashCurrentBook"><div class="empty-state"><div class="empty-icon">🔗</div>불러오는 중...</div></div>
+      <div id="dashCurrentBook">
+        <div class="empty-state"><div class="empty-icon">🔗</div>불러오는 중...</div>
+      </div>
     </div>
     <div class="card">
       <h2>💬 최근 한줄평 (최신 5개)</h2>
@@ -345,17 +339,17 @@
     </div>
   </div>
 
-  <!-- ===== 탭2: 이번 달 설정 ===== -->
+  <!-- 탭2: 이번 달 설정 -->
   <div class="tab-content" id="tab-current">
     <div class="card">
       <h2>🔗 도서 히스토리 연계</h2>
       <div class="linked-book-preview" id="linkedBookPreview">
-        <div class="placeholder" id="linkedBookThumbPlaceholder">📚</div>
-        <img id="linkedBookThumb" src="" alt="" style="display:none;width:40px;height:57px;border-radius:4px;object-fit:cover;"/>
-        <div class="info">
-          <div class="title"  id="linkedBookTitle">-</div>
-          <div class="sub"    id="linkedBookSub">-</div>
-          <span class="id-badge" id="linkedBookIdBadge">#-</span>
+        <div class="lbp-placeholder" id="lbpPlaceholder">📚</div>
+        <img id="lbpThumb" class="lbp-thumb" src="" alt=""/>
+        <div>
+          <div class="lbp-title" id="lbpTitle">-</div>
+          <div class="lbp-sub"   id="lbpSub">-</div>
+          <span class="lbp-badge" id="lbpBadge">#-</span>
         </div>
       </div>
       <div class="select-book-box">
@@ -365,11 +359,12 @@
           <select id="historyBookSelect" onchange="applyHistoryBook()">
             <option value="">── 도서를 선택하세요 ──</option>
           </select>
-          <button class="btn btn-secondary" onclick="refreshHistorySelect()" title="목록 새로고침">🔄</button>
+          <button class="btn btn-secondary" onclick="refreshHistorySelect()">🔄</button>
         </div>
       </div>
       <div class="divider-or">또는 직접 입력</div>
     </div>
+
     <div class="card">
       <h2>📅 이번 달 모임 일정</h2>
       <div class="form-grid">
@@ -379,6 +374,7 @@
         <div class="form-row"><label>👥 예상 참석인원</label><input type="text" id="scheduleMembers" placeholder="예: 5명"/></div>
       </div>
     </div>
+
     <div class="card">
       <h2>📖 이번 달 선정도서</h2>
       <div id="currentLinkBadge" style="display:none;">
@@ -395,8 +391,17 @@
         <div class="form-row span2"><label>📝 책 소개</label><textarea id="bookDesc" rows="4" placeholder="독자들에게 전달할 책 소개를 작성해주세요..."></textarea></div>
       </div>
       <div class="cover-row">
-        <div><div id="coverPreviewPlaceholder">📚</div><img id="coverPreviewAdmin" src="" alt=""/></div>
-        <p class="cover-hint">💡 <strong style="color:#f5d9a8;">책 표지 URL 찾는 법</strong><br/>① 네이버책 / 교보문고에서 책 검색<br/>② 표지 이미지 위에서 우클릭<br/>③ "이미지 주소 복사" 선택<br/>④ 위 URL 칸에 Ctrl+V 붙여넣기</p>
+        <div>
+          <div id="coverPreviewPlaceholder">📚</div>
+          <img id="coverPreviewAdmin" src="" alt=""/>
+        </div>
+        <p class="cover-hint">
+          💡 <strong style="color:#f5d9a8;">책 표지 URL 찾는 법</strong><br/>
+          ① 네이버책 / 교보문고에서 책 검색<br/>
+          ② 표지 이미지 위에서 우클릭<br/>
+          ③ "이미지 주소 복사" 선택<br/>
+          ④ 위 URL 칸에 Ctrl+V 붙여넣기
+        </p>
       </div>
     </div>
     <div class="save-bar">
@@ -405,7 +410,7 @@
     <div class="msg-box msg-global" id="saveMsgCurrent"></div>
   </div>
 
-  <!-- ===== 탭3: 도서 히스토리 ===== -->
+  <!-- 탭3: 도서 히스토리 -->
   <div class="tab-content" id="tab-books">
     <div class="card">
       <h2>➕ 새 도서 기록 추가</h2>
@@ -434,14 +439,18 @@
     </div>
   </div>
 
-  <!-- ===== 탭4: 공지사항 ===== -->
+  <!-- 탭4: 공지사항 -->
   <div class="tab-content" id="tab-notices">
     <div class="card">
       <h2>➕ 새 공지사항 작성</h2>
       <div class="form-grid">
         <div class="form-row span2"><label>📢 공지 제목 *</label><input type="text" id="newNoticeTitle" placeholder="예: 7월 모임 장소 변경 안내"/></div>
         <div class="form-row span2"><label>📝 공지 내용 *</label><textarea id="newNoticeContent" rows="4" placeholder="공지 내용을 작성해주세요..."></textarea></div>
-        <div class="form-row span2"><label class="checkbox-row"><input type="checkbox" id="newNoticePinned"/> 📌 상단 고정 (중요 공지)</label></div>
+        <div class="form-row span2">
+          <label class="checkbox-row">
+            <input type="checkbox" id="newNoticePinned"/> 📌 상단 고정 (중요 공지)
+          </label>
+        </div>
       </div>
       <div style="margin-top:16px;display:flex;gap:10px;">
         <button class="btn btn-primary" id="addNoticeBtn" onclick="addNotice()">📢 공지 등록</button>
@@ -459,7 +468,7 @@
     </div>
   </div>
 
-  <!-- ===== 탭5: 한줄평 관리 ===== -->
+  <!-- 탭5: 한줄평 관리 -->
   <div class="tab-content" id="tab-comments">
     <div class="card">
       <h2>💬 한줄평 전체 관리<span class="count-badge" id="commentCountBadge"></span></h2>
@@ -472,29 +481,15 @@
     </div>
   </div>
 
-  <!-- ===== 탭6: 회원 관리 (신규) ===== -->
+  <!-- 탭6: 회원 관리 -->
   <div class="tab-content" id="tab-members">
-
-    <!-- 회원 추가 폼 -->
     <div class="card">
       <h2>➕ 회원 추가</h2>
       <div class="form-grid">
-        <div class="form-row">
-          <label>🙋 이름 *</label>
-          <input type="text" id="mName" placeholder="예: 홍길동" maxlength="20"/>
-        </div>
-        <div class="form-row">
-          <label>📱 연락처</label>
-          <input type="text" id="mPhone" placeholder="예: 010-1234-5678" maxlength="20"/>
-        </div>
-        <div class="form-row">
-          <label>🏠 거주지</label>
-          <input type="text" id="mAddress" placeholder="예: 서울 강남구" maxlength="50"/>
-        </div>
-        <div class="form-row">
-          <label>📝 기타 메모</label>
-          <input type="text" id="mNotes" placeholder="예: 가입일, 특이사항 등" maxlength="100"/>
-        </div>
+        <div class="form-row"><label>🙋 이름 *</label><input type="text" id="mName" placeholder="예: 홍길동" maxlength="20"/></div>
+        <div class="form-row"><label>📱 연락처</label><input type="text" id="mPhone" placeholder="예: ***-****-****" maxlength="20"/></div>
+        <div class="form-row"><label>🏠 거주지</label><input type="text" id="mAddress" placeholder="예: 서울 강남구" maxlength="50"/></div>
+        <div class="form-row"><label>📝 기타 메모</label><input type="text" id="mNotes" placeholder="예: 가입일, 특이사항 등" maxlength="100"/></div>
       </div>
       <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-primary" id="addMemberBtn" onclick="addMember()">➕ 회원 추가</button>
@@ -502,16 +497,13 @@
       </div>
       <div class="msg-box" id="msgMember"></div>
     </div>
-
-    <!-- 회원 목록 -->
     <div class="card">
       <h2>👥 회원 목록<span class="count-badge" id="memberCountBadge"></span></h2>
       <div class="member-count-summary">
         <span class="m-badge m-badge-total">전체 <strong id="memberTotalCount">0</strong>명</span>
       </div>
       <div class="info-banner">
-        💡 카드를 클릭하면 이름 옆 고유 ID(UUID)를 확인할 수 있습니다.<br/>
-        이 ID는 <strong style="color:#f5d9a8;">attendance 테이블</strong>의 member_id와 자동 연결됩니다.
+        💡 고유 ID(UUID)는 attendance 테이블의 member_id와 자동 연결됩니다.
       </div>
       <div class="scroll-area" style="max-height:500px;">
         <div id="memberList">
@@ -519,34 +511,21 @@
         </div>
       </div>
     </div>
-
-  </div><!-- /tab-members -->
+  </div>
 
 </div><!-- /#adminContent -->
 
-<!-- ===== 회원 수정 모달 ===== -->
+<!-- 회원 수정 모달 -->
 <div class="modal-overlay" id="editMemberModal">
   <div class="modal-box">
     <h3>✏️ 회원 정보 수정</h3>
     <input type="hidden" id="editMemberId"/>
-    <div class="form-row" style="margin-bottom:12px;">
-      <label>🙋 이름 *</label>
-      <input type="text" id="editMemberName" placeholder="이름" maxlength="20"/>
-    </div>
-    <div class="form-row" style="margin-bottom:12px;">
-      <label>📱 연락처</label>
-      <input type="text" id="editMemberPhone" placeholder="연락처" maxlength="20"/>
-    </div>
-    <div class="form-row" style="margin-bottom:12px;">
-      <label>🏠 거주지</label>
-      <input type="text" id="editMemberAddress" placeholder="거주지" maxlength="50"/>
-    </div>
-    <div class="form-row" style="margin-bottom:12px;">
-      <label>📝 기타 메모</label>
-      <input type="text" id="editMemberNotes" placeholder="기타 메모" maxlength="100"/>
-    </div>
+    <div class="form-row" style="margin-bottom:12px;"><label>🙋 이름 *</label><input type="text" id="editMemberName" maxlength="20"/></div>
+    <div class="form-row" style="margin-bottom:12px;"><label>📱 연락처</label><input type="text" id="editMemberPhone" maxlength="20"/></div>
+    <div class="form-row" style="margin-bottom:12px;"><label>🏠 거주지</label><input type="text" id="editMemberAddress" maxlength="50"/></div>
+    <div class="form-row" style="margin-bottom:12px;"><label>📝 기타 메모</label><input type="text" id="editMemberNotes" maxlength="100"/></div>
     <div class="modal-actions">
-      <button class="btn btn-primary"   onclick="saveMemberEdit()">💾 저장</button>
+      <button class="btn btn-primary" onclick="saveMemberEdit()">💾 저장</button>
       <button class="btn btn-secondary" onclick="closeEditModal()">취소</button>
     </div>
     <div class="msg-box" id="msgMemberEdit"></div>
@@ -554,35 +533,44 @@
 </div>
 <script>
   // ============================================================
-  // ⚙️ 설정
+  // ⚙️ Supabase 설정
   // ============================================================
   const SUPABASE_URL = 'https://pxbgwwavxggbtywqxogj.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4Ymd3d2F2eGdnYnR5d3F4b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMjk5OTEsImV4cCI6MjA5NzYwNTk5MX0.XM0039icXsyrAQ_VLl7TvB6J_MzUzP9jQotifG5C5OM';
-  const ADMIN_PW     = 'dudwls@1026';
-
+  const ADMIN_PW = 'dudwls@1026';
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
   let currentLinkedHistoryId = null;
 
   // ============================================================
-  // 🔐 비밀번호 확인
+  // 🔐 비밀번호 확인 (✅ 수정: trim() 추가, 입력 초기화)
   // ============================================================
   function checkPw() {
-    const pw = document.getElementById('pwInput').value;
+    const inputEl = document.getElementById('pwInput');
+    const errorEl = document.getElementById('pwError');
+    const pw = inputEl.value.trim();
+
+    if (!pw) {
+      errorEl.textContent = '⚠️ 비밀번호를 입력해주세요.';
+      return;
+    }
     if (pw === ADMIN_PW) {
+      errorEl.textContent = '';
+      inputEl.value = '';
       document.getElementById('pwScreen').style.display     = 'none';
       document.getElementById('adminContent').style.display = 'block';
       initAdmin();
     } else {
-      document.getElementById('pwError').textContent = '❌ 비밀번호가 올바르지 않습니다.';
+      errorEl.textContent = '❌ 비밀번호가 올바르지 않습니다.';
+      inputEl.value = '';
+      inputEl.focus();
     }
   }
   document.getElementById('pwInput')
     .addEventListener('keydown', e => { if (e.key === 'Enter') checkPw(); });
 
   // ============================================================
-  // 🚀 초기 데이터 로드
+  // 🚀 초기 로드
   // ============================================================
   function initAdmin() {
     loadCurrentSettings();
@@ -591,150 +579,114 @@
     loadHistorySelect();
     loadNotices();
     loadAllComments();
-    loadMembers(); // ★ 회원 목록 초기 로드
+    loadMembers();
   }
-    // ============================================================
+
+  // ============================================================
   // 🗂️ 탭 전환
   // ============================================================
-  function switchTab(tabName, el) {
+    function switchTab(tabName, el) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + tabName).classList.add('active');
     el.classList.add('active');
-
     if (tabName === 'current') loadHistorySelect();
     if (tabName === 'books')   loadBookHistory();
-    if (tabName === 'members') loadMembers(); // ★ 회원관리 탭 진입 시 최신화
+    if (tabName === 'members') loadMembers();
   }
 
   // ============================================================
-  // 📊 대시보드 로드
+  // 📊 대시보드
   // ============================================================
   async function loadDashboard() {
-    const { count: cc } = await db
-      .from('comments').select('*', { count: 'exact', head: true });
+    const { count: cc } = await db.from('comments').select('*',{ count:'exact',head:true });
     document.getElementById('statComments').textContent = cc ?? 0;
-
-    const { count: bc } = await db
-      .from('book_history').select('*', { count: 'exact', head: true });
+    const { count: bc } = await db.from('book_history').select('*',{ count:'exact',head:true });
     document.getElementById('statBooks').textContent = bc ?? 0;
-
-    const { count: nc } = await db
-      .from('notices').select('*', { count: 'exact', head: true });
+    const { count: nc } = await db.from('notices').select('*',{ count:'exact',head:true });
     document.getElementById('statNotices').textContent = nc ?? 0;
-
-    // ★ 회원 수 통계 추가
-    const { count: mc } = await db
-      .from('members').select('*', { count: 'exact', head: true });
+    const { count: mc } = await db.from('members').select('*',{ count:'exact',head:true });
     document.getElementById('statMembers').textContent = mc ?? 0;
 
-    const { data: s } = await db
-      .from('settings').select('book_title,schedule_date,book_id')
-      .eq('id', 1).single();
-
-    // 이번 달 연계 현황 카드
+    const { data: s } = await db.from('settings').select('book_title,schedule_date,book_id').eq('id',1).single();
     const el = document.getElementById('dashCurrentBook');
     if (s?.book_id) {
-      const { data: bh } = await db
-        .from('book_history').select('*').eq('id', s.book_id).single();
+      const { data: bh } = await db.from('book_history').select('*').eq('id', s.book_id).single();
       if (bh) {
         el.innerHTML = `
-          <div class="linked-book-preview" style="display:flex;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;
+            background:rgba(85,239,196,0.06);border:1px solid rgba(85,239,196,0.2);border-radius:12px;">
             ${bh.book_cover_url
-              ? `<img src="${esc(bh.book_cover_url)}" alt="표지"
-                  style="width:40px;height:57px;border-radius:4px;object-fit:cover;"
-                  onerror="this.style.display='none'"/>`
-              : `<div class="placeholder">📚</div>`}
-            <div class="info">
-              <div class="title">${esc(bh.book_title)}</div>
-              <div class="sub">
-                ${esc(bh.book_author || '')}
-                ${bh.book_publisher ? ' · ' + esc(bh.book_publisher) : ''}
+              ? `<img src="${esc(bh.book_cover_url)}" style="width:40px;height:57px;border-radius:4px;object-fit:cover;" onerror="this.style.display='none'">`
+              : `<div style="width:40px;height:57px;background:rgba(255,255,255,0.07);border-radius:4px;display:flex;align-items:center;justify-content:center;">📚</div>`}
+            <div>
+              <div style="font-size:0.88rem;font-weight:600;color:#55efc4;">${esc(bh.book_title)}</div>
+              <div style="font-size:0.75rem;color:rgba(224,216,208,0.5);margin-top:3px;">
+                ${esc(bh.book_author||'')}${bh.book_publisher?' · '+esc(bh.book_publisher):''}
               </div>
-              ${bh.meeting_date
-                ? `<div class="sub">📅 ${esc(bh.meeting_date)}</div>` : ''}
-              <span class="id-badge">히스토리 #${bh.id}</span>
+              ${bh.meeting_date?`<div style="font-size:0.75rem;color:rgba(224,216,208,0.5);">📅 ${esc(bh.meeting_date)}</div>`:''}
+              <span style="display:inline-block;font-size:0.68rem;background:rgba(85,239,196,0.15);
+                color:#55efc4;border-radius:99px;padding:1px 8px;margin-top:4px;">히스토리 #${bh.id}</span>
             </div>
           </div>`;
       } else {
-        el.innerHTML = emptyState('⚠️', '연계된 도서 정보를 불러올 수 없습니다');
+        el.innerHTML = emptyState('⚠️','연계된 도서 정보를 불러올 수 없습니다');
       }
     } else {
-      el.innerHTML = emptyState('🔗',
-        '아직 도서 히스토리와 연계되지 않았습니다<br/><span style="font-size:0.8rem;">이번 달 설정 탭에서 연계해보세요</span>');
+      el.innerHTML = emptyState('🔗','아직 도서 히스토리와 연계되지 않았습니다<br/><span style="font-size:0.8rem;">이번 달 설정 탭에서 연계해보세요</span>');
     }
 
-    // 최근 한줄평 5개
-    const { data: recent } = await db
-      .from('comments').select('*')
-      .order('created_at', { ascending: false }).limit(5);
-
+    const { data: recent } = await db.from('comments').select('*').order('created_at',{ascending:false}).limit(5);
     const el2 = document.getElementById('recentComments');
-    if (!recent || recent.length === 0) {
-      el2.innerHTML = emptyState('💬', '아직 한줄평이 없습니다');
-      return;
-    }
+    if (!recent || recent.length === 0) { el2.innerHTML = emptyState('💬','아직 한줄평이 없습니다'); return; }
     el2.innerHTML = recent.map(c => `
       <div class="data-item">
         <div class="data-item-body">
           <div class="data-item-title">🙋 ${esc(c.name)}</div>
           <div class="data-item-sub">"${esc(c.review)}"</div>
-          ${c.question ? `<div class="data-item-sub">💬 ${esc(c.question)}</div>` : ''}
+          ${c.question?`<div class="data-item-sub">💬 ${esc(c.question)}</div>`:''}
           <div class="data-item-date">${fmtDate(c.created_at)}</div>
         </div>
       </div>`).join('');
   }
 
   // ============================================================
-  // ★ 히스토리 드롭다운 채우기
+  // 🔗 히스토리 드롭다운
   // ============================================================
   async function loadHistorySelect() {
     const sel = document.getElementById('historyBookSelect');
-    const { data, error } = await db
-      .from('book_history').select('id, book_title, book_author, meeting_date')
-      .order('book_id', { ascending: false });
-
+    const { data, error } = await db.from('book_history')
+      .select('id,book_title,book_author,meeting_date')
+      .order('id',{ascending:false});
     while (sel.options.length > 1) sel.remove(1);
-
     if (error || !data || data.length === 0) {
-      sel.options[0].text = '── 등록된 도서 없음 (히스토리 탭에서 추가하세요) ──';
-      return;
+      sel.options[0].text = '── 등록된 도서 없음 ──'; return;
     }
     sel.options[0].text = '── 도서를 선택하세요 ──';
-
     data.forEach(b => {
       const opt = document.createElement('option');
       opt.value = b.id;
-      const dateStr = b.meeting_date ? ` | ${b.meeting_date}` : '';
-      opt.text = `#${b.id} | ${b.book_title} — ${b.book_author || '저자미상'}${dateStr}`;
+      opt.text  = `#${b.id} | ${b.book_title} — ${b.book_author||'저자미상'}${b.meeting_date?' | '+b.meeting_date:''}`;
       sel.appendChild(opt);
     });
-
     if (currentLinkedHistoryId) sel.value = String(currentLinkedHistoryId);
   }
 
   async function refreshHistorySelect() {
     await loadHistorySelect();
-    showMsg('saveMsgCurrent', '🔄 목록을 새로고침했습니다', 'success');
+    showMsg('saveMsgCurrent','🔄 목록을 새로고침했습니다','success');
   }
 
   // ============================================================
-  // ★ 히스토리 도서 선택 → 폼 자동 채우기
+  // 🔗 히스토리 도서 선택 → 폼 자동 채우기
   // ============================================================
   async function applyHistoryBook() {
     const sel = document.getElementById('historyBookSelect');
     const id  = parseInt(sel.value);
-    if (!id) {
-      document.getElementById('linkedBookPreview').style.display = 'none';
-      return;
-    }
+    if (!id) { document.getElementById('linkedBookPreview').style.display='none'; return; }
 
-    const { data: bh, error } = await db
-      .from('book_history').select('*').eq('id', id).single();
-    if (error || !bh) {
-      showMsg('saveMsgCurrent', '❌ 도서 정보를 불러오지 못했습니다', 'error');
-      return;
-    }
+    const { data: bh, error } = await db.from('book_history').select('*').eq('id',id).single();
+    if (error || !bh) { showMsg('saveMsgCurrent','❌ 도서 정보를 불러오지 못했습니다','error'); return; }
 
     setVal('bookTitle',     bh.book_title);
     setVal('bookAuthor',    bh.book_author);
@@ -744,40 +696,35 @@
     previewCover();
 
     currentLinkedHistoryId = id;
-
     document.getElementById('currentLinkBadge').style.display = 'block';
     document.getElementById('currentLinkId').textContent      = `#${id}`;
 
-    const preview   = document.getElementById('linkedBookPreview');
-    const thumb     = document.getElementById('linkedBookThumb');
-    const thumbPh   = document.getElementById('linkedBookThumbPlaceholder');
+    // 미리보기 업데이트
+    updateLbpPreview(bh, id);
+    showMsg('saveMsgCurrent',`✅ #${id} "${bh.book_title}" 적용됨. 저장 버튼을 눌러주세요.`,'success');
+  }
 
-    document.getElementById('linkedBookTitle').textContent   = bh.book_title;
-    document.getElementById('linkedBookSub').textContent     =
-      [bh.book_author, bh.book_publisher].filter(Boolean).join(' · ');
-    document.getElementById('linkedBookIdBadge').textContent = `히스토리 #${id}`;
-
+  function updateLbpPreview(bh, id) {
+    const preview = document.getElementById('linkedBookPreview');
+    const thumb   = document.getElementById('lbpThumb');
+    const ph      = document.getElementById('lbpPlaceholder');
+    document.getElementById('lbpTitle').textContent = bh.book_title;
+    document.getElementById('lbpSub').textContent   = [bh.book_author,bh.book_publisher].filter(Boolean).join(' · ');
+    document.getElementById('lbpBadge').textContent = `히스토리 #${id}`;
     if (bh.book_cover_url) {
-      thumb.src = bh.book_cover_url;
-      thumb.style.display   = 'block';
-      thumbPh.style.display = 'none';
-      thumb.onerror = () => {
-        thumb.style.display   = 'none';
-        thumbPh.style.display = 'flex';
-      };
+      thumb.src          = bh.book_cover_url;
+      thumb.style.display = 'block';
+      ph.style.display    = 'none';
+      thumb.onerror = () => { thumb.style.display='none'; ph.style.display='flex'; };
     } else {
-      thumb.style.display   = 'none';
-      thumbPh.style.display = 'flex';
+      thumb.style.display = 'none';
+      ph.style.display    = 'flex';
     }
     preview.style.display = 'flex';
-
-    showMsg('saveMsgCurrent',
-      `✅ #${id} "${bh.book_title}" 정보가 폼에 적용되었습니다. 저장 버튼을 눌러주세요.`,
-      'success');
   }
 
   // ============================================================
-  // ★ 연계 해제
+  // 🔓 연계 해제
   // ============================================================
   function unlinkHistory() {
     if (!confirm('도서 히스토리 연계를 해제하시겠습니까?')) return;
@@ -785,17 +732,15 @@
     document.getElementById('currentLinkBadge').style.display  = 'none';
     document.getElementById('linkedBookPreview').style.display = 'none';
     document.getElementById('historyBookSelect').value         = '';
-    showMsg('saveMsgCurrent', '🔓 연계가 해제되었습니다. 저장 버튼을 눌러 반영하세요.', 'success');
+    showMsg('saveMsgCurrent','🔓 연계 해제됨. 저장 버튼을 눌러 반영하세요.','success');
   }
 
   // ============================================================
   // 📋 이번 달 설정 불러오기
   // ============================================================
   async function loadCurrentSettings() {
-    const { data } = await db
-      .from('settings').select('*').eq('id', 1).single();
+    const { data } = await db.from('settings').select('*').eq('id',1).single();
     if (!data) return;
-
     setVal('scheduleDate',    data.schedule_date);
     setVal('scheduleTime',    data.schedule_time);
     setVal('schedulePlace',   data.schedule_place);
@@ -811,30 +756,8 @@
       currentLinkedHistoryId = data.book_id;
       document.getElementById('currentLinkBadge').style.display = 'block';
       document.getElementById('currentLinkId').textContent      = `#${data.book_id}`;
-
-      const { data: bh } = await db
-        .from('book_history').select('*').eq('id', data.book_id).single();
-      if (bh) {
-        const preview = document.getElementById('linkedBookPreview');
-        const thumb   = document.getElementById('linkedBookThumb');
-        const thumbPh = document.getElementById('linkedBookThumbPlaceholder');
-
-        document.getElementById('linkedBookTitle').textContent   = bh.book_title;
-        document.getElementById('linkedBookSub').textContent     =
-          [bh.book_author, bh.book_publisher].filter(Boolean).join(' · ');
-        document.getElementById('linkedBookIdBadge').textContent = `히스토리 #${bh.id}`;
-
-        if (bh.book_cover_url) {
-          thumb.src = bh.book_cover_url;
-          thumb.style.display   = 'block';
-          thumbPh.style.display = 'none';
-          thumb.onerror = () => {
-            thumb.style.display   = 'none';
-            thumbPh.style.display = 'flex';
-          };
-        }
-        preview.style.display = 'flex';
-      }
+      const { data: bh } = await db.from('book_history').select('*').eq('id',data.book_id).single();
+      if (bh) updateLbpPreview(bh, data.book_id);
     }
   }
 
@@ -862,27 +785,23 @@
     }, { onConflict: 'id' });
 
     showMsg('saveMsgCurrent',
-      error ? `❌ 저장 실패: ${error.message}`
-            : '✅ 저장 완료! 메인 페이지에 즉시 반영되었습니다 🎉',
+      error ? `❌ 저장 실패: ${error.message}` : '✅ 저장 완료! 메인 페이지에 즉시 반영되었습니다 🎉',
       error ? 'error' : 'success');
-
     btn.disabled = false;
     btn.innerHTML = '💾 이번 달 정보 저장하기';
     if (!error) { loadDashboard(); loadBookHistory(); }
   }
 
   // ============================================================
-  // 🖼️ 책 표지 미리보기
+  // 🖼️ 표지 미리보기
   // ============================================================
   function previewCover() {
     const url = document.getElementById('bookCoverUrl').value.trim();
     const img = document.getElementById('coverPreviewAdmin');
     const ph  = document.getElementById('coverPreviewPlaceholder');
-    if (!url) { img.style.display = 'none'; ph.style.display = 'flex'; return; }
-    img.src = url;
-    img.style.display = 'block';
-    ph.style.display  = 'none';
-    img.onerror = () => { img.style.display = 'none'; ph.style.display = 'flex'; };
+    if (!url) { img.style.display='none'; ph.style.display='flex'; return; }
+    img.src = url; img.style.display='block'; ph.style.display='none';
+    img.onerror = () => { img.style.display='none'; ph.style.display='flex'; };
   }
 
   // ============================================================
@@ -890,15 +809,12 @@
   // ============================================================
   async function loadBookHistory() {
     const el = document.getElementById('bookHistoryList');
-    const { data: settings } = await db
-      .from('settings').select('book_id').eq('id', 1).single();
+    const { data: settings } = await db.from('settings').select('book_id').eq('id',1).single();
     const activeId = settings?.book_id ?? null;
-
-    const { data, error } = await db
-      .from('book_history').select('*').order('book_id', { ascending: false });
+    const { data, error } = await db.from('book_history').select('*').order('id',{ascending:false});
 
     if (error || !data || data.length === 0) {
-      el.innerHTML = emptyState('📚', '아직 등록된 도서 기록이 없습니다<br/>위 폼으로 추가해보세요!');
+      el.innerHTML = emptyState('📚','아직 등록된 도서 기록이 없습니다');
       document.getElementById('bookCountBadge').textContent = '';
       return;
     }
@@ -907,69 +823,80 @@
     el.innerHTML = data.map(b => {
       const isCurrent = (b.id === activeId);
       return `
-        <div class="data-item ${isCurrent ? 'is-current' : ''}" id="book-${b.id}">
+        <div class="data-item ${isCurrent?'is-current':''}" id="book-${b.id}">
           ${b.book_cover_url
-            ? `<img class="book-thumb" src="${esc(b.book_cover_url)}" alt="표지"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-               <div class="book-thumb-placeholder" style="display:none;">📚</div>`
-            : `<div class="book-thumb-placeholder">📚</div>`}
+            ? `<img class="book-thumb" src="${esc(b.book_cover_url)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <div class="book-thumb-placeholder" style="${b.book_cover_url?'display:none;':''}">📚</div>
           <div class="data-item-body">
             <div class="data-item-title">
               #${b.id} ${esc(b.book_title)}
-              ${isCurrent ? `<span class="current-badge">📌 이번 달</span>` : ''}
+              ${isCurrent?`<span class="current-badge">📌 이번 달</span>`:''}
             </div>
-            <div class="data-item-sub">
-              ${esc(b.book_author || '')}${b.book_publisher ? ` · ${esc(b.book_publisher)}` : ''}
-            </div>
-            ${b.meeting_date ? `<div class="data-item-sub">📅 ${esc(b.meeting_date)}</div>` : ''}
+            <div class="data-item-sub">${esc(b.book_author||'')}${b.book_publisher?' · '+esc(b.book_publisher):''}</div>
+            ${b.meeting_date?`<div class="data-item-sub">📅 ${esc(b.meeting_date)}</div>`:''}
             <div class="data-item-date">등록일: ${fmtDate(b.created_at)}</div>
           </div>
           <div class="data-item-actions">
             ${isCurrent
               ? `<button class="btn btn-set-current" disabled>✅ 지정됨</button>`
-              : `<button class="btn btn-set-current" onclick="setCurrentFromHistory(${b.id})">📌 이번 달로</button>`}
-            <button class="btn btn-danger" onclick="deleteBook(${b.id})">🗑️</button>
+              : `<button class="btn btn-set-current" data-id="${b.id}" onclick="setCurrentFromHistoryBtn(this)">📌 이번 달로</button>`}
+            <button class="btn btn-danger" data-id="${b.id}" onclick="deleteBookBtn(this)">🗑️</button>
           </div>
         </div>`;
     }).join('');
   }
 
-  async function setCurrentFromHistory(id) {
+  // ✅ data-* 방식으로 변경 (onclick 속성 충돌 방지)
+  async function setCurrentFromHistoryBtn(btn) {
+    const id = parseInt(btn.dataset.id);
     if (!confirm(`히스토리 #${id} 도서를 이번 달 선정도서로 지정하시겠습니까?`)) return;
-    const { data: bh, error } = await db
-      .from('book_history').select('*').eq('id', id).single();
+    const { data: bh, error } = await db.from('book_history').select('*').eq('id',id).single();
     if (error || !bh) { alert('도서 정보 조회 실패'); return; }
-
     const { error: saveErr } = await db.from('settings').upsert({
-      id: 1, book_title: bh.book_title, book_author: bh.book_author,
-      book_publisher: bh.book_publisher, book_desc: bh.book_desc,
-      book_cover_url: bh.book_cover_url, book_id: id,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'id' });
-
-    if (saveErr) { alert('저장 실패: ' + saveErr.message); return; }
-
+      id:1, book_title:bh.book_title, book_author:bh.book_author,
+      book_publisher:bh.book_publisher, book_desc:bh.book_desc,
+      book_cover_url:bh.book_cover_url, book_id:id,
+      updated_at:new Date().toISOString(),
+    },{ onConflict:'id' });
+    if (saveErr) { alert('저장 실패: '+saveErr.message); return; }
     currentLinkedHistoryId = id;
-    setVal('bookTitle', bh.book_title); setVal('bookAuthor', bh.book_author);
-    setVal('bookPublisher', bh.book_publisher); setVal('bookDesc', bh.book_desc);
-    setVal('bookCoverUrl', bh.book_cover_url);
+    setVal('bookTitle',bh.book_title); setVal('bookAuthor',bh.book_author);
+    setVal('bookPublisher',bh.book_publisher); setVal('bookDesc',bh.book_desc);
+    setVal('bookCoverUrl',bh.book_cover_url);
     document.getElementById('currentLinkBadge').style.display = 'block';
     document.getElementById('currentLinkId').textContent      = `#${id}`;
-
+    updateLbpPreview(bh, id);
     await loadBookHistory(); await loadDashboard(); await loadHistorySelect();
     alert(`✅ "${bh.book_title}" 이(가) 이번 달 도서로 지정되었습니다!`);
   }
 
+  async function deleteBookBtn(btn) {
+    const id = parseInt(btn.dataset.id);
+    if (!confirm('이 도서 기록을 삭제하시겠습니까?')) return;
+    if (id === currentLinkedHistoryId) {
+      if (!confirm('⚠️ 이번 달 연계 도서입니다. 삭제하면 연계가 해제됩니다. 계속하시겠습니까?')) return;
+      currentLinkedHistoryId = null;
+      document.getElementById('currentLinkBadge').style.display  = 'none';
+      document.getElementById('linkedBookPreview').style.display = 'none';
+      await db.from('settings').update({ book_id:null }).eq('id',1);
+    }
+    const { error } = await db.from('book_history').delete().eq('id',id);
+    if (error) { alert('삭제 실패: '+error.message); return; }
+    fadeRemove(`book-${id}`);
+    loadDashboard(); loadHistorySelect();
+  }
+
+  // ============================================================
+  // ➕ 도서 추가
+  // ============================================================
   async function addBook() {
     const title  = getVal('newBookTitle');
     const author = getVal('newBookAuthor');
-    if (!title)  { showMsg('msgBook', '⚠️ 책 제목은 필수입니다!', 'error'); return; }
-    if (!author) { showMsg('msgBook', '⚠️ 저자는 필수입니다!',    'error'); return; }
-
+    if (!title)  { showMsg('msgBook','⚠️ 책 제목은 필수입니다!','error'); return; }
+    if (!author) { showMsg('msgBook','⚠️ 저자는 필수입니다!','error');    return; }
     const btn = document.getElementById('addBookBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-inline"></span>추가 중...';
-
+    btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>추가 중...';
     const { error } = await db.from('book_history').insert([{
       book_title:     title,
       book_author:    author,
@@ -978,36 +905,16 @@
       book_cover_url: getVal('newBookCoverUrl'),
       meeting_date:   getVal('newBookMeetingDate'),
     }]);
-
     showMsg('msgBook',
-      error ? `❌ 추가 실패: ${error.message}`
-            : `✅ "${title}" 도서가 추가되었습니다!`,
+      error ? `❌ 추가 실패: ${error.message}` : `✅ "${title}" 도서가 추가되었습니다!`,
       error ? 'error' : 'success');
-
     if (!error) { clearBookForm(); loadBookHistory(); loadHistorySelect(); loadDashboard(); }
-    btn.disabled = false;
-    btn.innerHTML = '➕ 도서 추가';
+    btn.disabled=false; btn.innerHTML='➕ 도서 추가';
   }
 
   function clearBookForm() {
-    ['newBookTitle','newBookAuthor','newBookPublisher',
-     'newBookDesc','newBookCoverUrl','newBookMeetingDate']
-      .forEach(id => { document.getElementById(id).value = ''; });
-  }
-
-  async function deleteBook(id) {
-    if (!confirm('이 도서 기록을 삭제하시겠습니까?')) return;
-    if (id === currentLinkedHistoryId) {
-      if (!confirm('⚠️ 이 도서는 현재 이번 달 선정도서로 연계되어 있습니다. 계속하시겠습니까?')) return;
-      currentLinkedHistoryId = null;
-      document.getElementById('currentLinkBadge').style.display  = 'none';
-      document.getElementById('linkedBookPreview').style.display = 'none';
-      await db.from('settings').update({ book_id: null }).eq('id', 1);
-    }
-    const { error } = await db.from('book_history').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
-    fadeRemove(`book-${id}`);
-    loadDashboard(); loadHistorySelect();
+    ['newBookTitle','newBookAuthor','newBookPublisher','newBookDesc','newBookCoverUrl','newBookMeetingDate']
+      .forEach(id => { document.getElementById(id).value=''; });
   }
 
   // ============================================================
@@ -1015,30 +922,22 @@
   // ============================================================
   async function loadNotices() {
     const el = document.getElementById('noticeList');
-    const { data, error } = await db
-      .from('notices').select('*')
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      el.innerHTML = emptyState('📢', '등록된 공지사항이 없습니다<br/>위 폼으로 추가해보세요!');
-      document.getElementById('noticeCountBadge').textContent = '';
-      return;
+    const { data, error } = await db.from('notices').select('*')
+      .order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
+    if (error || !data || data.length===0) {
+      el.innerHTML = emptyState('📢','등록된 공지사항이 없습니다');
+      document.getElementById('noticeCountBadge').textContent=''; return;
     }
-    document.getElementById('noticeCountBadge').textContent = `(총 ${data.length}개)`;
-
+    document.getElementById('noticeCountBadge').textContent=`(총 ${data.length}개)`;
     el.innerHTML = data.map(n => `
       <div class="data-item" id="notice-${n.id}">
         <div class="data-item-body">
-          <div class="data-item-title">
-            📢 ${esc(n.title)}
-            ${n.is_pinned ? `<span class="pin-badge">📌 고정</span>` : ''}
-          </div>
+          <div class="data-item-title">📢 ${esc(n.title)}${n.is_pinned?`<span class="pin-badge">📌 고정</span>`:''}</div>
           <div class="notice-content">${esc(n.content)}</div>
           <div class="data-item-date" style="margin-top:6px;">${fmtDate(n.created_at)}</div>
         </div>
         <div class="data-item-actions">
-          <button class="btn btn-danger" onclick="deleteNotice(${n.id})">🗑️</button>
+          <button class="btn btn-danger" data-id="${n.id}" onclick="deleteNoticeBtn(this)">🗑️</button>
         </div>
       </div>`).join('');
   }
@@ -1047,20 +946,16 @@
     const title   = getVal('newNoticeTitle');
     const content = getVal('newNoticeContent');
     const pinned  = document.getElementById('newNoticePinned').checked;
-    if (!title)   { showMsg('msgNotice', '⚠️ 공지 제목은 필수입니다!', 'error'); return; }
-    if (!content) { showMsg('msgNotice', '⚠️ 공지 내용은 필수입니다!', 'error'); return; }
-
+    if (!title)   { showMsg('msgNotice','⚠️ 공지 제목은 필수입니다!','error'); return; }
+    if (!content) { showMsg('msgNotice','⚠️ 공지 내용은 필수입니다!','error'); return; }
     const btn = document.getElementById('addNoticeBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-inline"></span>등록 중...';
-
-    const { error } = await db.from('notices').insert([{ title, content, is_pinned: pinned }]);
+    btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>등록 중...';
+    const { error } = await db.from('notices').insert([{ title, content, is_pinned:pinned }]);
     showMsg('msgNotice',
       error ? `❌ 등록 실패: ${error.message}` : '✅ 공지사항이 등록되었습니다!',
       error ? 'error' : 'success');
     if (!error) { clearNoticeForm(); loadNotices(); loadDashboard(); }
-    btn.disabled = false;
-    btn.innerHTML = '📢 공지 등록';
+    btn.disabled=false; btn.innerHTML='📢 공지 등록';
   }
 
   function clearNoticeForm() {
@@ -1069,12 +964,12 @@
     document.getElementById('newNoticePinned').checked = false;
   }
 
-  async function deleteNotice(id) {
+  async function deleteNoticeBtn(btn) {
+    const id = parseInt(btn.dataset.id);
     if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
-    const { error } = await db.from('notices').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
-    fadeRemove(`notice-${id}`);
-    loadDashboard();
+    const { error } = await db.from('notices').delete().eq('id',id);
+    if (error) { alert('삭제 실패: '+error.message); return; }
+    fadeRemove(`notice-${id}`); loadDashboard();
   }
 
   // ============================================================
@@ -1083,112 +978,92 @@
   async function loadAllComments() {
     const el    = document.getElementById('allCommentsList');
     const badge = document.getElementById('commentCountBadge');
-    const { data, error } = await db
-      .from('comments').select('*').order('created_at', { ascending: false });
-
-    if (error) { el.innerHTML = emptyState('😥', '한줄평을 불러오지 못했습니다'); return; }
-    if (!data || data.length === 0) {
-      el.innerHTML = emptyState('💬', '아직 등록된 한줄평이 없습니다');
-      if (badge) badge.textContent = '';
-      return;
+    const { data, error } = await db.from('comments').select('*').order('created_at',{ascending:false});
+    if (error) { el.innerHTML=emptyState('😥','한줄평을 불러오지 못했습니다'); return; }
+    if (!data || data.length===0) {
+      el.innerHTML=emptyState('💬','아직 등록된 한줄평이 없습니다');
+      if (badge) badge.textContent=''; return;
     }
-    if (badge) badge.textContent = `(총 ${data.length}개)`;
-
+    if (badge) badge.textContent=`(총 ${data.length}개)`;
     el.innerHTML = data.map(c => `
       <div class="data-item" id="comment-${c.id}">
         <div class="data-item-body">
           <div class="data-item-title">🙋 ${esc(c.name)}</div>
           <div class="data-item-sub">"${esc(c.review)}"</div>
-          ${c.question ? `<div class="data-item-sub">💬 ${esc(c.question)}</div>` : ''}
+          ${c.question?`<div class="data-item-sub">💬 ${esc(c.question)}</div>`:''}
           <div class="data-item-date">${fmtDate(c.created_at)}</div>
         </div>
         <div class="data-item-actions">
-          <button class="btn btn-danger" onclick="deleteComment(${c.id})">🗑️ 삭제</button>
+          <button class="btn btn-danger" data-id="${c.id}" onclick="deleteCommentBtn(this)">🗑️ 삭제</button>
         </div>
       </div>`).join('');
   }
 
-  async function deleteComment(id) {
+  async function deleteCommentBtn(btn) {
+    const id = parseInt(btn.dataset.id);
     if (!confirm('이 한줄평을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
-    const { error } = await db.from('comments').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
+    const { error } = await db.from('comments').delete().eq('id',id);
+    if (error) { alert('삭제 실패: '+error.message); return; }
     fadeRemove(`comment-${id}`);
     const badge = document.getElementById('commentCountBadge');
     if (badge) {
-      const cur = parseInt(badge.textContent.replace(/[^0-9]/g, '')) || 0;
-      badge.textContent = cur > 1 ? `(총 ${cur - 1}개)` : '';
+      const cur = parseInt(badge.textContent.replace(/[^0-9]/g,'')) || 0;
+      badge.textContent = cur>1 ? `(총 ${cur-1}개)` : '';
     }
     loadDashboard();
   }
 
   // ============================================================
-  // 👥 회원 관리 — 목록 불러오기 (신규)
+  // 👥 회원 목록 불러오기
   // ============================================================
   async function loadMembers() {
     const el    = document.getElementById('memberList');
     const badge = document.getElementById('memberCountBadge');
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div>불러오는 중...</div>';
-
-    const { data, error } = await db
-      .from('members').select('*').order('created_at', { ascending: true });
-
-    if (error) {
-      el.innerHTML = emptyState('😥', `오류: ${error.message}`);
-      return;
+    const { data, error } = await db.from('members').select('*').order('created_at',{ascending:true});
+    if (error) { el.innerHTML=emptyState('😥',`오류: ${error.message}`); return; }
+    if (!data || data.length===0) {
+      el.innerHTML=emptyState('👥','등록된 회원이 없습니다<br/>위 폼으로 추가해보세요!');
+      document.getElementById('memberTotalCount').textContent=0;
+      if (badge) badge.textContent=''; return;
     }
-    if (!data || data.length === 0) {
-      el.innerHTML = emptyState('👥', '등록된 회원이 없습니다<br/>위 폼으로 추가해보세요!');
-      document.getElementById('memberTotalCount').textContent = 0;
-      if (badge) badge.textContent = '';
-      return;
-    }
-
     document.getElementById('memberTotalCount').textContent = data.length;
     if (badge) badge.textContent = `(총 ${data.length}명)`;
 
-    // 테이블 형태로 렌더링
     el.innerHTML = `
       <div style="overflow-x:auto;">
         <table class="member-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>이름</th>
-              <th>연락처</th>
-              <th>거주지</th>
-              <th>기타 메모</th>
-              <th>고유 ID (UUID)</th>
-              <th>등록일</th>
-              <th>관리</th>
+              <th>#</th><th>이름</th><th>연락처</th><th>거주지</th>
+              <th>기타 메모</th><th>고유 ID</th><th>등록일</th><th>관리</th>
             </tr>
           </thead>
           <tbody>
-            ${data.map((m, i) => `
+            ${data.map((m,i) => `
               <tr id="member-row-${m.id}">
-                <td>${i + 1}</td>
+                <td>${i+1}</td>
                 <td><strong style="color:#f5d9a8;">${esc(m.name)}</strong></td>
-                <td>${esc(m.phone || '-')}</td>
-                <td>${esc(m.address || '-')}</td>
-                <td>${esc(m.notes || '-')}</td>
-                <td class="uid-cell" title="${esc(m.id)}">${esc(m.id)}</td>
+                <td>${esc(m.phone||'-')}</td>
+                <td>${esc(m.address||'-')}</td>
+                <td>${esc(m.notes||'-')}</td>
+                <td class="uid-cell" title="${m.id}">${m.id.substring(0,8)}...</td>
                 <td>${fmtDate(m.created_at)}</td>
                 <td>
                   <div class="actions-cell">
                     <button class="btn btn-warning"
                       style="padding:5px 10px;font-size:0.78rem;"
-                      onclick="openEditModal(
-                        '${esc(m.id)}',
-                        '${esc(m.name)}',
-                        '${esc(m.phone||'')}',
-                        '${esc(m.address||'')}',
-                        '${esc(m.notes||'')}')">
-                      ✏️ 수정
-                    </button>
+                      data-id="${m.id}"
+                      data-name="${esc(m.name)}"
+                      data-phone="${esc(m.phone||'')}"
+                      data-address="${esc(m.address||'')}"
+                      data-notes="${esc(m.notes||'')}"
+                      onclick="openEditModalBtn(this)">✏️ 수정</button>
                     <button class="btn btn-danger"
                       style="padding:5px 10px;font-size:0.78rem;"
-                      onclick="deleteMember('${esc(m.id)}', '${esc(m.name)}')">
-                      🗑️ 삭제
-                    </button>
+                      data-id="${m.id}"
+                      data-name="${esc(m.name)}"
+                      onclick="deleteMemberBtn(this)">🗑️ 삭제</button>
                   </div>
                 </td>
               </tr>`).join('')}
@@ -1198,84 +1073,57 @@
   }
 
   // ============================================================
-  // 👥 회원 추가 (신규)
+  // 👥 회원 추가
   // ============================================================
   async function addMember() {
     const name    = getVal('mName');
     const phone   = getVal('mPhone');
     const address = getVal('mAddress');
     const notes   = getVal('mNotes');
-
-    if (!name) { showMsg('msgMember', '⚠️ 이름은 필수 입력 항목입니다!', 'error'); return; }
-
+    if (!name) { showMsg('msgMember','⚠️ 이름은 필수 입력 항목입니다!','error'); return; }
     const btn = document.getElementById('addMemberBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-inline"></span>추가 중...';
-
+    btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>추가 중...';
     const { error } = await db.from('members').insert([{
-      name,
-      phone:   phone   || null,
-      address: address || null,
-      notes:   notes   || null,
-      // UUID는 Supabase DB에서 gen_random_uuid()로 자동 생성
+      name, phone:phone||null, address:address||null, notes:notes||null
     }]);
-
     showMsg('msgMember',
-      error ? `❌ 추가 실패: ${error.message}`
-            : `✅ "${name}" 회원이 추가되었습니다!`,
+      error ? `❌ 추가 실패: ${error.message}` : `✅ "${name}" 회원이 추가되었습니다!`,
       error ? 'error' : 'success');
-
-    if (!error) {
-      clearMemberForm();
-      loadMembers();
-      loadDashboard(); // 통계 갱신
-    }
-    btn.disabled = false;
-    btn.innerHTML = '➕ 회원 추가';
+    if (!error) { clearMemberForm(); loadMembers(); loadDashboard(); }
+    btn.disabled=false; btn.innerHTML='➕ 회원 추가';
   }
 
   function clearMemberForm() {
-    ['mName', 'mPhone', 'mAddress', 'mNotes']
-      .forEach(id => { document.getElementById(id).value = ''; });
+    ['mName','mPhone','mAddress','mNotes'].forEach(id => { document.getElementById(id).value=''; });
   }
 
   // ============================================================
-  // 👥 회원 삭제 (신규)
+  // 👥 회원 삭제 (✅ data-* 방식)
   // ============================================================
-  async function deleteMember(id, name) {
-    if (!confirm(`"${name}" 회원을 삭제하시겠습니까?\n⚠️ 해당 회원의 참석 기록(attendance)도 함께 삭제됩니다.`)) return;
-
-    const { error } = await db.from('members').delete().eq('id', id);
-    if (error) { alert('삭제 실패: ' + error.message); return; }
-
-    // 해당 회원의 attendance 데이터도 삭제
-    await db.from('attendance').delete().eq('member_id', id);
-
-    // 테이블 행 페이드아웃
+  async function deleteMemberBtn(btn) {
+    const id   = btn.dataset.id;
+    const name = btn.dataset.name;
+    if (!confirm(`"${name}" 회원을 삭제하시겠습니까?\n⚠️ 참석 기록도 함께 삭제됩니다.`)) return;
+    const { error } = await db.from('members').delete().eq('id',id);
+    if (error) { alert('삭제 실패: '+error.message); return; }
+    await db.from('attendance').delete().eq('member_id',id);
     const row = document.getElementById(`member-row-${id}`);
-    if (row) {
-      row.style.transition = 'opacity 0.3s';
-      row.style.opacity    = '0';
-      setTimeout(() => { row.remove(); }, 300);
-    }
-
-    showMsg('msgMember', `✅ "${name}" 회원이 삭제되었습니다.`, 'success');
+    if (row) { row.style.transition='opacity 0.3s'; row.style.opacity='0'; setTimeout(()=>row.remove(),300); }
+    showMsg('msgMember',`✅ "${name}" 회원이 삭제되었습니다.`,'success');
     loadDashboard();
-
-    // 총 회원 수 업데이트
-    const cur = parseInt(document.getElementById('memberTotalCount').textContent) || 0;
-    if (cur > 0) document.getElementById('memberTotalCount').textContent = cur - 1;
+    const cur = parseInt(document.getElementById('memberTotalCount').textContent)||0;
+    if (cur>0) document.getElementById('memberTotalCount').textContent=cur-1;
   }
 
   // ============================================================
-  // 👥 회원 수정 모달 열기 (신규)
+  // 👥 회원 수정 모달 (✅ data-* 방식)
   // ============================================================
-  function openEditModal(id, name, phone, address, notes) {
-    document.getElementById('editMemberId').value      = id;
-    document.getElementById('editMemberName').value    = name;
-    document.getElementById('editMemberPhone').value   = phone;
-    document.getElementById('editMemberAddress').value = address;
-    document.getElementById('editMemberNotes').value   = notes;
+  function openEditModalBtn(btn) {
+    document.getElementById('editMemberId').value      = btn.dataset.id;
+    document.getElementById('editMemberName').value    = btn.dataset.name;
+    document.getElementById('editMemberPhone').value   = btn.dataset.phone;
+    document.getElementById('editMemberAddress').value = btn.dataset.address;
+    document.getElementById('editMemberNotes').value   = btn.dataset.notes;
     document.getElementById('editMemberModal').classList.add('open');
   }
 
@@ -1283,44 +1131,27 @@
     document.getElementById('editMemberModal').classList.remove('open');
   }
 
-  // ============================================================
-  // 👥 회원 수정 저장 (신규)
-  // ============================================================
   async function saveMemberEdit() {
     const id      = document.getElementById('editMemberId').value;
     const name    = document.getElementById('editMemberName').value.trim();
     const phone   = document.getElementById('editMemberPhone').value.trim();
     const address = document.getElementById('editMemberAddress').value.trim();
     const notes   = document.getElementById('editMemberNotes').value.trim();
-
-    if (!name) {
-      showMsg('msgMemberEdit', '⚠️ 이름은 필수 입력 항목입니다!', 'error');
-      return;
-    }
-
+    if (!name) { showMsg('msgMemberEdit','⚠️ 이름은 필수 입력 항목입니다!','error'); return; }
     const { error } = await db.from('members').update({
-      name,
-      phone:   phone   || null,
-      address: address || null,
-      notes:   notes   || null,
-    }).eq('id', id);
-
+      name, phone:phone||null, address:address||null, notes:notes||null
+    }).eq('id',id);
     if (error) {
-      showMsg('msgMemberEdit', `❌ 수정 실패: ${error.message}`, 'error');
+      showMsg('msgMemberEdit',`❌ 수정 실패: ${error.message}`,'error');
     } else {
-      showMsg('msgMemberEdit', '✅ 수정되었습니다!', 'success');
-      setTimeout(() => {
-        closeEditModal();
-        loadMembers(); // 목록 새로고침
-      }, 800);
+      showMsg('msgMemberEdit','✅ 수정되었습니다!','success');
+      setTimeout(()=>{ closeEditModal(); loadMembers(); },800);
     }
   }
 
   // 모달 외부 클릭 시 닫기
   document.getElementById('editMemberModal')
-    .addEventListener('click', function(e) {
-      if (e.target === this) closeEditModal();
-    });
+    .addEventListener('click', function(e) { if (e.target===this) closeEditModal(); });
 
   // ============================================================
   // 🔧 유틸리티
@@ -1328,53 +1159,43 @@
   function esc(text) {
     if (!text) return '';
     return String(text)
-      .replace(/&/g,  '&amp;')
-      .replace(/</g,  '&lt;')
-      .replace(/>/g,  '&gt;')
-      .replace(/"/g,  '&quot;')
-      .replace(/'/g,  '&#039;');
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    // ✅ 작은따옴표(')는 변환하지 않음 → data-* 속성 충돌 방지
   }
 
   function fmtDate(isoStr) {
     if (!isoStr) return '';
-    const d = new Date(isoStr);
-    const Y = d.getFullYear();
-    const M = String(d.getMonth() + 1).padStart(2, '0');
-    const D = String(d.getDate()).padStart(2, '0');
-    const h = String(d.getHours()).padStart(2, '0');
-    const m = String(d.getMinutes()).padStart(2, '0');
-    return `${Y}.${M}.${D} ${h}:${m}`;
+    const d=new Date(isoStr);
+    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   }
 
-  function setVal(id, value) {
-    const el = document.getElementById(id);
-    if (el && value != null) el.value = value;
+  function setVal(id,value) {
+    const el=document.getElementById(id);
+    if (el && value!=null) el.value=value;
   }
 
   function getVal(id) {
-    const el = document.getElementById(id);
+    const el=document.getElementById(id);
     return el ? el.value.trim() : '';
   }
 
-  function showMsg(elementId, text, type = 'success') {
-    const el = document.getElementById(elementId);
+  function showMsg(elementId,text,type='success') {
+    const el=document.getElementById(elementId);
     if (!el) return;
-    el.textContent   = text;
-    el.className     = `msg-box ${type}`;
-    el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, 3500);
+    el.textContent=text; el.className=`msg-box ${type}`; el.style.display='block';
+    setTimeout(()=>{ el.style.display='none'; },3500);
   }
 
   function fadeRemove(elementId) {
-    const el = document.getElementById(elementId);
+    const el=document.getElementById(elementId);
     if (!el) return;
-    el.style.transition = 'opacity 0.3s, transform 0.3s';
-    el.style.opacity    = '0';
-    el.style.transform  = 'translateX(10px)';
-    setTimeout(() => el.remove(), 300);
+    el.style.transition='opacity 0.3s,transform 0.3s';
+    el.style.opacity='0'; el.style.transform='translateX(10px)';
+    setTimeout(()=>el.remove(),300);
   }
 
-  function emptyState(icon, text) {
+  function emptyState(icon,text) {
     return `<div class="empty-state"><div class="empty-icon">${icon}</div>${text}</div>`;
   }
 
