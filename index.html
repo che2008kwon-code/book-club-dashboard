@@ -542,11 +542,12 @@
       }
 
       // 도서 표시
+      // 📋 이번 달 설정 불러오기 내 도서 표시 부분 수정
       const bookHtml = data.book_title
         ? `<div class="book-section">
             <div class="book-cover-wrap">
               ${data.book_cover_url
-                ? ``
+                ? `<img src="${esc(data.book_cover_url)}" alt="${esc(data.book_title)}" class="book-cover">`
                 : ''}
               <div id="coverFallback" class="book-cover-placeholder"
                 style="display:${data.book_cover_url?'none':'flex'}">📚</div>
