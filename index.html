@@ -419,7 +419,7 @@
     // ============================================================
     async function loadSettings() {
       const { data, error } = await db
-        .from('settings').select('*').eq('id', 1).single();
+        .from('settings').select('*').eq('book_id', 1).single();
 
       document.getElementById('loading-overlay').style.display = 'none';
 
