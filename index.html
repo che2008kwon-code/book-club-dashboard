@@ -529,7 +529,7 @@
             </div>
             <div class="schedule-item">
               <div class="label">👥 참석인원</div>
-              // <div class="value">${esc(data.schedule_members)||'미정'}</div>
+              //<div class="value">${esc(data.schedule_members)||'미정'}</div>
               const scheduleMembersEl = document.querySelector('.schedule-item:nth-child(4) .value');
               if (scheduleMembersEl) {
                   scheduleMembersEl.textContent = `참석 ${attendCount}명 / 전체 ${members.length}명`;
