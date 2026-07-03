@@ -847,7 +847,7 @@
               <div class="history-title">${esc(b.book_title)}</div>
               <div class="history-author">✍️ ${esc(b.book_author)||'저자 미등록'}</div>
               <div class="history-publisher">🏢 ${esc(b.book_publisher)||'출판사 미등록'}</div>
-              ${b.meeting_date ? `<span class="history-date">📅 ${esc(b.meeting_date)}</span>` : ''}
+              /* ${b.meeting_date ? `<span class="history-date">📅 ${esc(b.meeting_date)}</span>` : ''} */
               ${b.book_desc   ? `<div class="history-desc">${esc(b.book_desc)}</div>` : ''}
             </div>
           </div>`).join('') +
