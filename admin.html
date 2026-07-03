@@ -945,7 +945,7 @@
     const sel = document.getElementById('historyBookSelect');
     const { data, error } = await db
       .from('book_history').select('id, book_title, book_author, meeting_date')
-      .order('created_at', { ascending: false });
+      .order('book_id', { ascending: false });
 
     // 기존 옵션 유지 (첫 번째 placeholder만 남기고 삭제)
     while (sel.options.length > 1) sel.remove(1);
