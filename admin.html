@@ -1021,18 +1021,6 @@
     const badge = document.getElementById('memberCountBadge');
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div>불러오는 중...</div>';
     const { data, error } = await db.from('members').select('*').order('created_at',{ascending:true});
-    const { data: attendance, error: aErr } = await db.from('attendance').select('member_id');
-    if (mErr || aErr) { /* 에러 처리 */ return; }
-    // member_id별 참석 횟수 계산
-    const attendanceCounts = {};
-    attendance.forEach(att => {
-      attendanceCounts[att.member_id] = (attendanceCounts[att.member_id] || 0) + 1;
-    });
-    // ... (테이블 생성 부분)
-    // 테이블 내부에 참석 횟수 셀 추가
-    /*
-      <td>${attendanceCounts[m.id] || 0}회</td>
-    */
     if (error) { el.innerHTML=emptyState('😥',`오류: ${error.message}`); return; }
     if (!data || data.length===0) {
       el.innerHTML=emptyState('👥','등록된 회원이 없습니다<br/>위 폼으로 추가해보세요!');
@@ -1048,7 +1036,7 @@
           <thead>
             <tr>
               <th>#</th><th>이름</th><th>연락처</th><th>거주지</th>
-              <th>기타 메모</th><th>고유 ID</th><th>등록일</th><th>관리</th><th>참석</th>
+              <th>기타 메모</th><th>고유 ID</th><th>등록일</th><th>관리</th>
             </tr>
           </thead>
           <tbody>
