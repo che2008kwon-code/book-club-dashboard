@@ -847,7 +847,10 @@
               <div class="history-title">${esc(b.book_title)}</div>
               <div class="history-author">✍️ ${esc(b.book_author)||'저자 미등록'}</div>
               <div class="history-publisher">🏢 ${esc(b.book_publisher)||'출판사 미등록'}</div>
+              
+              // 해당 줄을 삭제하거나 아래와 같이 주석 처리하세요.
               /* ${b.meeting_date ? `<span class="history-date">📅 ${esc(b.meeting_date)}</span>` : ''} */
+              
               ${b.book_desc   ? `<div class="history-desc">${esc(b.book_desc)}</div>` : ''}
             </div>
           </div>`).join('') +
