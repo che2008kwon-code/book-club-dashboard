@@ -869,18 +869,18 @@
 
     // 이번 달 등록 여부
     const { data: s } = await db
-      .from('settings').select('book_title,schedule_date,book_history_id')
+      .from('settings').select('book_title,schedule_date,book_id')
       .eq('id', 1).single();
     document.getElementById('statStatus').textContent =
       (s?.book_title && s?.schedule_date) ? '✅' : '⚠️';
 
     // ★ 대시보드 연계 현황 카드
     const el = document.getElementById('dashCurrentBook');
-    if (s?.book_history_id) {
+    if (s?.book_id) {
       // 연계된 히스토리 도서 정보 조회
       const { data: bh } = await db
         .from('book_history').select('*')
-        .eq('id', s.book_history_id).single();
+        .eq('id', s.book_id).single();
 
       if (bh) {
         el.innerHTML = `
@@ -1081,17 +1081,17 @@
     if (data.book_cover_url) previewCover();
 
     // ★ 연계 ID 복원
-    if (data.book_history_id) {
-      currentLinkedHistoryId = data.book_history_id;
+    if (data.book_id) {
+      currentLinkedHistoryId = data.book_id;
 
       // 배지 표시
       document.getElementById('currentLinkBadge').style.display = 'block';
-      document.getElementById('currentLinkId').textContent      = `#${data.book_history_id}`;
+      document.getElementById('currentLinkId').textContent      = `#${data.book_id}`;
 
       // 미리보기 채우기
       const { data: bh } = await db
         .from('book_history').select('*')
-        .eq('id', data.book_history_id).single();
+        .eq('id', data.book_id).single();
 
       if (bh) {
         const preview   = document.getElementById('linkedBookPreview');
@@ -1118,7 +1118,7 @@
   }
 
   // ============================================================
-  // 💾 이번 달 설정 저장 (★ book_history_id 포함)
+  // 💾 이번 달 설정 저장 (★ book_id 포함)
   // ============================================================
   async function saveCurrentSettings() {
     const btn = document.getElementById('saveCurrentBtn');
@@ -1136,7 +1136,7 @@
       book_publisher:   getVal('bookPublisher'),
       book_desc:        getVal('bookDesc'),
       book_cover_url:   getVal('bookCoverUrl'),
-      book_history_id:  currentLinkedHistoryId,  // ★ 연계 ID 저장
+      book_id:  currentLinkedHistoryId,  // ★ 연계 ID 저장
       updated_at:       new Date().toISOString(),
     }, { onConflict: 'id' });
 
@@ -1182,10 +1182,10 @@
   async function loadBookHistory() {
     const el = document.getElementById('bookHistoryList');
 
-    // ★ 현재 settings의 book_history_id 조회 (하이라이트용)
+    // ★ 현재 settings의 book_id 조회 (하이라이트용)
     const { data: settings } = await db
-      .from('settings').select('book_history_id').eq('id', 1).single();
-    const activeId = settings?.book_history_id ?? null;
+      .from('settings').select('book_id').eq('id', 1).single();
+    const activeId = settings?.book_id ?? null;
 
     const { data, error } = await db
       .from('book_history').select('*')
@@ -1258,7 +1258,7 @@
       book_publisher:  bh.book_publisher,
       book_desc:       bh.book_desc,
       book_cover_url:  bh.book_cover_url,
-      book_history_id: id,
+      book_id: id,
       updated_at:      new Date().toISOString(),
     }, { onConflict: 'id' });
 
@@ -1341,8 +1341,8 @@
       currentLinkedHistoryId = null;
       document.getElementById('currentLinkBadge').style.display  = 'none';
       document.getElementById('linkedBookPreview').style.display = 'none';
-      // settings의 book_history_id도 null로
-      await db.from('settings').update({ book_history_id: null })
+      // settings의 book_id도 null로
+      await db.from('settings').update({ book_id: null })
               .eq('id', 1);
     }
 
