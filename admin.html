@@ -1189,7 +1189,7 @@
 
     const { data, error } = await db
       .from('book_history').select('*')
-      .order('created_at', { ascending: false });
+      .order('book_id', { ascending: false });
 
     if (error || !data || data.length === 0) {
       el.innerHTML = emptyState('📚',
