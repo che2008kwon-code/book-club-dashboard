@@ -911,6 +911,7 @@
     (async () => {
       await loadSettings();  // settings 먼저 로드
       await loadComments();  // 그 다음 댓글 로드 (book_id 필요)
+      await loadDashboardNotices();
     })();
   </script>
 </body>
