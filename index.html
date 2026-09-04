@@ -784,13 +784,18 @@
       // 카드 렌더링
       grid.innerHTML = members.map(m => {
         const status = attMap[m.id]; // true=참석, false=불참, undefined=미정
+        const totalCount = totalAttMap[m.id] || 0; // 누적 참석 횟수 계산
+      
         let cardClass = '', icon = '❓', text = '미정';
         if (status === true)  { cardClass = 'attended'; icon = '✅'; text = '참석'; }
         if (status === false) { cardClass = 'absent';   icon = '❌'; text = '불참'; }
-
+      
         return `
           <div class="att-card ${cardClass}" onclick="toggleAttendance('${m.id}', '${esc(m.name)}')">
-            <div class="att-name">${esc(m.name)}</div>
+            <div class="att-name">
+              ${esc(m.name)} 
+              <span style="font-size: 0.75rem; color: #8b6340; font-weight: normal; margin-left: 2px;">(${totalCount}회)</span>
+            </div>
             <div class="att-icon">${icon}</div>
             <div class="att-text">${text}</div>
           </div>`;
