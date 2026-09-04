@@ -741,14 +741,28 @@
       }
 
       // 이번 모임 참석 데이터
+      // 1. 전체 모임에서의 회원별 누적 참석 횟수 조회 (attended가 true인 데이터만)
+      const { data: totalAttData } = await db
+        .from('attendance')
+        .select('member_id')
+        .eq('attended', true);
+      
+      // member_id → 누적 참석 횟수 맵
+      const totalAttMap = {};
+      (totalAttData || []).forEach(a => {
+        totalAttMap[a.member_id] = (totalAttMap[a.member_id] || 0) + 1;
+      });
+      
+      // 2. 이번 모임 참석 데이터 조회
       const { data: attData } = await db
         .from('attendance').select('member_id, attended')
         .eq('book_id', currentSettings.book_id);
-
-      // member_id → attended 맵
+      
+      // member_id → attended 맵 (이번 모임 상태)
       const attMap = {};
       (attData || []).forEach(a => { attMap[a.member_id] = a.attended; });
-            // 집계
+      
+      // 집계
       let attendCount = 0, absentCount = 0;
       members.forEach(m => {
         if (attMap[m.id] === true) attendCount++;
