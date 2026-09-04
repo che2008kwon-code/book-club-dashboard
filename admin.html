@@ -751,7 +751,7 @@
     const { count, error } = await db.from('attendance')
       .select('*', { count: 'exact', head: true })
       .eq('book_id', data.book_id)
-      .eq('status', 'attended');
+      .eq('attended', true); // <-- boolean 컬럼 조건으로 변경
     
     if (!error && count !== null) {
       setVal('scheduleMembers', `${count}명 참석`);
