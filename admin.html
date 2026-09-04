@@ -268,6 +268,11 @@
     .member-count-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
     .m-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; }
     .m-badge-total { background: rgba(245,217,168,0.12); color: #f5d9a8; }
+    .att-count-badge {
+      display: inline-block; background: rgba(85,239,196,0.15); color: #55efc4;
+      border: 1px solid rgba(85,239,196,0.3); padding: 2px 8px; border-radius: 12px;
+      font-size: 0.78rem; font-weight: 600; text-align: center;
+    }
     /* 수정 모달 */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
@@ -287,7 +292,7 @@
 </head>
 <body>
 
-<!-- ✅ 비밀번호 화면 (1개만 존재해야 함) -->
+<!-- 비밀번호 화면 -->
 <div id="pwScreen">
   <div class="lock-icon">🔐</div>
   <h2>관리자 페이지</h2>
@@ -297,7 +302,7 @@
   <div id="pwError"></div>
 </div>
 
-<!-- ✅ 관리자 콘텐츠 (초기 display:none) -->
+<!-- 관리자 콘텐츠 -->
 <div id="adminContent">
 
   <div class="admin-header">
@@ -371,7 +376,6 @@
         <div class="form-row"><label>📆 모임 날짜</label><input type="text" id="scheduleDate" placeholder="예: 2026년 7월 3일(금)"/></div>
         <div class="form-row"><label>🕑 시간</label><input type="text" id="scheduleTime" placeholder="예: 오전 10:00 ~ 12:00"/></div>
         <div class="form-row"><label>📍 장소</label><input type="text" id="schedulePlace" placeholder="예: 경인교육대학교 평생학습관"/></div>
-        <!-- 참석자 체크 결과 표시 영역으로 변경 -->
         <div class="form-row"><label>👥 회원 참석 인원 (회원참석 탭 연동)</label><input type="text" id="scheduleMembers" readonly style="background: rgba(255,255,255,0.03); opacity: 0.8;" placeholder="회원참석 탭에서 자동 집계됨"/></div>
       </div>
     </div>
@@ -504,7 +508,7 @@
         <span class="m-badge m-badge-total">전체 <strong id="memberTotalCount">0</strong>명</span>
       </div>
       <div class="info-banner">
-        💡 고유 ID(UUID)는 attendance 테이블의 member_id와 자동 연결됩니다.
+        💡 참석횟수는 역대 모임에서 실제 출석(attended=true) 처리된 누적 횟수입니다.
       </div>
       <div class="scroll-area" style="max-height:500px;">
         <div id="memberList">
@@ -532,6 +536,7 @@
     <div class="msg-box" id="msgMemberEdit"></div>
   </div>
 </div>
+
 <script>
   // ============================================================
   // ⚙️ Supabase 설정
@@ -544,7 +549,7 @@
   let currentLinkedHistoryId = null;
 
   // ============================================================
-  // 🔐 비밀번호 확인 (✅ 수정: trim() 추가, 입력 초기화)
+  // 🔐 비밀번호 확인
   // ============================================================
   function checkPw() {
     const inputEl = document.getElementById('pwInput');
@@ -586,7 +591,7 @@
   // ============================================================
   // 🗂️ 탭 전환
   // ============================================================
-    function switchTab(tabName, el) {
+  function switchTab(tabName, el) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + tabName).classList.add('active');
@@ -700,7 +705,6 @@
     document.getElementById('currentLinkBadge').style.display = 'block';
     document.getElementById('currentLinkId').textContent      = `#${id}`;
 
-    // 미리보기 업데이트
     updateLbpPreview(bh, id);
     showMsg('saveMsgCurrent',`✅ #${id} "${bh.book_title}" 적용됨. 저장 버튼을 눌러주세요.`,'success');
   }
@@ -737,7 +741,7 @@
   }
 
   // ============================================================
-  // 📋 이번 달 설정 불러오기 (회원 참석 인원 자동 집계 연동)
+  // 📋 이번 달 설정 불러오기
   // ============================================================
   async function loadCurrentSettings() {
     const { data } = await db.from('settings').select('*').eq('id', 1).single();
@@ -747,12 +751,11 @@
     setVal('scheduleTime',  data.schedule_time);
     setVal('schedulePlace', data.schedule_place);
 
-    // 1. 현재 연계된 도서(book_id)의 참석자 체크 수(attended = true) 자동 집계
     if (data.book_id) {
       const { count, error } = await db.from('attendance')
         .select('*', { count: 'exact', head: true })
         .eq('book_id', data.book_id)
-        .eq('attended', true); // Boolean 컬럼 연동
+        .eq('attended', true);
       
       if (!error && count !== null) {
         setVal('scheduleMembers', `${count}명 참석`);
@@ -780,14 +783,13 @@
   }
 
   // ============================================================
-  // 💾 이번 달 설정 저장 (집계된 참석 인원 정보 포함 저장)
+  // 💾 이번 달 설정 저장
   // ============================================================
   async function saveCurrentSettings() {
     const btn = document.getElementById('saveCurrentBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-inline"></span>저장 중...';
 
-    // 저장 전 참석 인원 최신 상태 다시 집계
     let membersText = getVal('scheduleMembers');
     if (currentLinkedHistoryId) {
       const { count } = await db.from('attendance')
@@ -805,7 +807,7 @@
       schedule_date:    getVal('scheduleDate'),
       schedule_time:    getVal('scheduleTime'),
       schedule_place:   getVal('schedulePlace'),
-      schedule_members: membersText, // 자동 집계된 인원수 반영
+      schedule_members: membersText,
       book_title:       getVal('bookTitle'),
       book_author:      getVal('bookAuthor'),
       book_publisher:   getVal('bookPublisher'),
@@ -878,7 +880,6 @@
     }).join('');
   }
 
-  // ✅ data-* 방식으로 변경 (onclick 속성 충돌 방지)
   async function setCurrentFromHistoryBtn(btn) {
     const id = parseInt(btn.dataset.id);
     if (!confirm(`히스토리 #${id} 도서를 이번 달 선정도서로 지정하시겠습니까?`)) return;
@@ -1045,36 +1046,62 @@
   }
 
   // ============================================================
-  // 👥 회원 목록 불러오기
+  // 👥 회원 목록 불러오기 (현재까지 참석횟수 누계 집계 추가)
   // ============================================================
   async function loadMembers() {
     const el    = document.getElementById('memberList');
     const badge = document.getElementById('memberCountBadge');
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div>불러오는 중...</div>';
-    const { data, error } = await db.from('members').select('*').order('created_at',{ascending:true});
-    if (error) { el.innerHTML=emptyState('😥',`오류: ${error.message}`); return; }
-    if (!data || data.length===0) {
+    
+    // 1. 회원 전체 목록 불러오기
+    const { data: members, error: mErr } = await db.from('members').select('*').order('created_at',{ascending:true});
+    if (mErr) { el.innerHTML=emptyState('😥',`오류: ${mErr.message}`); return; }
+    if (!members || members.length===0) {
       el.innerHTML=emptyState('👥','등록된 회원이 없습니다<br/>위 폼으로 추가해보세요!');
       document.getElementById('memberTotalCount').textContent=0;
       if (badge) badge.textContent=''; return;
     }
-    document.getElementById('memberTotalCount').textContent = data.length;
-    if (badge) badge.textContent = `(총 ${data.length}명)`;
+
+    // 2. 누적 참석 기록 집계 (attended가 true인 데이터)
+    const { data: attendanceData, error: aErr } = await db.from('attendance').select('member_id').eq('attended', true);
+    
+    // 회원 ID별 참석 횟수 Map 생성
+    const attendanceCountMap = {};
+    if (!aErr && attendanceData) {
+      attendanceData.forEach(rec => {
+        if (rec.member_id) {
+          attendanceCountMap[rec.member_id] = (attendanceCountMap[rec.member_id] || 0) + 1;
+        }
+      });
+    }
+
+    document.getElementById('memberTotalCount').textContent = members.length;
+    if (badge) badge.textContent = `(총 ${members.length}명)`;
 
     el.innerHTML = `
       <div style="overflow-x:auto;">
         <table class="member-table">
           <thead>
             <tr>
-              <th>#</th><th>이름</th><th>연락처</th><th>거주지</th>
-              <th>기타 메모</th><th>고유 ID</th><th>등록일</th><th>관리</th>
+              <th>#</th>
+              <th>이름</th>
+              <th>참석 횟수</th>
+              <th>연락처</th>
+              <th>거주지</th>
+              <th>기타 메모</th>
+              <th>고유 ID</th>
+              <th>등록일</th>
+              <th>관리</th>
             </tr>
           </thead>
           <tbody>
-            ${data.map((m,i) => `
+            ${members.map((m,i) => {
+              const attCount = attendanceCountMap[m.id] || 0;
+              return `
               <tr id="member-row-${m.id}">
                 <td>${i+1}</td>
                 <td><strong style="color:#f5d9a8;">${esc(m.name)}</strong></td>
+                <td><span class="att-count-badge">🏃 ${attCount}회</span></td>
                 <td>${esc(m.phone||'-')}</td>
                 <td>${esc(m.address||'-')}</td>
                 <td>${esc(m.notes||'-')}</td>
@@ -1097,7 +1124,8 @@
                       onclick="deleteMemberBtn(this)">🗑️ 삭제</button>
                   </div>
                 </td>
-              </tr>`).join('')}
+              </tr>`;
+            }).join('')}
           </tbody>
         </table>
       </div>`;
@@ -1129,7 +1157,7 @@
   }
 
   // ============================================================
-  // 👥 회원 삭제 (✅ data-* 방식)
+  // 👥 회원 삭제
   // ============================================================
   async function deleteMemberBtn(btn) {
     const id   = btn.dataset.id;
@@ -1147,7 +1175,7 @@
   }
 
   // ============================================================
-  // 👥 회원 수정 모달 (✅ data-* 방식)
+  // 👥 회원 수정 모달
   // ============================================================
   function openEditModalBtn(btn) {
     document.getElementById('editMemberId').value      = btn.dataset.id;
@@ -1180,7 +1208,6 @@
     }
   }
 
-  // 모달 외부 클릭 시 닫기
   document.getElementById('editMemberModal')
     .addEventListener('click', function(e) { if (e.target===this) closeEditModal(); });
 
@@ -1192,7 +1219,6 @@
     return String(text)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    // ✅ 작은따옴표(')는 변환하지 않음 → data-* 속성 충돌 방지
   }
 
   function fmtDate(isoStr) {
@@ -1229,7 +1255,6 @@
   function emptyState(icon,text) {
     return `<div class="empty-state"><div class="empty-icon">${icon}</div>${text}</div>`;
   }
-
 </script>
 </body>
 </html>
