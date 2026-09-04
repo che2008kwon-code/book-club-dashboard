@@ -737,61 +737,75 @@
   }
 
   // ============================================================
-  // 📋 이번 달 설정 불러오기
+  // 📋 이번 달 설정 불러오기 (회원 참석 인원 자동 집계 연동)
   // ============================================================
   async function loadCurrentSettings() {
-  const { data } = await db.from('settings').select('*').eq('id',1).single();
-  if (!data) return;
-  setVal('scheduleDate',    data.schedule_date);
-  setVal('scheduleTime',    data.schedule_time);
-  setVal('schedulePlace',   data.schedule_place);
+    const { data } = await db.from('settings').select('*').eq('id', 1).single();
+    if (!data) return;
 
-  // 1. 현재 연계된 도서(book_id)의 참석자 체크 수(attended) 가져오기
-  if (data.book_id) {
-    const { count, error } = await db.from('attendance')
-      .select('*', { count: 'exact', head: true })
-      .eq('book_id', data.book_id)
-      .eq('attended', true); // <-- boolean 컬럼 조건으로 변경
-    
-    if (!error && count !== null) {
-      setVal('scheduleMembers', `${count}명 참석`);
+    setVal('scheduleDate',  data.schedule_date);
+    setVal('scheduleTime',  data.schedule_time);
+    setVal('schedulePlace', data.schedule_place);
+
+    // 1. 현재 연계된 도서(book_id)의 참석자 체크 수(attended = true) 자동 집계
+    if (data.book_id) {
+      const { count, error } = await db.from('attendance')
+        .select('*', { count: 'exact', head: true })
+        .eq('book_id', data.book_id)
+        .eq('attended', true); // Boolean 컬럼 연동
+      
+      if (!error && count !== null) {
+        setVal('scheduleMembers', `${count}명 참석`);
+      } else {
+        setVal('scheduleMembers', '0명 참석');
+      }
     } else {
-      setVal('scheduleMembers', '0명 참석');
+      setVal('scheduleMembers', '도서 연계 필요');
     }
-  } else {
-    setVal('scheduleMembers', '도서 연계 필요');
-  }
 
-  setVal('bookTitle',       data.book_title);
-  setVal('bookAuthor',      data.book_author);
-  setVal('bookPublisher',   data.book_publisher);
-  setVal('bookDesc',        data.book_desc);
-  setVal('bookCoverUrl',    data.book_cover_url);
-  if (data.book_cover_url) previewCover();
+    setVal('bookTitle',     data.book_title);
+    setVal('bookAuthor',    data.book_author);
+    setVal('bookPublisher', data.book_publisher);
+    setVal('bookDesc',      data.book_desc);
+    setVal('bookCoverUrl',  data.book_cover_url);
+    if (data.book_cover_url) previewCover();
 
-  if (data.book_id) {
-    currentLinkedHistoryId = data.book_id;
-    document.getElementById('currentLinkBadge').style.display = 'block';
-    document.getElementById('currentLinkId').textContent      = `#${data.book_id}`;
-    const { data: bh } = await db.from('book_history').select('*').eq('id',data.book_id).single();
-    if (bh) updateLbpPreview(bh, data.book_id);
+    if (data.book_id) {
+      currentLinkedHistoryId = data.book_id;
+      document.getElementById('currentLinkBadge').style.display = 'block';
+      document.getElementById('currentLinkId').textContent      = `#${data.book_id}`;
+      const { data: bh } = await db.from('book_history').select('*').eq('id', data.book_id).single();
+      if (bh) updateLbpPreview(bh, data.book_id);
+    }
   }
-}
 
   // ============================================================
-  // 💾 이번 달 설정 저장
+  // 💾 이번 달 설정 저장 (집계된 참석 인원 정보 포함 저장)
   // ============================================================
   async function saveCurrentSettings() {
     const btn = document.getElementById('saveCurrentBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-inline"></span>저장 중...';
 
+    // 저장 전 참석 인원 최신 상태 다시 집계
+    let membersText = getVal('scheduleMembers');
+    if (currentLinkedHistoryId) {
+      const { count } = await db.from('attendance')
+        .select('*', { count: 'exact', head: true })
+        .eq('book_id', currentLinkedHistoryId)
+        .eq('attended', true);
+      if (count !== null) {
+        membersText = `${count}명 참석`;
+        setVal('scheduleMembers', membersText);
+      }
+    }
+
     const { error } = await db.from('settings').upsert({
       id:               1,
       schedule_date:    getVal('scheduleDate'),
       schedule_time:    getVal('scheduleTime'),
       schedule_place:   getVal('schedulePlace'),
-      schedule_members: getVal('scheduleMembers'),
+      schedule_members: membersText, // 자동 집계된 인원수 반영
       book_title:       getVal('bookTitle'),
       book_author:      getVal('bookAuthor'),
       book_publisher:   getVal('bookPublisher'),
