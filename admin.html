@@ -926,10 +926,23 @@
     const title  = getVal('newBookTitle');
     const author = getVal('newBookAuthor');
     if (!title)  { showMsg('msgBook','⚠️ 책 제목은 필수입니다!','error'); return; }
-    if (!author) { showMsg('msgBook','⚠️ 저자는 필수입니다!','error');    return; }
+    if (!author) { showMsg('msgBook','⚠️️ 저자는 필수입니다!','error');    return; }
     const btn = document.getElementById('addBookBtn');
     btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>추가 중...';
+
+    // 1. 가장 최근(마지막) 도서의 id 조회를 통해 다음 번호 계산
+    const { data: lastBook } = await db.from('book_history')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const nextId = lastBook ? lastBook.id + 1 : 1;
+
+    // 2. 계산된 nextId를 id 및 book_id에 함께 입력
     const { error } = await db.from('book_history').insert([{
+      id:             nextId,        // id 직접 지정
+      book_id:        nextId,        // book_id에도 동일한 번호 입력
       book_title:     title,
       book_author:    author,
       book_publisher: getVal('newBookPublisher'),
@@ -937,8 +950,9 @@
       book_cover_url: getVal('newBookCoverUrl'),
       meeting_date:   getVal('newBookMeetingDate'),
     }]);
+
     showMsg('msgBook',
-      error ? `❌ 추가 실패: ${error.message}` : `✅ "${title}" 도서가 추가되었습니다!`,
+      error ? `❌ 추가 실패: ${error.message}` : `✅ "${title}" 도서가 추가되었습니다! (ID: #${nextId})`,
       error ? 'error' : 'success');
     if (!error) { clearBookForm(); loadBookHistory(); loadHistorySelect(); loadDashboard(); }
     btn.disabled=false; btn.innerHTML='➕ 도서 추가';
