@@ -720,7 +720,7 @@
     }
 
     // ============================================================
-    // 👥 회원 참석 현황 불러오기 (신규)
+    // 👥 회원 참석 현황 불러오기 (수정됨)
     // ============================================================
     async function loadAttendance() {
       const grid = document.getElementById('attendanceGrid');
@@ -740,25 +740,22 @@
         return;
       }
 
-      // 이번 모임 참석 데이터
       // 1. 전체 모임에서의 회원별 누적 참석 횟수 조회 (attended가 true인 데이터만)
       const { data: totalAttData } = await db
         .from('attendance')
         .select('member_id')
         .eq('attended', true);
       
-      // member_id → 누적 참석 횟수 맵
       const totalAttMap = {};
       (totalAttData || []).forEach(a => {
         totalAttMap[a.member_id] = (totalAttMap[a.member_id] || 0) + 1;
       });
       
-      // 2. 이번 모임 참석 데이터 조회
+      // 2. 이번 모임(현재 설정된 book_id 기준) 참석 데이터 조회
       const { data: attData } = await db
         .from('attendance').select('member_id, attended')
         .eq('book_id', currentSettings.book_id);
       
-      // member_id → attended 맵 (이번 모임 상태)
       const attMap = {};
       (attData || []).forEach(a => { attMap[a.member_id] = a.attended; });
       
@@ -775,16 +772,16 @@
       document.getElementById('absentCount').textContent = absentCount;
       document.getElementById('noneCount').textContent   = noneCount;
 
-      // 참석인원 요약 업데이트
+      // 🔥 [핵심] '이번 달 모임' 탭 일정 영역의 참석인원을 실시간 참석자 수로 업데이트
       const memberCountEl = document.getElementById('dynamicMemberCount');
       if (memberCountEl) {
-          memberCountEl.textContent = `${attendCount}명`;
+        memberCountEl.textContent = `${attendCount}명`;
       }
 
       // 카드 렌더링
       grid.innerHTML = members.map(m => {
-        const status = attMap[m.id]; // true=참석, false=불참, undefined=미정
-        const totalCount = totalAttMap[m.id] || 0; // 누적 참석 횟수 계산
+        const status = attMap[m.id]; 
+        const totalCount = totalAttMap[m.id] || 0;
       
         let cardClass = '', icon = '❓', text = '미정';
         if (status === true)  { cardClass = 'attended'; icon = '✅'; text = '참석'; }
