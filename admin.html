@@ -783,19 +783,21 @@
   }
 
   // ============================================================
-  // 💾 이번 달 설정 저장
+  // 💾 이번 달 설정 저장 (수정됨)
   // ============================================================
   async function saveCurrentSettings() {
     const btn = document.getElementById('saveCurrentBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-inline"></span>저장 중...';
 
+    // 🔥 현재 연계된 도서(book_id)를 기준으로 실제 참석(attended=true) 인원을 정확히 재계산
     let membersText = getVal('scheduleMembers');
     if (currentLinkedHistoryId) {
       const { count } = await db.from('attendance')
         .select('*', { count: 'exact', head: true })
         .eq('book_id', currentLinkedHistoryId)
         .eq('attended', true);
+      
       if (count !== null) {
         membersText = `${count}명 참석`;
         setVal('scheduleMembers', membersText);
@@ -807,7 +809,7 @@
       schedule_date:    getVal('scheduleDate'),
       schedule_time:    getVal('scheduleTime'),
       schedule_place:   getVal('schedulePlace'),
-      schedule_members: membersText,
+      schedule_members: membersText, // 정확히 집계된 참석자 수 반영
       book_title:       getVal('bookTitle'),
       book_author:      getVal('bookAuthor'),
       book_publisher:   getVal('bookPublisher'),
